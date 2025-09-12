@@ -1,0 +1,23 @@
+
+admin{
+        add_products
+        product_list(update,delete))
+        add_admins
+        reports{
+            topselling_products(monthly)
+            sales_reports(quarterly)
+            estimate_time
+            total_orders(category)
+            order_summay(customer-wise)
+
+        }
+}
+customer{
+        product(listout product to users)
+        cart(page after adding product)
+        my_orders(order hisory,penidng orders)
+        profile(update account details after login)
+}
+home(first page when started)
+about(about our site)
+contactUs(contact details)
