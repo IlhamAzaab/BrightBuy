@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
+import Orders from "../pages/Orders";
 
 // Public pages
 import Home from "../pages/Home";
@@ -42,6 +43,15 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route path="/orders" element={<Orders />} />
+
+        {/*<Route 
+          path ="/orders" 
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+        }/>*/}
 
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
