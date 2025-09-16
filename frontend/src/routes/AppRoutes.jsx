@@ -7,7 +7,7 @@ import Orders from "../pages/Orders";
 
 // Public pages
 import Home from "../pages/Home";
-import Products from "../pages/Products";
+import CustomerProductList from "../pages/Customer Product List Page/CustomerProductsList"
 
 // Protected pages (require login)
 import Cart from "../pages/Cart";
@@ -28,7 +28,7 @@ export default function AppRoutes() {
       <Routes>
         {/* Public routes (accessible to everyone) */}
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
+        <Route path="/products" element={<CustomerProductList />} />
 
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
