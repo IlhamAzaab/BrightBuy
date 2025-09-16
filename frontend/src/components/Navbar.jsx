@@ -6,6 +6,10 @@ import userIcon from "../assets/user_icon.svg";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+
+  // Check role
+  const isSeller = ["admin"].includes(user?.role?.toLowerCase());
 
   const [user, setUser] = useState({
     isLoggedIn: true,
@@ -198,3 +202,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
