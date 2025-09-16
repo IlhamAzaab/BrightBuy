@@ -1,16 +1,20 @@
+
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
+require("dotenv").config();
+
 const app = express();
 
-// Enable CORS for all routes
-app.use(cors());
-app.use(bodyParser.json());
 
+// Enable CORS for frontend
+app.use(cors({ origin: "http://localhost:3000" }));
+app.use(express.json());
 
-//Our routes
+// Routes
+const authRoutes = require("./routes/auth");
+app.use("/auth", authRoutes);
 
-// Example route
+// Example test route
 app.get("/", (req, res) => {
   res.send("Backend is running!");
 });

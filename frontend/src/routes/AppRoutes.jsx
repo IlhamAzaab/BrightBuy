@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React,{ useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
@@ -49,3 +49,4 @@ export default function AppRoutes() {
     </Router>
   );
 }
+
