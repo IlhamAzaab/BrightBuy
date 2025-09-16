@@ -14,7 +14,7 @@ const Orders = () => {
     if (user?.id) {
       fetchOrders(tab);
     }
-  }, [tab, user?.id]); // ✅ Fixed: Only depend on user.id, not the entire user object
+  }, [tab, user?.id]); 
 
   const fetchOrders = async (status) => {
     setLoading(true);
