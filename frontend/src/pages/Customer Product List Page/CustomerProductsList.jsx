@@ -25,6 +25,7 @@ export default function CustomerProductList() {
 
   return (
     <div className="customer_product_list_grid">
+      <h2 className="text-2xl font-medium">All Products</h2>
       {products.map((p) => (
         <ProductCard key={p.Product_ID} product={p} />
       ))}
