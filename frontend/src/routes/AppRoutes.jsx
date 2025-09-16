@@ -17,7 +17,7 @@ export default function AppRoutes() {
   // ProtectedRoute only wraps pages that require login
   const ProtectedRoute = ({ children }) => {
     if (!user) {
-      return <Navigate to="/login" replace />;
+      return <Navigate to="/signup" replace />;
     }
     return children;
   };
