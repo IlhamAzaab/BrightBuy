@@ -1,13 +1,19 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import searchIcon from "../assets/search_icon.svg";
 import userIcon from "../assets/user_icon.svg";
-import { AuthContext } from "../context/AuthContext"; // make sure you import your context
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user, logout } = useContext(AuthContext);
+
+  // 🔹 Manually set your user here
+  const [user, setUser] = useState({
+    isLoggedIn: true,
+    role: "admin", // change this to "admin" or "customer" manually
+    name: "MIM Ilham",
+    avatar: userIcon,
+  });
 
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
@@ -50,18 +56,10 @@ const Navbar = () => {
 
       {/* Desktop menu */}
       <div className="flex items-center gap-4 lg:gap-10 max-md:hidden">
-        <button onClick={() => navigate("/")} className="hover:text-black">
-          Home
-        </button>
-        <button onClick={() => navigate("/products")} className="hover:text-black">
-          Shop
-        </button>
-        <button onClick={() => navigate("/about")} className="hover:text-black">
-          About Us
-        </button>
-        <button onClick={() => navigate("/contact")} className="hover:text-black">
-          Contact
-        </button>
+        <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
+        <button onClick={() => navigate("/products")} className="hover:text-black">Shop</button>
+        <button onClick={() => navigate("/about")} className="hover:text-black">About Us</button>
+        <button onClick={() => navigate("/contact")} className="hover:text-black">Contact</button>
 
         {isAdmin && (
           <button
@@ -85,37 +83,15 @@ const Navbar = () => {
               onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
               className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
             >
-              <img
-                src={user.avatar || userIcon}
-                alt="user avatar"
-                className="w-5 h-5 rounded-full"
-              />
+              <img src={user.avatar} alt="user avatar" className="w-5 h-5 rounded-full" />
               <span>{user.name}</span>
             </button>
 
             {desktopDropdownOpen && isCustomer && (
               <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg flex flex-col z-50">
-                <button
-                  type="button"
-                  onClick={() => handleNavigation("/cart")}
-                  className="px-4 py-2 text-left hover:bg-gray-100"
-                >
-                  Cart
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleNavigation("/my-orders")}
-                  className="px-4 py-2 text-left hover:bg-gray-100"
-                >
-                  My Orders
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleNavigation("/profile")}
-                  className="px-4 py-2 text-left hover:bg-gray-100"
-                >
-                  Profile
-                </button>
+                <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
+                <button onClick={() => handleNavigation("/my-orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
+                <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
               </div>
             )}
           </div>
@@ -145,12 +121,8 @@ const Navbar = () => {
 
         {user?.isLoggedIn ? (
           <>
-            <button type="button" onClick={() => navigate("/")} className="hover:text-black">
-              Home
-            </button>
-            <button type="button" onClick={() => navigate("/products")} className="hover:text-black">
-              Products
-            </button>
+            <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
+            <button onClick={() => navigate("/products")} className="hover:text-black">Products</button>
 
             <div className="relative" ref={mobileRef}>
               <button
@@ -158,37 +130,15 @@ const Navbar = () => {
                 onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
                 className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
               >
-                <img
-                  src={user.avatar || userIcon}
-                  alt="user avatar"
-                  className="w-5 h-5 rounded-full"
-                />
+                <img src={user.avatar} alt="user avatar" className="w-5 h-5 rounded-full" />
                 <span>{user.name}</span>
               </button>
 
               {mobileDropdownOpen && isCustomer && (
                 <div className="flex flex-col mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-50">
-                  <button
-                    type="button"
-                    onClick={() => handleNavigation("/cart")}
-                    className="px-4 py-2 text-left hover:bg-gray-100"
-                  >
-                    Cart
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleNavigation("/my-orders")}
-                    className="px-4 py-2 text-left hover:bg-gray-100"
-                  >
-                    My Orders
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleNavigation("/profile")}
-                    className="px-4 py-2 text-left hover:bg-gray-100"
-                  >
-                    Profile
-                  </button>
+                  <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
+                  <button onClick={() => handleNavigation("/my-orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
+                  <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
                 </div>
               )}
             </div>
