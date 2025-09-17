@@ -1,22 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import searchIcon from "../assets/search_icon.svg";
 import userIcon from "../assets/user_icon.svg";
+import { AuthContext } from "../context/AuthContext"; // make sure you import your context
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
-
-  // Check role
-  const isSeller = ["admin"].includes(user?.role?.toLowerCase());
-
-  const [user, setUser] = useState({
-    isLoggedIn: true,
-    role: "admin", // "customer" or "admin"
-    name: "MIM Ilham",
-    avatar: userIcon,
-  });
 
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
@@ -24,8 +15,8 @@ const Navbar = () => {
   const desktopRef = useRef(null);
   const mobileRef = useRef(null);
 
-  const isAdmin = user?.role === "admin";
-  const isCustomer = user?.role === "customer";
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+  const isCustomer = user?.role?.toLowerCase() === "customer";
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -36,14 +27,10 @@ const Navbar = () => {
   // Close dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        desktopRef.current && !desktopRef.current.contains(event.target)
-      ) {
+      if (desktopRef.current && !desktopRef.current.contains(event.target)) {
         setDesktopDropdownOpen(false);
       }
-      if (
-        mobileRef.current && !mobileRef.current.contains(event.target)
-      ) {
+      if (mobileRef.current && !mobileRef.current.contains(event.target)) {
         setMobileDropdownOpen(false);
       }
     };
@@ -63,10 +50,18 @@ const Navbar = () => {
 
       {/* Desktop menu */}
       <div className="flex items-center gap-4 lg:gap-10 max-md:hidden">
-        <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
-        <button onClick={() => navigate("/products")} className="hover:text-black">Shop</button>
-        <button onClick={() => navigate("/about")} className="hover:text-black">About Us</button>
-        <button onClick={() => navigate("/contact")} className="hover:text-black">Contact</button>
+        <button onClick={() => navigate("/")} className="hover:text-black">
+          Home
+        </button>
+        <button onClick={() => navigate("/products")} className="hover:text-black">
+          Shop
+        </button>
+        <button onClick={() => navigate("/about")} className="hover:text-black">
+          About Us
+        </button>
+        <button onClick={() => navigate("/contact")} className="hover:text-black">
+          Contact
+        </button>
 
         {isAdmin && (
           <button
@@ -90,7 +85,11 @@ const Navbar = () => {
               onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
               className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
             >
-              <img src={user.avatar} alt="user avatar" className="w-5 h-5 rounded-full" />
+              <img
+                src={user.avatar || userIcon}
+                alt="user avatar"
+                className="w-5 h-5 rounded-full"
+              />
               <span>{user.name}</span>
             </button>
 
@@ -146,8 +145,12 @@ const Navbar = () => {
 
         {user?.isLoggedIn ? (
           <>
-            <button type="button" onClick={() => navigate("/")} className="hover:text-black">Home</button>
-            <button type="button" onClick={() => navigate("/products")} className="hover:text-black">Products</button>
+            <button type="button" onClick={() => navigate("/")} className="hover:text-black">
+              Home
+            </button>
+            <button type="button" onClick={() => navigate("/products")} className="hover:text-black">
+              Products
+            </button>
 
             <div className="relative" ref={mobileRef}>
               <button
@@ -155,7 +158,11 @@ const Navbar = () => {
                 onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
                 className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
               >
-                <img src={user.avatar} alt="user avatar" className="w-5 h-5 rounded-full" />
+                <img
+                  src={user.avatar || userIcon}
+                  alt="user avatar"
+                  className="w-5 h-5 rounded-full"
+                />
                 <span>{user.name}</span>
               </button>
 
@@ -202,4 +209,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

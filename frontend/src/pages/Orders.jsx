@@ -7,7 +7,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
 
   // For now use test user (replace later with AuthContext)
-  const user = { id: 1, name: "Alice" };
+  const user = { id: 1, name: "John Smith" };
   // const { user } = useContext(AuthContext);
 
   useEffect(() => {
