@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -20,47 +20,28 @@ export default function ProductCard({ product }) {
 
 
   const staticRating = 4.5;
+  const detailsPath = `/products/${product.Product_ID}`;
 
   return (
-    <div
-      onClick={() => {
-        navigate(`/product/${product.Product_ID}`);
-        window.scrollTo(0, 0);
-      }}
-      className="flex flex-col items-start gap-1 max-w-[220px] w-full cursor-pointer"
-    >
-      <div className="group relative bg-gray-100 rounded-lg w-full h-52 flex items-center justify-center overflow-hidden">
+    <div className="flex flex-col items-start gap-1 max-w-[220px] w-full">
+      <Link to={detailsPath} className="group relative bg-gray-100 rounded-lg w-full h-52 flex items-center justify-center overflow-hidden">
         <img
-          src={`${API_BASE}${product.Image_URL}`}
+          src={`${API_BASE}${product.Image_URL || ""}`}
           alt={product.Product_Name}
           className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
           loading="lazy"
         />
-        <button
-          className="absolute top-2 right-2 bg-white p-2 rounded-full shadow-md"
-          onClick={(e) => {
-            e.stopPropagation(); /* wishlist action here */
-          }}
-          aria-label="Add to wishlist"
-          title="Add to wishlist"
-        >
-          ❤️
-        </button>
-      </div>
+      </Link>
 
-      <p className="md:text-base font-medium pt-2 w-full truncate">
+      <Link to={detailsPath} className="md:text-base font-medium pt-2 w-full truncate">
         {product.SKU}
-      </p>
-      <p className="w-full text-xs text-gray-500/70 max-sm:hidden truncate">
-        {product.Description}
-      </p>
+      </Link>
+      <p className="w-full text-xs text-gray-500/70 max-sm:hidden truncate">{product.Description}</p>
 
       <div className="flex items-center gap-2">
-        <p className="text-xs">{staticRating}</p>
+        <p className="text-xs">4.5</p>
         <div className="flex items-center gap-0.5 text-yellow-500 text-xs">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i}>{i < Math.floor(staticRating) ? "★" : "☆"}</span>
-          ))}
+          {Array.from({ length: 5 }).map((_, i) => <span key={i}>{i < 4 ? "★" : "☆"}</span>)}
         </div>
       </div>
 
@@ -68,7 +49,8 @@ export default function ProductCard({ product }) {
         <p className="text-base font-medium">{priceLabel}</p>
         <button
           onClick={(e) => {
-            e.stopPropagation(); /* add-to-cart / buy now */
+            e.preventDefault();           
+            navigate(detailsPath);        
           }}
           className="max-sm:hidden px-4 py-1.5 text-gray-600 border border-gray-300 rounded-full text-xs hover:bg-slate-50 transition"
         >

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
@@ -7,7 +7,8 @@ import Orders from "../pages/Orders";
 
 // Public pages
 import Home from "../pages/Home";
-import CustomerProductList from "../pages/Customer Product List Page/CustomerProductsList"
+import CustomerProductList from "../pages/Customer Product List Page/CustomerProductsList";
+import ProductDetails from "../pages/Customer Product List Page/ProductDetails";
 
 // Protected pages (require login)
 import Cart from "../pages/Cart";
@@ -24,11 +25,12 @@ export default function AppRoutes() {
   };
 
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         {/* Public routes (accessible to everyone) */}
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProductList />} />
+        <Route path="/products/:id" element={<ProductDetails/>}/>
 
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
@@ -56,6 +58,6 @@ export default function AppRoutes() {
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
