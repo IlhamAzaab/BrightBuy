@@ -31,7 +31,7 @@ router.get("/", async(_req, res) => {
                 
             }
 
-            if(r.Varinat_ID != null){
+            if(r.Variant_ID != null){
                 grouped[pid].Variants.push({
                     Variant_ID: r.Variant_ID,
                     Colour: r.Colour,
@@ -40,6 +40,8 @@ router.get("/", async(_req, res) => {
                 });                
             }
         }
+        console.log(grouped);
+        
        res.json(Object.values(grouped));
     } 
     catch (err) {
@@ -47,7 +49,7 @@ router.get("/", async(_req, res) => {
     res.status(500).json({ ok: false, error: "Failed to fetch products" });    
     }
 
-    console.log(err);
+    
     
 });
 
