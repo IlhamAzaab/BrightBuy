@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import "dotenv/config";
 import productsRouter from "./routes/products.js";
-import ordersRoute from "../routes/orders.js";
+import ordersRoute from "./routes/orders.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -1,11 +1,7 @@
 import express from "express";
-import pool from "../src/db.js";
+import pool from "../db.js";
 
 const router = express.Router();
-<<<<<<< HEAD:backend/routes/orders.js
-=======
-const db = require("../../db");
->>>>>>> 1490c3a96de7d7a945b0a21ce367b540893b56e8:backend/src/routes/orders.js
 
 // Get orders by user + status
 router.get("/", async (req, res) => {
