@@ -1,27 +1,24 @@
-import express from "express";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-import "dotenv/config";
-import productsRouter from "./routes/products.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000" })); // CRA dev server
+
+// Enable CORS for frontend
+app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
 
-// serve product images from backend/assets
-app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
+// Routes
+const authRoutes = require("../routes/auth");
+app.use("/auth", authRoutes);
 
-// api routes
-app.use("/api/products", productsRouter);
+// Example test route
+app.get("/", (req, res) => {
+  res.send("Backend is running!");
+});
 
-// health
-app.get("/api/health", (_req, res) => res.json({ ok: true }));
-
-const PORT = Number(process.env.PORT || 5000);
+const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
+  console.log(`http://localhost:${PORT}/`);
 });
