@@ -9,7 +9,7 @@ const Navbar = () => {
 
   // 🔹 Manually set your user here
   const [user, setUser] = useState({
-    isLoggedIn: true,
+    isLoggedIn: false, // change this to true or false manually,
     role: "admin", // change this to "admin" or "customer" manually
     name: "MIM Ilham",
     avatar: userIcon,

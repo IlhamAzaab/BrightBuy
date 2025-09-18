@@ -22,7 +22,6 @@ app.use("/api/orders", ordersRoute);
 // Routes
 const authRoutes = require("./routes/auth");
 app.use("/auth", authRoutes);
->>>>>>> 675f21590225d51ca3fece821ed96136e27be6c0
 
 // Example test route
 app.get("/", (req, res) => {
