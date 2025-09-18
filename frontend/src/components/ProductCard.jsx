@@ -18,7 +18,7 @@ export default function ProductCard({ product }) {
   const priceLabel =
     min == null ? "—" : min === max ? priceFormat.format(min) : `${priceFormat.format(min)} - ${priceFormat.format(max)}`;
 
-  // Static stars just for UI parity with the sample site (not from DB)
+
   const staticRating = 4.5;
 
   return (
@@ -49,7 +49,7 @@ export default function ProductCard({ product }) {
       </div>
 
       <p className="md:text-base font-medium pt-2 w-full truncate">
-        {product.Product_Name}
+        {product.SKU}
       </p>
       <p className="w-full text-xs text-gray-500/70 max-sm:hidden truncate">
         {product.Description}
