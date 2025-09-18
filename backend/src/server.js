@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import "dotenv/config";
 import productsRouter from "./routes/products.js";
+import ordersRoute from "../routes/orders.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +18,7 @@ app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
 
 // api routes
 app.use("/api/products", productsRouter);
+app.use("/api/orders", ordersRoute);
 
 // health
 app.get("/api/health", (_req, res) => res.json({ ok: true }));

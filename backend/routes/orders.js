@@ -1,9 +1,10 @@
-const express = require("express");
+import express from "express";
+import pool from "../src/db.js";
+
 const router = express.Router();
-const db = require("../db");
 
 // Get orders by user + status
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   const { userId, status } = req.query;
 
   if (!userId || !status) {
@@ -23,8 +24,8 @@ router.get("/", (req, res) => {
     ORDER BY o.Order_Date DESC
   `;
 
-  db.query(sql, [userId, status], (err, results) => {
-    if (err) return res.status(500).json(err);
+  try {
+    const [results] = await pool.query(sql, [userId, status]);
 
     // Group items by order
     const orders = {};
@@ -48,22 +49,25 @@ router.get("/", (req, res) => {
     });
 
     res.json(Object.values(orders));
-  });
+  } catch (err) {
+    return res.status(500).json(err);
+  }
 });
 
 // Update order status (mark completed)
-router.put("/:id/status", (req, res) => {
+router.put("/:id/status", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  db.query(
-    "UPDATE `Order` SET Status = ? WHERE Order_ID = ?",
-    [status, id],
-    (err) => {
-      if (err) return res.status(500).json(err);
-      res.json({ success: true });
-    }
-  );
+  try {
+    await pool.query(
+      "UPDATE `Order` SET Status = ? WHERE Order_ID = ?",
+      [status, id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json(err);
+  }
 });
 
-module.exports = router;
+export default router;
