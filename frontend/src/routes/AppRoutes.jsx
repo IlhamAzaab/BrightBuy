@@ -5,9 +5,11 @@ import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
 import Admin from "../pages/Admin/admin";
+import AddAdmin from "../pages/AddAdmin";
+
 // Public pages
 import Home from "../pages/Home";
-import CustomerProductList from "../pages/Customer Product List Page/CustomerProductsList"
+import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList"
 
 // Protected pages (require login)
 import Cart from "../pages/Cart";
@@ -37,6 +39,7 @@ export default function AppRoutes() {
 
       {/* Admin route */}
         <Route path="/admin" element={<Admin />} />
+        <Route path="/addadmin" element={<AddAdmin/>}/>
         {/* Protected routes (only logged in users can access) */}
         <Route
           path="/cart"

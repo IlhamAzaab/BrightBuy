@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import searchIcon from "../assets/search_icon.svg";
 import userIcon from "../assets/user_icon.svg";
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
 
-  // 🔹 Manually set your user here
-  const [user, setUser] = useState({
-    isLoggedIn: false, // change this to true or false manually,
-    role: "admin", // change this to "admin" or "customer" manually
-    name: "MIM Ilham",
-    avatar: userIcon,
-  });
+  const { user, logout } = useContext(AuthContext);
+  const isLoggedIn = !!user;
 
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
@@ -62,6 +58,7 @@ const Navbar = () => {
         <button onClick={() => navigate("/contact")} className="hover:text-black">Contact</button>
 
         {isAdmin && (
+          <>
           <button
             type="button"
             onClick={() => navigate("/admin")}
@@ -69,6 +66,9 @@ const Navbar = () => {
           >
             Admin Dashboard
           </button>
+          <button onClick={() => {logout(); navigate("/")}} className="hover:text-black">Logout</button>
+          </>
+
         )}
       </div>
 
@@ -76,7 +76,7 @@ const Navbar = () => {
       <div className="hidden md:flex items-center gap-4 relative">
         <img className="w-4 h-4" src={searchIcon} alt="search icon" />
 
-        {user?.isLoggedIn ? (
+        {isLoggedIn ? (
           <div className="relative" ref={desktopRef}>
             <button
               type="button"
@@ -92,6 +92,7 @@ const Navbar = () => {
                 <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
                 <button onClick={() => handleNavigation("/my-orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
                 <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
+                <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
               </div>
             )}
           </div>
@@ -119,7 +120,7 @@ const Navbar = () => {
           </button>
         )}
 
-        {user?.isLoggedIn ? (
+        {isLoggedIn ? (
           <>
             <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
             <button onClick={() => navigate("/products")} className="hover:text-black">Products</button>

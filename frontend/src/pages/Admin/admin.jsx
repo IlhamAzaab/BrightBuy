@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
+  const navigate = useNavigate();
+
   return (
     <div style={{ textAlign: "center", marginTop: "60px" }}>
       <h1>Admin Dashboard</h1>
@@ -12,7 +15,7 @@ const Admin = () => {
         <button style={{ margin: "10px", padding: "10px 20px" }}>
           Manage Orders
         </button>
-        <button style={{ margin: "10px", padding: "10px 20px" }}>
+        <button style={{ margin: "10px", padding: "10px 20px" }} onClick={() => navigate("/addadmin")}>
           Manage Users
         </button>
       </div>

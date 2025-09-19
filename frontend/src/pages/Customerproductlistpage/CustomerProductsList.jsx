@@ -6,7 +6,7 @@ export default function CustomerProductList() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch("http://localhost:9000/api/products")
       .then(async (res) => {
         if (!res.ok) {
           const text = await res.text();
