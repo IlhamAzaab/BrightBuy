@@ -9,10 +9,12 @@ import AddAdmin from "../pages/AddAdmin";
 
 // Public pages
 import Home from "../pages/Home";
-import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList"
+import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList";
+import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 
 // Protected pages (require login)
 import Cart from "../pages/Cart";
+import Orders from "../pages/Orders";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -26,11 +28,12 @@ export default function AppRoutes() {
   };
 
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         {/* Public routes (accessible to everyone) */}
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProductList />} />
+        <Route path="/products/:id" element={<ProductDetails/>}/>
 
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
@@ -49,20 +52,19 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route path="/orders" element={<Orders />} />
 
-        {/*<Route 
+        {<Route 
           path ="/orders" 
           element={
             <ProtectedRoute>
               <Orders />
             </ProtectedRoute>
-        }/>*/}
+        }></Route>}
 
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 

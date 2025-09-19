@@ -10,3 +10,4 @@ backend/dist/
 frontend/.env
 backend/.env
 .env
+backend\src\.env

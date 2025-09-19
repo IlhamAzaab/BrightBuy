@@ -13,6 +13,10 @@ const authRoutes = require("../routes/auth");
 app.use("/auth", authRoutes);
 const userRoutes = require("../routes/addadmin");
 app.use("/addadmin", userRoutes);
+const productsRouter = require("../routes/products");
+app.use("/api/products", productsRouter);
+const ordersRoute = require("../routes/orders");
+app.use("/api/orders", ordersRoute);
 
 // Example test route
 app.get("/", (req, res) => {
