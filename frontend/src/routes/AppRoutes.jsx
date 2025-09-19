@@ -1,5 +1,5 @@
 import React,{ useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
@@ -14,7 +14,7 @@ import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 
 // Protected pages (require login)
 import Cart from "../pages/Cart";
-import Orders from "../pages/Orders";
+
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
