@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -12,6 +13,9 @@ app.use(cors({
   credentials: false
 }));
 app.use(express.json());
+
+// Serve static assets (e.g., images) from backend/assets
+app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
 
 // Routes
 const authRoutes = require("../routes/auth");
@@ -77,5 +81,5 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`http://localhost:${PORT}/`);
+  console.log(`Try: http://localhost:${PORT}/assets/images/SamsungA55.webp`);
 });
