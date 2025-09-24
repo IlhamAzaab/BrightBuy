@@ -28,11 +28,11 @@ router.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Default role
-    const role = "admin";
+    const role = "constumer";
 
     await db.execute(
-      "INSERT INTO `user` (`User_ID`,`Name`, `Password`, `Email`, `Role`) VALUES (?, ?, ?, ?, ?)",
-      [100,name, hashedPassword, email, role]
+      "INSERT INTO `user` (`User_ID`,`Name`, `Password`, `Email`, `Role`) VALUES (?, ?, ?, ?)",
+      [name, hashedPassword, email, role]
     );
 
     res.json({ message: "User registered successfully" });
