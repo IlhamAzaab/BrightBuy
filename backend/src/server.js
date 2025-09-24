@@ -1,7 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import path from "path";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+
+dotenv.config();
 
 const app = express();
 
@@ -14,21 +17,25 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// __dirname equivalent in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Serve static assets (e.g., images) from backend/assets
 app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
 
 // Routes
-const authRoutes = require("../routes/auth");
+import authRoutes from "../routes/auth.js";
 app.use("/auth", authRoutes);
-const userRoutes = require("../routes/addadmin");
+import userRoutes from "../routes/addadmin.js";
 app.use("/addadmin", userRoutes);
-const productsRouter = require("../routes/products");
+import productsRouter from "../routes/products.js";
 app.use("/api/products", productsRouter);
-const ordersRoute = require("../routes/orders");
+import ordersRoute from "../routes/orders.js";
 app.use("/api/orders", ordersRoute);
 
 // Health check (DB)
-const db = require("../db");
+import db from "../db.js";
 app.get("/health", async (_req, res) => {
   try {
     await db.query("SELECT 1");
