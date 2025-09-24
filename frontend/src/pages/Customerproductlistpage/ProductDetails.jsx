@@ -1,9 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
+
 export default function ProductDetails() {
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
@@ -103,6 +105,7 @@ export default function ProductDetails() {
               className="px-5 py-3 rounded-md border"
               onClick={() => {
                 // example cart add (localStorage). Replace with API if you have one.
+
                 const cart = JSON.parse(localStorage.getItem("cart") || "[]");
                 cart.push({
                   Product_ID: product.Product_ID,
@@ -119,6 +122,7 @@ export default function ProductDetails() {
               className="px-5 py-3 rounded-md bg-orange-600 text-white"
               onClick={() => {
                 // Require a variant if multiple exist
+
                 if ((product.Variants?.length ?? 0) > 1 && !selectedVariant) {
                   alert("Please choose a variant first");
                   return;

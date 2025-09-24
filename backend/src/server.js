@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -17,6 +18,11 @@ const productsRouter = require("../routes/products");
 app.use("/api/products", productsRouter);
 const ordersRoute = require("../routes/orders");
 app.use("/api/orders", ordersRoute);
+
+const IMAGES_DIR = path.join(__dirname, "..", "assets", "images");
+app.use("/images", express.static(IMAGES_DIR));       
+app.use("/assets/images", express.static(IMAGES_DIR));  
+
 
 // Example test route
 app.get("/", (req, res) => {
