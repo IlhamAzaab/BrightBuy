@@ -413,5 +413,15 @@ WHERE Product_ID = 39;
 UPDATE product SET Image_URL = '/assets/images/RazerKishiV2.webp'
 WHERE Product_ID = 40;
 
+INSERT INTO `user` 
+(user_id, name, password, address, city_ID, email, role)
+VALUES
+(1, 'John Smith', '$2b$10$5uQp7jO9Z1h7b3qM3LmqL.2x/Uf0GeykW6v36LgTzptE5ZmZkMo2y', '123 Broadway Ave', NULL, 'john.smith@email.com', 'customer'),
+(2, 'Maria Garcia', '$2b$10$1HnHZY0gk1aIqqoxmOfpUe8Z9UBHq5OJwITCwM3cjsCF14Cb0Lzj6', '456 Sunset Blvd', NULL, 'maria.garcia@email.com', 'customer'),
+(3, 'Admin User', '$2b$10$3P8Wq90x9dR.4ysYWj9pIuaQb0iVik4aS8PKotcJqSb5kKFXs4fQ6', '789 Michigan Ave', NULL, 'admin@brightbuy.com', 'admin'),
+(4, 'David Johnson', '$2b$10$0nM9Hx3QnFUkzqD95v7eReN2/NnQ5LbYfY8zjYl4V7PmVvN49hw5u', '321 Main Street', NULL, 'david.johnson@email.com', 'customer'),
+(5, 'Sarah Wilson', '$2b$10$gW3ap0LJGyjWJpVk6k6GeOlDq5Uu0g7qB4zF6wA5p1pCBP.jkW5Rm', '654 Central Ave', NULL, 'sarah.wilson@email.com', 'customer'),
+(6, 'admin2 User', '$2b$10$ns35RoYdRZMFctzh8Up3Lu7gK9fIu9XiM/CeRajGqI9PRByim5jEy', NULL, NULL, 'Admin2@example.com', 'admin');
+
 
 
