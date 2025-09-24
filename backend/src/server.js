@@ -4,20 +4,14 @@ const path = require("path");
 require("dotenv").config();
 
 const app = express();
-
-// Enable CORS for frontend
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
 
-// Routes
-const authRoutes = require("../routes/auth");
-app.use("/auth", authRoutes);
-const userRoutes = require("../routes/addadmin");
-app.use("/addadmin", userRoutes);
-const productsRouter = require("../routes/products");
-app.use("/api/products", productsRouter);
-const ordersRoute = require("../routes/orders");
-app.use("/api/orders", ordersRoute);
+// routes...
+app.use("/auth", require("../routes/auth"));
+app.use("/addadmin", require("../routes/addadmin"));
+app.use("/api/products", require("../routes/products"));
+app.use("/api/orders", require("../routes/orders"));
 
 const IMAGES_DIR = path.join(__dirname, "..", "assets", "images");
 app.use("/images", express.static(IMAGES_DIR));       
@@ -32,5 +26,5 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`http://localhost:${PORT}/`);
+  console.log(`Try: http://localhost:${PORT}/assets/images/SamsungA55.webp`);
 });
