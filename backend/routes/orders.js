@@ -1,5 +1,5 @@
-const express = require("express");
-const pool = require("../db"); // assuming db.js exports with module.exports
+import express from "express";
+import pool from "../db.js";
 
 const router = express.Router();
 
@@ -70,4 +70,4 @@ router.put("/:id/status", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
