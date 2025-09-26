@@ -32,12 +32,14 @@ import userRoutes from "../routes/addadmin.js";
 import productsRouter from "../routes/products.js";
 import ordersRoute from "../routes/orders.js";
 import cartRoute from "../routes/cart.js";
+import customersRoute from "../routes/customers.js";
 
 app.use("/auth", authRoutes);
 app.use("/addadmin", userRoutes);
 app.use("/api/products", productsRouter);
 app.use("/api/orders", ordersRoute);
 app.use("/api/cart", cartRoute);
+app.use("/api/customers", customersRoute);
 
 // Health check & debug endpoints retained
 import db from "../db.js";

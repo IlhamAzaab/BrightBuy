@@ -9,8 +9,8 @@ const Admin = () => {
       <h1>Admin Dashboard</h1>
       <p>Welcome, Admin! Manage products, orders, and users from here.</p>
       <div style={{ marginTop: "40px" }}>
-        <button style={{ margin: "10px", padding: "10px 20px" }}>
-          Manage Products
+        <button style={{ margin: "10px", padding: "10px 20px" }} onClick={() => navigate('/admin/reports')}>
+          Reports
         </button>
         <button style={{ margin: "10px", padding: "10px 20px" }}>
           Manage Orders
