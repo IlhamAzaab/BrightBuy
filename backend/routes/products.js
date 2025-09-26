@@ -99,8 +99,7 @@ router.get("/:id", async (req, res) => {
       }
     }
 
-    console.log(prod);
-    
+   
 
     res.json(prod);
   } catch (err) {

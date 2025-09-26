@@ -20,7 +20,7 @@ export default function CustomerProductList() {
 
   // fetch once
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch("http://localhost:9000/api/products")
       .then(async (res) => {
         if (!res.ok) throw new Error(await res.text() || res.statusText);
         return res.json();

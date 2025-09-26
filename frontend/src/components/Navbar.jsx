@@ -1,18 +1,47 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logo.svg"; // replace with your logo image
-import searchIcon from "../assets/search_icon.svg"; // replace with actual paths
-import userIcon from "../assets/user_icon.svg"; // replace with actual paths
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo.svg";
+import searchIcon from "../assets/search_icon.svg";
+import userIcon from "../assets/user_icon.svg";
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
 
-  // Example: in CRA you’d normally manage auth with context or props
-  const isSeller = false; // later you’ll connect with context or API
-  const user = null; // dummy, replace with actual auth logic
+  const { user, logout } = useContext(AuthContext);
+  const isLoggedIn = !!user;
+
+  const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+
+  const desktopRef = useRef(null);
+  const mobileRef = useRef(null);
+
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+  const isCustomer = user?.role?.toLowerCase() === "customer";
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setDesktopDropdownOpen(false);
+    setMobileDropdownOpen(false);
+  };
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (desktopRef.current && !desktopRef.current.contains(event.target)) {
+        setDesktopDropdownOpen(false);
+      }
+      if (mobileRef.current && !mobileRef.current.contains(event.target)) {
+        setMobileDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-600">
+    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-600 relative">
       {/* Logo */}
       <img
         src={logo}
@@ -21,63 +50,55 @@ const Navbar = () => {
         onClick={() => navigate("/")}
       />
 
-      {/* Links for desktop */}
+      {/* Desktop menu */}
       <div className="flex items-center gap-4 lg:gap-10 max-md:hidden">
-        <Link
-          to="/"
-          className="hover:text-black transition-transform duration-100 hover:scale-110"
-        >
-          Home
-        </Link>
-        <Link
-          to="/products"
-          className="hover:text-black transition-transform duration-100 hover:scale-110"
-        >
-          Shop
-        </Link>
-        <Link
-          to="/about"
-          className="hover:text-black transition-transform duration-100 hover:scale-110"
-        >
-          About Us
-        </Link>
-        <Link
-          to="/contact"
-          className="hover:text-black transition-transform duration-100 hover:scale-110"
-        >
-          Contact
-        </Link>
-        {isSeller && (
+        <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
+        <button onClick={() => navigate("/products")} className="hover:text-black">Shop</button>
+        <button onClick={() => navigate("/about")} className="hover:text-black">About Us</button>
+        <button onClick={() => navigate("/contact")} className="hover:text-black">Contact</button>
+
+        {isAdmin && (
+          <>
           <button
-            onClick={() => navigate("/seller")}
+            type="button"
+            onClick={() => navigate("/admin")}
             className="text-xs border px-4 py-1.5 rounded-full"
           >
-            Seller Dashboard
+            Admin Dashboard
           </button>
+          <button onClick={() => {logout(); navigate("/")}} className="hover:text-black">Logout</button>
+          </>
+
         )}
       </div>
 
-      {/* Right-side icons / user */}
-      <ul className="hidden md:flex items-center gap-4">
+      {/* Right-side / Account */}
+      <div className="hidden md:flex items-center gap-4 relative">
         <img className="w-4 h-4" src={searchIcon} alt="search icon" />
 
-        {user ? (
-          <>
+        {isLoggedIn ? (
+          <div className="relative" ref={desktopRef}>
             <button
-              onClick={() => navigate("/cart")}
-              className="hover:text-black"
+              type="button"
+              onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
+              className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
             >
-              Cart
+              <img src={user.avatar} alt="user avatar" className="w-5 h-5 rounded-full" />
+              <span>{user.name}</span>
             </button>
-            <button
-              onClick={() => navigate("/my-orders")}
-              className="hover:text-black"
-            >
-              My Orders
-            </button>
-          </>
+
+            {desktopDropdownOpen && isCustomer && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg flex flex-col z-50">
+                <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
+                <button onClick={() => handleNavigation("/my-orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
+                <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
+                <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
+              </div>
+            )}
+          </div>
         ) : (
           <button
+            type="button"
             onClick={() => navigate("/login")}
             className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
           >
@@ -85,44 +106,47 @@ const Navbar = () => {
             Account
           </button>
         )}
-      </ul>
+      </div>
 
-      {/* Mobile menu (simplified) */}
+      {/* Mobile menu */}
       <div className="flex items-center md:hidden gap-3">
-        {isSeller && (
+        {isAdmin && (
           <button
-            onClick={() => navigate("/seller")}
+            type="button"
+            onClick={() => navigate("/admin")}
             className="text-xs border px-4 py-1.5 rounded-full"
           >
-            Seller Dashboard
+            Admin Dashboard
           </button>
         )}
-        {user ? (
+
+        {isLoggedIn ? (
           <>
-            <button onClick={() => navigate("/")} className="hover:text-black">
-              Home
-            </button>
-            <button
-              onClick={() => navigate("/products")}
-              className="hover:text-black"
-            >
-              Products
-            </button>
-            <button
-              onClick={() => navigate("/cart")}
-              className="hover:text-black"
-            >
-              Cart
-            </button>
-            <button
-              onClick={() => navigate("/my-orders")}
-              className="hover:text-black"
-            >
-              My Orders
-            </button>
+            <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
+            <button onClick={() => navigate("/products")} className="hover:text-black">Products</button>
+
+            <div className="relative" ref={mobileRef}>
+              <button
+                type="button"
+                onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+                className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
+              >
+                <img src={user.avatar} alt="user avatar" className="w-5 h-5 rounded-full" />
+                <span>{user.name}</span>
+              </button>
+
+              {mobileDropdownOpen && isCustomer && (
+                <div className="flex flex-col mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-50">
+                  <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
+                  <button onClick={() => handleNavigation("/my-orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
+                  <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <button
+            type="button"
             onClick={() => navigate("/login")}
             className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
           >

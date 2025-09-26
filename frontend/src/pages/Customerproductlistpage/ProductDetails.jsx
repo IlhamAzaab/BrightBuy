@@ -7,7 +7,7 @@ export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
 
   useEffect(() => {
     fetch(`${API_BASE}/api/products/${id}`)

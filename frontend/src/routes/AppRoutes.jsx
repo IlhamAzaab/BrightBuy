@@ -1,18 +1,20 @@
-import React, { useContext } from "react";
+import React,{ useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
-
+import Orders from "../pages/Orders";
+import Admin from "../pages/Admin/admin";
+import AddAdmin from "../pages/AddAdmin";
 
 // Public pages
 import Home from "../pages/Home";
-import CustomerProductList from "../pages/Customer Product List Page/CustomerProductsList";
-import ProductDetails from "../pages/Customer Product List Page/ProductDetails";
+import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList";
+import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 
 // Protected pages (require login)
 import Cart from "../pages/Cart";
-import Orders from "../pages/Orders";
+
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -37,6 +39,10 @@ export default function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
+
+      {/* Admin route */}
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/addadmin" element={<AddAdmin/>}/>
         {/* Protected routes (only logged in users can access) */}
         <Route
           path="/cart"
@@ -61,3 +67,4 @@ export default function AppRoutes() {
     </BrowserRouter>
   );
 }
+
