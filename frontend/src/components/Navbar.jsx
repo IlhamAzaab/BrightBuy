@@ -91,7 +91,7 @@ const Navbar = () => {
             {desktopDropdownOpen && isCustomer && (
               <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg flex flex-col z-50">
                 <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
-                <button onClick={() => handleNavigation("/my-orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
+                <button onClick={() => handleNavigation("/orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
                 <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
                 <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
               </div>
@@ -111,7 +111,9 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       <div className="flex items-center md:hidden gap-3">
+        
         {isAdmin && (
+          <>
           <button
             type="button"
             onClick={() => navigate("/admin")}
@@ -119,6 +121,8 @@ const Navbar = () => {
           >
             Admin Dashboard
           </button>
+          <button onClick={() => {logout(); navigate("/")}} className="hover:text-black">Logout</button>
+          </>
         )}
 
         {isLoggedIn ? (
@@ -141,6 +145,7 @@ const Navbar = () => {
                   <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
                   <button onClick={() => handleNavigation("/my-orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
                   <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
+                  <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
                 </div>
               )}
             </div>

@@ -3,7 +3,6 @@ import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
-
 dotenv.config();
 
 const app = express();
@@ -21,20 +20,29 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve static assets (e.g., images) from backend/assets
+// Static assets (merged needs) - original /assets plus /images for compatibility
 app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
+const IMAGES_DIR = path.join(__dirname, "..", "assets", "images");
+app.use("/images", express.static(IMAGES_DIR));
+app.use("/assets/images", express.static(IMAGES_DIR));
 
-// Routes
+// Routes (ESM imports)
 import authRoutes from "../routes/auth.js";
-app.use("/auth", authRoutes);
 import userRoutes from "../routes/addadmin.js";
-app.use("/addadmin", userRoutes);
 import productsRouter from "../routes/products.js";
-app.use("/api/products", productsRouter);
 import ordersRoute from "../routes/orders.js";
-app.use("/api/orders", ordersRoute);
+// cart route (CommonJS originally) - dynamic import workaround not needed; create an interop
+import cartModule from "../routes/cart.js" assert { type: "javascript" };
+// Fallback if default export missing
+const cartRoute = cartModule.default || cartModule;
 
-// Health check (DB)
+app.use("/auth", authRoutes);
+app.use("/addadmin", userRoutes);
+app.use("/api/products", productsRouter);
+app.use("/api/orders", ordersRoute);
+app.use("/api/cart", cartRoute);
+
+// Health check & debug endpoints retained
 import db from "../db.js";
 app.get("/health", async (_req, res) => {
   try {
@@ -52,7 +60,6 @@ app.get("/health", async (_req, res) => {
   }
 });
 
-// Debug endpoints to inspect DB schema for `user` table
 app.get("/debug/user-schema", async (_req, res) => {
   try {
     const dbName = process.env.DB_NAME;
