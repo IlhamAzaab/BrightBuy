@@ -18,8 +18,6 @@ export default function ProductCard({ product }) {
   const priceLabel =
     min == null ? "—" : min === max ? priceFormat.format(min) : `${priceFormat.format(min)} - ${priceFormat.format(max)}`;
 
-
-  const staticRating = 4.5;
   const detailsPath = `/products/${product.Product_ID}`;
 
   return (

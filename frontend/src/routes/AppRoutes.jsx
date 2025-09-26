@@ -1,5 +1,5 @@
 import React,{ useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
@@ -53,13 +53,14 @@ export default function AppRoutes() {
           }
         />
 
-        {<Route 
-          path ="/orders" 
+        <Route 
+          path ="/my-orders" 
           element={
             <ProtectedRoute>
               <Orders />
             </ProtectedRoute>
-        }></Route>}
+          }
+        />
 
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
