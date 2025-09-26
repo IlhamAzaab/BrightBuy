@@ -1,23 +1,16 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
-// Normalize JWT payload so req.user.id always exists (maps User_ID → id)
-module.exports = function auth(req, res, next) {
-  const hdr = req.headers.authorization || req.headers.Authorization || "";
-  const token = hdr.startsWith("Bearer ") ? hdr.slice(7) : null;
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
+// ESM auth middleware; normalizes payload so req.user.id exists
+export default function auth(req, res, next) {
+  const authHeader = req.headers["authorization"] || req.headers["Authorization"];
+  const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) return res.status(401).json({ message: "Access token missing" });
 
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    if (!payload.User_ID) return res.status(401).json({ error: "Token missing User_ID" });
-
-    req.user = {
-      id: payload.User_ID,             // normalized
-      email: payload.email ?? null,
-      role: payload.role ?? null,
-      User_ID: payload.User_ID,        // keep original if needed
-    };
+  jwt.verify(token, process.env.ACCESS_SECRET || "access_secret_key", (err, payload) => {
+    if (err) return res.status(403).json({ message: "Invalid or expired token" });
+    const userId = payload.id || payload.User_ID; // backward compatibility
+    if (!userId) return res.status(400).json({ message: "Token payload missing user id" });
+    req.user = { id: userId, role: payload.role };
     next();
-  } catch {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-};
+  });
+}

@@ -1,7 +1,7 @@
-// backend/routes/cart.js
-const { Router } = require("express");
-const auth = require("../middleware/auth");     // <-- correct path now
-const pool = require("../db");
+// backend/routes/cart.js (ESM)
+import { Router } from "express";
+import auth from "../middleware/auth.js";
+import pool from "../db.js";
 const router = Router();
 
 // Make sure the logged-in user has a cart; if not, create one and return its ID
@@ -100,4 +100,4 @@ router.delete("/item/:id", auth, async (req, res) => {
   res.json({ success: true });
 });
 
-module.exports = router;
+export default router;

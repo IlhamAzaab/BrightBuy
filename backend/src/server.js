@@ -31,10 +31,7 @@ import authRoutes from "../routes/auth.js";
 import userRoutes from "../routes/addadmin.js";
 import productsRouter from "../routes/products.js";
 import ordersRoute from "../routes/orders.js";
-// cart route (CommonJS originally) - dynamic import workaround not needed; create an interop
-import cartModule from "../routes/cart.js" assert { type: "javascript" };
-// Fallback if default export missing
-const cartRoute = cartModule.default || cartModule;
+import cartRoute from "../routes/cart.js";
 
 app.use("/auth", authRoutes);
 app.use("/addadmin", userRoutes);
