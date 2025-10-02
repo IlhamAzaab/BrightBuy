@@ -7,6 +7,7 @@ import Orders from "../pages/Orders";
 import Admin from "../pages/Admin/admin";
 import ReportsPage from "../pages/Admin/reports";
 import AddAdmin from "../pages/AddAdmin";
+import Profile from "../pages/profile";
 
 // Public pages
 import Home from "../pages/Home";
@@ -77,6 +78,15 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <Orders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
