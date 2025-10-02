@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Global typography adjustments */
+@layer base {
+	html { @apply font-sans antialiased; }
+	h1, h2, h3, h4, h5, h6 { @apply font-heading font-semibold tracking-tight; }
+	p { @apply leading-relaxed; }
+	strong { @apply font-semibold; }
+	button { @apply font-medium; }
+}
+
+/* Utility classes for consistent product/order text usage */
+@layer components {
+	.heading-1 { @apply text-3xl font-semibold tracking-tight; }
+	.heading-2 { @apply text-2xl font-semibold tracking-tight; }
+	.heading-3 { @apply text-xl font-semibold tracking-tight; }
+	.text-muted { @apply text-gray-600; }
+	.text-subtle { @apply text-gray-500; }
+}

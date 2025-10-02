@@ -54,6 +54,7 @@ const Navbar = () => {
       <div className="flex items-center gap-4 lg:gap-10 max-md:hidden">
         <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
         <button onClick={() => navigate("/products")} className="hover:text-black">Shop</button>
+        <button onClick={() => navigate("/my-orders")} className="hover:text-black">My orders</button>
         <button onClick={() => navigate("/about")} className="hover:text-black">About Us</button>
         <button onClick={() => navigate("/contact")} className="hover:text-black">Contact</button>
 
