@@ -17,6 +17,9 @@ const productsRouter = require("../routes/products");
 app.use("/api/products", productsRouter);
 const ordersRoute = require("../routes/orders");
 app.use("/api/orders", ordersRoute);
+const addproductRoute = require("../routes/addproduct");
+app.use("/api/addproduct", addproductRoute);
+app.use("/uploads", express.static("uploads")); // To serve images
 
 // Example test route
 app.get("/", (req, res) => {

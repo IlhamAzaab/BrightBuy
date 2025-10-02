@@ -17,7 +17,7 @@ export default function Signup() {
       await signup(name, email, password);
       navigate("/"); // redirect after signup
     } catch (err) {
-      setError("Signup failed. Try again.");
+      setError("Incorrect email address. Try again.");
     }
   };
 

@@ -1,25 +1,32 @@
-import React,{ useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+import React, { useContext } from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  BrowserRouter,
+} from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
-import Admin from "../pages/Admin/admin";
-import AddAdmin from "../pages/AddAdmin";
 
-// Public pages
+// Existing pages
 import Home from "../pages/Home";
 import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList";
 import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
-
-// Protected pages (require login)
 import Cart from "../pages/Cart";
+
+// New Admin pages
+import Admin from "../pages/Admin/admin";
+import AddProduct from "../pages/Admin/AddProduct";
+import AddAdmin from "../pages/Admin/AddAdmin";
+import ProductList from "../pages/Admin/ProductList";
+import Report from "../pages/Admin/Report";
 
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
 
-  // ProtectedRoute only wraps pages that require login
   const ProtectedRoute = ({ children }) => {
     if (!user) {
       return <Navigate to="/signup" replace />;
@@ -30,20 +37,24 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public routes (accessible to everyone) */}
+        {/* Public routes */}
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProductList />} />
-        <Route path="/products/:id" element={<ProductDetails/>}/>
-
-        {/* Auth routes */}
+        <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
+        {/* Admin routes */}
+        <Route path="/admin" element={<Admin />}>
+          {/* Default page when admin visits /admin */}
+          <Route index element={<Navigate to="addproduct" />} />
+          <Route path="addproduct" element={<AddProduct />} />
+          <Route path="addadmin" element={<AddAdmin />} />
+          <Route path="productlist" element={<ProductList />} />
+          <Route path="report" element={<Report />} />
+        </Route>
 
-      {/* Admin route */}
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/addadmin" element={<AddAdmin/>}/>
-        {/* Protected routes (only logged in users can access) */}
+        {/* Protected routes */}
         <Route
           path="/cart"
           element={
@@ -52,19 +63,18 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
-        {<Route 
-          path ="/orders" 
+        <Route
+          path="/orders"
           element={
             <ProtectedRoute>
               <Orders />
             </ProtectedRoute>
-        }></Route>}
+          }
+        />
 
-        {/* Catch-all route */}
+        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
-

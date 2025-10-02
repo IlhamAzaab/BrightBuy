@@ -1,23 +1,24 @@
 
 admin{
-        add_products
-        product_list(update,delete))
-        add_admins
+        add_products - ilham
+        product_list(update,delete) - nadil
+        add_admins - harshana
         reports{
-            topselling_products(monthly)
-            sales_reports(quarterly)
-            estimate_time
-            total_orders(category)
-            order_summay(customer-wise)
+            topselling_products(monthly) - ilham
+            sales_reports(quarterly) - harshana
+            estimate_time - nadil 
+            total_orders(category)- januli
+            order_summay(customer-wise) - lakmana
 
         }
 }
 customer{
-        product(listout product to users)
-        cart(page after adding product)
-        my_orders(order hisory,penidng orders)
-        profile(update account details after login)
+        product(listout product to users) - nadil
+        cart(page after adding product) - januli
+        my_orders(order hisory,penidng orders) - lakmana
+        profile(update account details after login) - harshana
+        checkout(total bill,delivery details) - harshana
 }
-home(first page when started)
-about(about our site)
-contactUs(contact details)
+home(first page when started) -ilham
+about(about our site) - ilham
+contactUs(contact details) - ilham

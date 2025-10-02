@@ -23,7 +23,7 @@ router.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Default role
-    let role = "customer";
+    let role = "admin";
 
     await db.query(
       "INSERT INTO user (Name, Password, Email, Role) VALUES (?, ?, ?, ?)",

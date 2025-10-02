@@ -1,26 +1,22 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import Navbar from '../../components/admin/Navbar';
+import Footer from '../../components/admin/Footer';
+import Sidebar from '../../components/admin/Sidebar';
+import { Outlet } from 'react-router-dom';
 
-const Admin = () => {
-  const navigate = useNavigate();
-
+const admin = () => {
   return (
-    <div style={{ textAlign: "center", marginTop: "60px" }}>
-      <h1>Admin Dashboard</h1>
-      <p>Welcome, Admin! Manage products, orders, and users from here.</p>
-      <div style={{ marginTop: "40px" }}>
-        <button style={{ margin: "10px", padding: "10px 20px" }}>
-          Manage Products
-        </button>
-        <button style={{ margin: "10px", padding: "10px 20px" }}>
-          Manage Orders
-        </button>
-        <button style={{ margin: "10px", padding: "10px 20px" }} onClick={() => navigate("/addadmin")}>
-          Manage Users
-        </button>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="flex flex-1">
+        <Sidebar />
+        <div className="flex-1 p-4">
+          <Outlet />
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };
 
-export default Admin;
+export default admin;

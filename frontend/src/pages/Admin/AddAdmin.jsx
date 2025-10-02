@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const AddAdmin = () => {
   const { user, token } = useContext(AuthContext);
@@ -30,16 +30,18 @@ const AddAdmin = () => {
       );
 
       // Update UI immediately
-      setUsers(users.map(u =>
-        u.User_ID === id ? { ...u, Role: newRole } : u
-      ));
+      setUsers(
+        users.map((u) => (u.User_ID === id ? { ...u, Role: newRole } : u))
+      );
     } catch (err) {
       console.error("Error updating role:", err);
     }
   };
 
   if (!user || user.role !== "admin") {
-    return <p className="text-center text-red-500">Access denied. Admins only.</p>;
+    return (
+      <p className="text-center text-red-500">Access denied. Admins only.</p>
+    );
   }
 
   return (
@@ -55,7 +57,7 @@ const AddAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map(u => (
+          {users.map((u) => (
             <tr key={u.User_ID} className="text-center">
               <td className="p-2 border">{u.User_ID}</td>
               <td className="p-2 border">{u.Name}</td>
