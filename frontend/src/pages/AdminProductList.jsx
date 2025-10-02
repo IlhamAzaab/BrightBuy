@@ -2,6 +2,20 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
+
+
+const resolveImageUrl = (u) => {
+  if (!u) return null;
+  // normalize slashes
+  const clean = String(u).trim().replace(/\\/g, "/");
+  // absolute url? keep as-is
+  if (/^https?:\/\//i.test(clean)) return clean;
+  // ensure leading slash, then prefix API
+  const path = clean.startsWith("/") ? clean : `/${clean}`;
+  return `${API}${path}`;
+};
+
+
 const API =
   (import.meta?.env?.VITE_API_BASE ||
     process.env.REACT_APP_API_BASE ||
@@ -237,7 +251,7 @@ export default function AdminProductList() {
 
                           {p.Image_URL ? (
                             <img
-                              src={p.Image_URL.startsWith("/") ? `${API}${p.Image_URL}` : p.Image_URL}
+                              src={resolveImageUrl(p.Image_URL)}
                               alt=""
                               style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6, background: "#f3f4f6" }}
                               onError={(e) => (e.currentTarget.style.visibility = "hidden")}
