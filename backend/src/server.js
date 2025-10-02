@@ -1,9 +1,9 @@
-// backend/src/server.js  (ESM)
 import express from "express";
 import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
+
 
 // __dirname / __filename in ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -18,11 +18,14 @@ const app = express();
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN || "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: false,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
+
 
 app.use(express.json());
 
@@ -42,6 +45,9 @@ app.use("/api/products", productsRouter);
 import ordersRoute from "../routes/orders.js";
 app.use("/api/orders", ordersRoute);
 
+import adminProductsRoutes from "../routes/adminProducts.js";
+app.use("/api/admin", adminProductsRoutes); 
+
 // Health check
 app.get("/health", (_req, res) => {
   res.json({ ok: true, env: process.env.NODE_ENV || "development" });
@@ -57,6 +63,7 @@ app.use((err, _req, res, _next) => {
   console.error("Unhandled error:", err);
   res.status(500).json({ error: "Internal server error" });
 });
+
 
 // Start server
 const PORT = Number(process.env.PORT) || 9000;

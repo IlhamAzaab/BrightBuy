@@ -1,5 +1,11 @@
-import React,{ useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+import React, { useContext } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  BrowserRouter,
+} from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
@@ -15,6 +21,7 @@ import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 // Protected pages (require login)
 import Cart from "../pages/Cart";
 
+import AdminProductList from "../pages/AdminProductList";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -33,16 +40,24 @@ export default function AppRoutes() {
         {/* Public routes (accessible to everyone) */}
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProductList />} />
-        <Route path="/products/:id" element={<ProductDetails/>}/>
+        <Route path="/products/:id" element={<ProductDetails />} />
 
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-
-      {/* Admin route */}
+        {/* Admin route */}
         <Route path="/admin" element={<Admin />} />
-        <Route path="/addadmin" element={<AddAdmin/>}/>
+        <Route path="/addadmin" element={<AddAdmin />} />
+        <Route
+          path="/admin/products"
+          element={
+            // Use AdminRoute here if you want to restrict by role
+            // <AdminRoute><AdminProductList /></AdminRoute>
+            <AdminProductList />
+          }
+        />
+
         {/* Protected routes (only logged in users can access) */}
         <Route
           path="/cart"
@@ -53,13 +68,16 @@ export default function AppRoutes() {
           }
         />
 
-        {<Route 
-          path ="/orders" 
-          element={
-            <ProtectedRoute>
-              <Orders />
-            </ProtectedRoute>
-        }></Route>}
+        {
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
+            }
+          ></Route>
+        }
 
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -67,4 +85,3 @@ export default function AppRoutes() {
     </BrowserRouter>
   );
 }
-
