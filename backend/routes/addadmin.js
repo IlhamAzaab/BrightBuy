@@ -1,6 +1,7 @@
-const express = require("express");
-const db = require("../db");
-require("dotenv").config();
+import express from "express";
+import db from "../db.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const router = express.Router();
 
@@ -40,4 +41,4 @@ router.put("/users/:id/role", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
