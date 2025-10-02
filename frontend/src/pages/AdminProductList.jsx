@@ -17,8 +17,7 @@ const resolveImageUrl = (u) => {
 
 
 const API =
-  (import.meta?.env?.VITE_API_BASE ||
-    process.env.REACT_APP_API_BASE ||
+  (process.env.REACT_APP_API_BASE ||
     "http://localhost:9000") + "";
 
 function Spinner() {
