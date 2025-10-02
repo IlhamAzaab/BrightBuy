@@ -12,6 +12,9 @@ const Admin = () => {
         <button style={{ margin: "10px", padding: "10px 20px" }} onClick={() => navigate('/admin/reports')}>
           Reports
         </button>
+        <button style={{ margin: "10px", padding: "10px 20px" }} onClick={() => navigate("/admin/products")}>
+          Manage Products
+        </button>
         <button style={{ margin: "10px", padding: "10px 20px" }}>
           Manage Orders
         </button>

@@ -16,6 +16,7 @@ import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 // Protected pages (require login)
 import Cart from "../pages/Cart";
 
+import AdminProductList from "../pages/AdminProductList";
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
 
@@ -43,6 +44,15 @@ export default function AppRoutes() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/reports" element={<ReportsPage />} />
         <Route path="/addadmin" element={<AddAdmin />} />
+        <Route
+          path="/admin/products"
+          element={
+            // Use AdminRoute here if you want to restrict by role
+            // <AdminRoute><AdminProductList /></AdminRoute>
+            <AdminProductList />
+          }
+        />
+
         {/* Protected routes (only logged in users can access) */}
         <Route
           path="/cart"
@@ -55,6 +65,15 @@ export default function AppRoutes() {
 
         <Route
           path="/my-orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders"
           element={
             <ProtectedRoute>
               <Orders />

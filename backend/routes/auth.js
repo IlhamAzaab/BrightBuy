@@ -1,3 +1,4 @@
+// backend/routes/auth.js (ESM)
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -15,7 +16,7 @@ const generateAccessToken = (user) =>
   jwt.sign(
     { id: user.User_ID, role: user.Role },
     ACCESS_SECRET,
-    { expiresIn: process.env.ACCESS_TOKEN_TTL || "5m" }
+    { expiresIn: process.env.ACCESS_TOKEN_TTL || "15m" }
   );
 
 const generateRefreshToken = (user) =>
@@ -31,11 +32,17 @@ router.post("/signup", async (req, res) => {
     const { name, email, password } = req.body || {};
 
     if (!name || !email || !password) {
-      return res.status(400).json({ error: "Name, email and password are required" });
+      return res
+        .status(400)
+        .json({ error: "Name, email and password are required" });
     }
 
-    const [existing] = await db.execute("SELECT 1 FROM `user` WHERE `Email` = ? LIMIT 1", [email]);
-    if (existing.length) {
+    // Check if user exists
+    const [existing] = await db.execute(
+      "SELECT 1 FROM `user` WHERE `Email` = ? LIMIT 1",
+      [email]
+    );
+    if (existing.length > 0) {
       return res.status(400).json({ error: "User already exists" });
     }
 
@@ -57,11 +64,23 @@ router.post("/signup", async (req, res) => {
       refreshToken
     });
   } catch (err) {
-    console.error("Signup error", err);
-    if (err?.code === "ER_DUP_ENTRY") {
+    console.error("Signup error:", {
+      message: err?.message,
+      code: err?.code,
+      errno: err?.errno,
+      sqlState: err?.sqlState,
+      sqlMessage: err?.sqlMessage,
+    });
+
+    if (err && err.code === "ER_DUP_ENTRY") {
       return res.status(400).json({ error: "Email already in use" });
     }
-    res.status(500).json({ error: "Server error during signup" });
+
+    const isDev = process.env.NODE_ENV !== "production";
+    return res.status(500).json({
+      error: "Server error during signup",
+      detail: isDev ? err?.sqlMessage || err?.message : undefined,
+    });
   }
 });
 
@@ -69,15 +88,22 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
+
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const [users] = await db.execute("SELECT * FROM `user` WHERE `Email` = ? LIMIT 1", [email]);
-    if (!users.length) {
+    // Look up by correct column name `Email`
+    const [users] = await db.execute(
+      "SELECT * FROM `user` WHERE `Email` = ? LIMIT 1",
+      [email]
+    );
+
+    if (users.length === 0) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
     const user = users[0];
+
     if (!user.Password) {
       return res.status(500).json({ error: "User account misconfigured" });
     }
