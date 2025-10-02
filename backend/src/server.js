@@ -32,6 +32,8 @@ app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
 const IMAGES_DIR = path.join(__dirname, "..", "assets", "images");
 app.use("/images", express.static(IMAGES_DIR));
 app.use("/assets/images", express.static(IMAGES_DIR));
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // -------- Routes (ESM imports) --------
 import authRoutes from "../routes/auth.js";
@@ -47,11 +49,13 @@ import ordersRoute from "../routes/orders.js";
 import cartRoute from "../routes/cart.js";
 import customersRoute from "../routes/customers.js";
 import adminProductsRoutes from "../routes/adminProducts.js";
+import profileroute from "../routes/profile.js"
 
 app.use("/api/orders", ordersRoute);
 app.use("/api/cart", cartRoute);
 app.use("/api/customers", customersRoute);
 app.use("/api/admin", adminProductsRoutes);
+app.use("/api/profile", profileroute);
 
 // Health check & debug endpoints retained
 import db from "../db.js";
