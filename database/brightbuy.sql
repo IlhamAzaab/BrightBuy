@@ -1,9 +1,11 @@
-create database brightbuy;
+-- if one exist, drop it
+drop database brightbuy;
 
+create database brightbuy;
 use brightbuy;
 
 CREATE TABLE `Product` (
-  `Product_ID` Int not null,
+  `Product_ID` Int not null AUTO_INCREMENT,
   `Category_ID` Int,
   `Product_Name` Varchar(225),
   `Brand` Varchar(225),
@@ -20,7 +22,7 @@ CREATE TABLE `Cart` (
 );
 
 CREATE TABLE `Variant` (
-  `Variant_ID` Int not null,
+  `Variant_ID` Int not null AUTO_INCREMENT,
   `Product_ID` Int,
   `Price` decimal(10,2),
   `Stock_quantity` int,
@@ -449,7 +451,7 @@ UPDATE User SET City_ID = 1 WHERE User_ID = 3; -- Admin User in Houston
 UPDATE User SET City_ID = 3 WHERE User_ID = 4; -- David Johnson in Austin
 UPDATE User SET City_ID = 4 WHERE User_ID = 5; -- Sarah Wilson in San Antonio
 UPDATE User SET City_ID = 1 WHERE User_ID = 6;
-update User set city_id = 5 where user_id = 7; -- Admin2 User in Houston
+
 
 -- Insert Delivery data
 INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
@@ -473,7 +475,6 @@ INSERT INTO Cart (Cart_ID, User_ID) VALUES
 (5, 1), -- John Smith's second cart (for multiple orders)
 (6, 2), -- Maria Garcia's second cart
 (7, 4), -- David Johnson's second cart
-(9,7),
 (8, 5); -- Sarah Wilson's second cart
 
 
@@ -487,11 +488,6 @@ INSERT INTO Cart_Item (Cart_Item_ID, Cart_ID, Product_ID, Variant_ID, Quantity, 
 -- Maria Garcia's first cart
 (4, 2, 2, 3, 1, 699.00),    -- Pixel 8 Porcelain 128GB
 (5, 2, 31, 41, 1, 59.00),   -- PowerCore 20K
-
--- my-user first cart
-(6, 9, 3, 5, 1, 749.00),    -- Galaxy S23 Green 128GB
-(7, 9, 23, 33, 1, 899.00),  -- Galaxy Tab S9
-(8, 9, 29, 39, 1, 229.00),  -- Galaxy Buds2 Pro
 
 -- Sarah Wilson's first cart
 (9, 4, 4, 7, 1, 599.00),    -- iPad Air Starlight 64GB
@@ -516,32 +512,11 @@ INSERT INTO Cart_Item (Cart_Item_ID, Cart_ID, Product_ID, Variant_ID, Quantity, 
 
 -- Insert Order data
 INSERT INTO `Order` (Order_ID, User_ID, Cart_ID, `Total Amount`, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
-(1, 7, 1, 1127.98, 'Credit Card', 1, '2024-01-10', 1001),
-(2, 7, 2, 758.00, 'PayPal', 2, '2024-01-12', 1002),
 (3, 4, 3, 1877.00, 'Credit Card', 3, '2024-01-14', 1003),
-(4, 7, 4, 728.00, 'Debit Card', 4, '2024-01-15', 1004),
+(4, 3, 4, 728.00, 'Debit Card', 4, '2024-01-15', 1004),
 (5, 1, 5, 1198.00, 'Credit Card', 5, '2024-01-08', 1005),
-(6, 7, 6, 1198.00, 'PayPal', 6, '2024-01-16', 1006),
 (7, 4, 7, 1228.00, 'Credit Card', 7, '2024-01-18', 1007),
-(8, 7, 8, 1386.00, 'Apple Pay', 8, '2024-01-19', 1008);
-
--- Insert Report data
-INSERT INTO Report (Report_ID, Report_Type, Report_Name, Time_Period) VALUES
-(1, 'Sales Report', 'Monthly Sales Summary', 'January 2024'),
-(2, 'Inventory Report', 'Stock Levels Report', 'Weekly'),
-(3, 'Customer Report', 'New Customer Analysis', 'Monthly'),
-(4, 'Sales Report', 'Product Performance', 'Quarterly'),
-(5, 'Financial Report', 'Revenue Analysis', 'Monthly'),
-(6, 'Inventory Report', 'Low Stock Alert', 'Daily'),
-(7, 'Customer Report', 'Customer Satisfaction', 'Monthly'),
-(8, 'Sales Report', 'Top Selling Products', 'Weekly'),
-(9, 'Financial Report', 'Profit Margin Analysis', 'Quarterly'),
-(10, 'Operational Report', 'Delivery Performance', 'Weekly'),
-(11, 'Marketing Report', 'Campaign Effectiveness', 'Monthly'),
-(12, 'Inventory Report', 'Supplier Performance', 'Monthly'),
-(13, 'Customer Report', 'Customer Retention', 'Quarterly'),
-(14, 'Sales Report', 'Regional Sales Analysis', 'Monthly'),
-(15, 'Financial Report', 'Cost Analysis', 'Quarterly');
+(8, 2, 8, 1386.00, 'Apple Pay', 8, '2024-01-19', 1008);
 
 -- Add foreign key constraint for Product -> Category (if not already added)
 ALTER TABLE Product 
@@ -558,4 +533,7 @@ ALTER TABLE `Order`
 ADD CONSTRAINT fk_order_cart 
 FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
 
+-- add profile image column to user table
+Alter table user
+Add column image_URL varchar(300);
 
