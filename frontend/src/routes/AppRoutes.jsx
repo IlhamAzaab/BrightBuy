@@ -1,14 +1,13 @@
 import React, { useContext } from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-  BrowserRouter,
-} from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
+import Admin from "../pages/Admin/admin";
+import ReportsPage from "../pages/Admin/reports";
+import AddAdmin from "../pages/AddAdmin";
+import Profile from "../pages/profile";
 
 // Existing pages
 import Home from "../pages/Home";
@@ -18,7 +17,7 @@ import Cart from "../pages/Cart";
 
 // New Admin pages
 import Admin from "../pages/Admin/admin";
-import AddProduct from "../pages/Admin/AddProduct";
+import AddProduct from "../pages/Admin/addproduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import Report from "../pages/Admin/reports";
@@ -80,6 +79,24 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <Orders />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />

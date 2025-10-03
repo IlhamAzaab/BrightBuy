@@ -9,6 +9,8 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const { user, logout } = useContext(AuthContext);
+
+
   const isLoggedIn = !!user;
 
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
@@ -84,7 +86,7 @@ const Navbar = () => {
               onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
               className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
             >
-              <img src={user.avatar} alt="user avatar" className="w-5 h-5 rounded-full" />
+              <img src={user.image_URL ? `http://localhost:9000${user.image_URL}` : "/images/default.jpg" } alt="user avatar" className="w-5 h-5 rounded-full" />
               <span>{user.name}</span>
             </button>
 

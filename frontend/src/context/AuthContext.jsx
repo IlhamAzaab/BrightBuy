@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
       clearTimeout(window.inactivityTimer);
       window.inactivityTimer = setTimeout(() => {
         logout();
-      }, 15*60*1000); // 15 minutes inactivity
+      }, 60*60*1000); // 15 minutes inactivity
     };
 
     const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }) => {
 
     setToken(accessToken);
     setUser(user);
+
   };
 
   const signup = async (name, email, password) => {

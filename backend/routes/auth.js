@@ -13,11 +13,7 @@ const ACCESS_SECRET = process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET ||
 const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || "dev_refresh_secret";
 
 const generateAccessToken = (user) =>
-  jwt.sign(
-    { id: user.User_ID, role: user.Role },
-    ACCESS_SECRET,
-    { expiresIn: process.env.ACCESS_TOKEN_TTL || "15m" }
-  );
+  jwt.sign({ id: user.User_ID, role: user.Role }, process.env.JWT_SECRET, { expiresIn: "60m" });
 
 const generateRefreshToken = (user) =>
   jwt.sign(
@@ -59,7 +55,7 @@ router.post("/signup", async (req, res) => {
     const refreshToken = generateRefreshToken(user);
 
     res.json({
-      user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role },
+      user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role, image_URL: user.image_URL },
       accessToken,
       refreshToken
     });
@@ -115,7 +111,7 @@ router.post("/login", async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
     res.json({
-      user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role },
+      user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role , image_URL: user.image_URL },
       accessToken,
       refreshToken
     });
@@ -152,7 +148,7 @@ router.get("/profile", async (req, res) => {
     const [users] = await db.execute("SELECT * FROM `user` WHERE `User_ID` = ? LIMIT 1", [decoded.id]);
     if (!users.length) return res.status(404).json({ error: "User not found" });
     const user = users[0];
-    res.json({ user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role } });
+    res.json({ user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role, image_URL: user.image_URL } });
   } catch (err) {
     return res.status(401).json({ error: "Invalid or expired token" });
   }
