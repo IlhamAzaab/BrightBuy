@@ -7,7 +7,7 @@ export default function ProductCard({ product }) {
     style: "currency",
     currency: "USD",
   });
-  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
+  //const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
 
   // Prices from variants (DECIMAL(10,2) → Number)
   const prices = (product.Variants ?? []).map((v) => Number(v.Price)).filter((n) => !Number.isNaN(n));
@@ -18,19 +18,18 @@ export default function ProductCard({ product }) {
   const priceLabel =
     min == null ? "—" : min === max ? priceFormat.format(min) : `${priceFormat.format(min)} - ${priceFormat.format(max)}`;
 
-
-  const staticRating = 4.5;
   const detailsPath = `/products/${product.Product_ID}`;
 
   return (
     <div className="flex flex-col items-start gap-1 max-w-[220px] w-full">
       <Link to={detailsPath} className="group relative bg-gray-100 rounded-lg w-full h-52 flex items-center justify-center overflow-hidden">
         <img
-          src={`${API_BASE}${product.Image_URL || ""}`}
+          src={product.Image_URL}
           alt={product.Product_Name}
           className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
           loading="lazy"
         />
+
       </Link>
 
       <Link to={detailsPath} className="md:text-base font-medium pt-2 w-full truncate">

@@ -1,34 +1,80 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
+
 
 export default function ProductDetails() {
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+
+  // Base URL for the backend API
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
 
+  // Current logged-in user (null if not logged in)
+  const { user } = useContext(AuthContext);
+
   useEffect(() => {
+    // Load single product (with its Variants) from backend
     fetch(`${API_BASE}/api/products/${id}`)
-      .then(r => r.json())
+      .then((r) => r.json())
       .then(setProduct)
       .catch(() => setProduct(null));
   }, [id, API_BASE]);
 
   const prices = useMemo(() => {
+    // Compute min/max price from variants
     const arr = (product?.Variants ?? [])
-      .map(v => Number(v.Price))
-      .filter(n => !Number.isNaN(n));
+      .map((v) => Number(v.Price))
+      .filter((n) => !Number.isNaN(n));
     if (!arr.length) return null;
-    const min = Math.min(...arr), max = Math.max(...arr);
+    const min = Math.min(...arr),
+      max = Math.max(...arr);
     return { min, max };
   }, [product]);
 
   const priceFormat = (n) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 
-  const [selectedVariant, setSelectedVariant] = useState(null);
+  // Add the selected variant to the user's cart on the server (or redirect to login)
+  const handleAddToCart = async () => {
+    // If not logged in, send to login page
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    // If there are multiple variants, require a choice
+    if ((product.Variants?.length ?? 0) > 1 && !selectedVariant) {
+      alert("Please choose a variant first");
+      return;
+    }
+    // Prefer the selected variant; otherwise use the first available one
+    const variantId =
+      selectedVariant?.Variant_ID ?? product.Variants?.[0]?.Variant_ID ?? null;
+
+    try {
+      // Call backend to add variant to the user's cart (JWT is auto-set by AuthProvider)
+      await axios.post(`${API_BASE}/api/cart/add`, { variantId, qty: 1 });
+      alert("Added to cart");
+    } catch (e) {
+      alert(e.response?.data?.error || "Failed to add to cart");
+    }
+  };
+
+  // Add to cart then navigate to checkout (requires login)
+  const handleBuyNow = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    await handleAddToCart(); // Ensure item exists in server cart
+    navigate("/checkout");   // Go to checkout page
+  };
 
   if (!product) {
     return (
@@ -43,18 +89,19 @@ export default function ProductDetails() {
   return (
     <>
       <Navbar />
-      <div className="px-6 md:px-16 lg:px-32 py-12 grid lg:grid-cols-2 gap-10">
- 
-        <div className="bg-gray-100 rounded-xl p-6 flex items-center justify-center">
+      <div className="md:px-1 lg:px-32 py-5 grid lg:grid-cols-2 gap-10">
+        {/* Image */}
+        <div className="bg-gray-100 rounded-xl p-2 flex items-center justify-center">
           <img
-            src={`${API_BASE}${product.Image_URL || ""}`}
+            src={product.Image_URL}
             alt={product.Product_Name}
-            className="object-contain max-h-[480px] w-full"
+            className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
           />
+
         </div>
 
-      
-        <div>
+        {/* Details */}
+        <div className="py-10">
           <h1 className="text-3xl font-semibold">{product.Product_Name}</h1>
 
           <div className="mt-3 text-sm text-gray-600 leading-6">
@@ -72,12 +119,12 @@ export default function ProductDetails() {
             <div className="mt-2 text-sm text-gray-500">Brand: {product.Brand}</div>
           </div>
 
-
+          {/* Variant selector */}
           {!!(product.Variants?.length) && (
             <div className="mt-6 space-y-3">
               <div className="text-sm font-medium">Choose a variant</div>
               <div className="flex flex-wrap gap-2">
-                {product.Variants.map(v => (
+                {product.Variants.map((v) => (
                   <button
                     key={v.Variant_ID}
                     onClick={() => setSelectedVariant(v)}
@@ -88,7 +135,7 @@ export default function ProductDetails() {
                     }`}
                     title={`${v.Colour ?? "—"} ${v.Size ? `• ${v.Size}GB` : ""}`}
                   >
-                    {v.Colour ?? "Default"} {v.Size ? `· ${v.Size}GB` : ""}
+                    {v.Colour ?? "Default"} {v.Size ? `· ${v.Size}GB` : ""}{" "}
                     {" · "}
                     {priceFormat(Number(v.Price))}
                   </button>
@@ -97,45 +144,14 @@ export default function ProductDetails() {
             </div>
           )}
 
-          
+          {/* Actions */}
           <div className="mt-8 flex gap-3">
-            <button
-              className="px-5 py-3 rounded-md border"
-              onClick={() => {
-                // example cart add (localStorage). Replace with API if you have one.
-                const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-                cart.push({
-                  Product_ID: product.Product_ID,
-                  Variant_ID: selectedVariant?.Variant_ID ?? null,
-                  qty: 1,
-                });
-                localStorage.setItem("cart", JSON.stringify(cart));
-                alert("Added to cart");
-              }}
-            >
+            <button className="px-5 py-3 rounded-md border" onClick={handleAddToCart}>
               Add to Cart
             </button>
             <button
               className="px-5 py-3 rounded-md bg-orange-600 text-white"
-              onClick={() => {
-                // Require a variant if multiple exist
-                if ((product.Variants?.length ?? 0) > 1 && !selectedVariant) {
-                  alert("Please choose a variant first");
-                  return;
-                }
-                // Navigate to checkout and pass selection
-                navigate("/checkout", {
-                  state: {
-                    items: [
-                      {
-                        Product_ID: product.Product_ID,
-                        Variant_ID: selectedVariant?.Variant_ID ?? product.Variants?.[0]?.Variant_ID ?? null,
-                        qty: 1,
-                      },
-                    ],
-                  },
-                });
-              }}
+              onClick={handleBuyNow}
             >
               Buy now
             </button>

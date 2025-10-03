@@ -21,7 +21,7 @@ import Admin from "../pages/Admin/admin";
 import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
-import Report from "../pages/Admin/Report";
+import Report from "../pages/Admin/reports";
 
 
 export default function AppRoutes() {
@@ -40,6 +40,9 @@ export default function AppRoutes() {
         {/* Public routes */}
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProductList />} />
+        <Route path="/products/:id" element={<ProductDetails />} />
+
+        {/* Auth routes */}
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -60,6 +63,15 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <Cart />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
             </ProtectedRoute>
           }
         />

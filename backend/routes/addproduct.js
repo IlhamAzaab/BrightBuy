@@ -1,83 +1,92 @@
-const express = require("express");
-const router = express.Router();
-const upload = require("../config/multer");
-const cloudinary = require("../config/cloudinary");
-const pool = require("../db");
+import express from "express";
+import upload from "../config/multer.js";
+import cloudinary from "../config/cloudinary.js";
+import db from "../db.js";
 
-// Endpoint to get all categories for the dropdown
+const router = express.Router();
+
+// Get categories
 router.get("/categories", async (req, res) => {
   try {
-    const [categories] = await pool.query(
+    const [rows] = await db.query(
       "SELECT Category_ID, Category_Name FROM Category"
     );
-    res.json(categories);
+    res.json(rows);
   } catch (err) {
+    console.error("Error fetching categories:", err);
     res.status(500).json({ error: "Failed to fetch categories" });
   }
 });
 
-// Upload up to 4 images and add product
-router.post("/", upload.array("images", 4), async (req, res) => {
-  const {
-    categoryId, // receive categoryId from frontend
-    productName,
-    brand,
-    sku,
-    price,
-    stockQuantity,
-    size,
-    colour,
-    description,
-  } = req.body;
+// Add product with multiple variants
+router.post(
+  "/", 
+  upload.array("variantImages"), // Changed: each variant has one image
+  async (req, res) => {
+    try {
+      const {
+        categoryId,
+        productName,
+        brand,
+        sku,
+        description,
+        variantCount, // Added: variant count from frontend
+        price,
+        stockQuantity,
+        size,
+        colour,
+      } = req.body;
 
-  if (
-    !categoryId ||
-    !productName ||
-    !brand ||
-    !sku ||
-    !price ||
-    !stockQuantity
-  ) {
-    return res.status(400).json({ error: "Please fill all required fields" });
-  }
+      // Validate product fields
+      if (!categoryId || !productName || !brand || !sku) {
+        return res.status(400).json({ error: "Please fill all required fields" });
+      }
 
-  try {
-    // 1️⃣ No need to insert or check category, just use categoryId
+      // Insert Product
+      const [productResult] = await db.query(
+        "INSERT INTO Product (Category_ID, Product_Name, Brand, SKU, Description) VALUES (?, ?, ?, ?, ?)",
+        [categoryId, productName, brand, sku, description]
+      );
+      const productId = productResult.insertId;
 
-    // 2️⃣ Upload images to Cloudinary
-    const imageUrls = [];
-    for (let file of req.files) {
-      const uploaded = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "products" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
+      // Parse variant fields
+      // These fields are arrays sent from frontend
+      const priceArr = Array.isArray(price) ? price : [price];
+      const stockArr = Array.isArray(stockQuantity) ? stockQuantity : [stockQuantity];
+      const sizeArr = Array.isArray(size) ? size : [size];
+      const colourArr = Array.isArray(colour) ? colour : [colour];
+
+      // Each variant has its own image in req.files
+      for (let i = 0; i < variantCount; i++) {
+        if (!req.files[i]) {
+          return res.status(400).json({ error: `Image missing for variant ${i + 1}` });
+        }
+
+        // Upload variant image to Cloudinary
+        const uploaded = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "products" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(req.files[i].buffer);
+        });
+
+        await db.query(
+          "INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES (?, ?, ?, ?, ?, ?)",
+          [productId, priceArr[i], stockArr[i], colourArr[i], sizeArr[i], uploaded.secure_url]
         );
-        stream.end(file.buffer);
-      });
-      imageUrls.push(uploaded.secure_url);
+      }
+
+      return res.json({ message: "Product and variants added successfully" });
+
+    } catch (err) {
+      console.error("Add Product Error:", err);
+      return res.status(500).json({ error: err.message || "Server error" });
     }
-
-    // 3️⃣ Insert into Product table
-    const productResult = await pool.query(
-      "INSERT INTO Product (Category_ID, Product_Name, Brand, SKU, Image_URL, Description) VALUES (?, ?, ?, ?, ?, ?)",
-      [categoryId, productName, brand, sku, imageUrls.join(","), description]
-    );
-    const productId = productResult[0].insertId;
-
-    // 4️⃣ Insert into Variant table
-    await pool.query(
-      "INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size) VALUES (?, ?, ?, ?, ?)",
-      [productId, price, stockQuantity, colour, size]
-    );
-
-    return res.json({ message: "Product added successfully" });
-  } catch (err) {
-    console.error("Add Product Error:", err); // Make sure this is present
-    return res.status(500).json({ error: err.message || "Server error" });
   }
-});
+);
 
-module.exports = router;
+export default router;

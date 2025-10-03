@@ -1,92 +1,161 @@
-
-// module.exports = router;
-const express = require("express");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const db = require("../db");
-require("dotenv").config();
+// backend/routes/auth.js (ESM)
+import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import db from "../db.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const router = express.Router();
 
-// Signup
+// Helper functions
+const ACCESS_SECRET = process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET || "dev_access_secret";
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || "dev_refresh_secret";
+
+const generateAccessToken = (user) =>
+  jwt.sign(
+    { id: user.User_ID, role: user.Role },
+    ACCESS_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_TTL || "15m" }
+  );
+
+const generateRefreshToken = (user) =>
+  jwt.sign(
+    { id: user.User_ID },
+    REFRESH_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_TTL || "7d" }
+  );
+
+// -------------------- Signup --------------------
 router.post("/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body || {};
+
+    if (!name || !email || !password) {
+      return res
+        .status(400)
+        .json({ error: "Name, email and password are required" });
+    }
 
     // Check if user exists
-    const [existing] = await db.query("SELECT * FROM user WHERE Email = ?", [email]);
+    const [existing] = await db.execute(
+      "SELECT 1 FROM `user` WHERE `Email` = ? LIMIT 1",
+      [email]
+    );
     if (existing.length > 0) {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Default role
-    let role = "admin";
-
-    await db.query(
-      "INSERT INTO user (Name, Password, Email, Role) VALUES (?, ?, ?, ?)",
-      [name, hashedPassword, email, role]
+    const hashed = await bcrypt.hash(password, 10);
+    const role = "customer";
+    await db.execute(
+      "INSERT INTO `user` (`Name`, `Password`, `Email`, `Role`) VALUES (?, ?, ?, ?)",
+      [name, hashed, email, role]
     );
 
-    res.json({ message: "User registered successfully" });
+    const [users] = await db.execute("SELECT * FROM `user` WHERE `Email` = ? LIMIT 1", [email]);
+    const user = users[0];
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.json({
+      user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role },
+      accessToken,
+      refreshToken
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
+    console.error("Signup error:", {
+      message: err?.message,
+      code: err?.code,
+      errno: err?.errno,
+      sqlState: err?.sqlState,
+      sqlMessage: err?.sqlMessage,
+    });
+
+    if (err && err.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+
+    const isDev = process.env.NODE_ENV !== "production";
+    return res.status(500).json({
+      error: "Server error during signup",
+      detail: isDev ? err?.sqlMessage || err?.message : undefined,
+    });
   }
 });
 
-// Login
-router.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
+// -------------------- Login --------------------
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
 
-        // Validate input
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
-        }
-
-        // Find user in database - use correct column name 'Email'
-        const [users] = await db.execute('SELECT * FROM user WHERE Email = ?', [email]);
-        
-        if (users.length === 0) {
-            return res.status(401).json({ error: 'Invalid Email' });
-        }
-
-        const user = users[0];
-
-        // Validate that we have both passwords
-        if (!password) {
-            return res.status(400).json({ error: 'Password is required' });
-        }
-
-        if (!user.Password) {
-            return res.status(500).json({ error: 'User account error - no password stored' });
-        }
-
-        // Compare passwords - use correct column name 'Password'
-        const isMatch = await bcrypt.compare(password, user.Password);
-        
-        if (!isMatch) {
-            return res.status(401).json({ error: 'Incorrect password' });
-        }
-
-        // Login successful - use correct column names
-        res.json({ 
-            message: 'Login successful', 
-            user: { 
-                id: user.User_ID, 
-                email: user.Email,
-                name: user.Name,
-                role: user.Role
-            } 
-        });
-        
-    } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ error: 'Server error during login' });
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
     }
+
+    // Look up by correct column name `Email`
+    const [users] = await db.execute(
+      "SELECT * FROM `user` WHERE `Email` = ? LIMIT 1",
+      [email]
+    );
+
+    if (users.length === 0) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+    const user = users[0];
+
+    if (!user.Password) {
+      return res.status(500).json({ error: "User account misconfigured" });
+    }
+    const match = await bcrypt.compare(password, user.Password);
+    if (!match) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    res.json({
+      user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role },
+      accessToken,
+      refreshToken
+    });
+  } catch (err) {
+    console.error("Login error", err);
+    res.status(500).json({ error: "Server error during login" });
+  }
 });
 
-module.exports = router;
+// -------------------- Refresh token --------------------
+router.post("/refresh", async (req, res) => {
+  const { refreshToken } = req.body || {};
+  if (!refreshToken) return res.status(401).json({ error: "No refresh token provided" });
+  try {
+    const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+    const [users] = await db.execute("SELECT * FROM `user` WHERE `User_ID` = ? LIMIT 1", [decoded.id]);
+    if (!users.length) return res.status(401).json({ error: "User not found" });
+    const user = users[0];
+    const accessToken = generateAccessToken(user);
+    res.json({ accessToken });
+  } catch (err) {
+    return res.status(403).json({ error: "Invalid refresh token" });
+  }
+});
+
+// -------------------- Profile (protected) --------------------
+router.get("/profile", async (req, res) => {
+  const authHeader = req.headers["authorization"]; 
+  if (!authHeader) return res.status(401).json({ error: "No token provided" });
+  const token = authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "No token provided" });
+  try {
+    const decoded = jwt.verify(token, ACCESS_SECRET);
+    const [users] = await db.execute("SELECT * FROM `user` WHERE `User_ID` = ? LIMIT 1", [decoded.id]);
+    if (!users.length) return res.status(404).json({ error: "User not found" });
+    const user = users[0];
+    res.json({ user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role } });
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+});
+
+export default router;
