@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+// 
+
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -29,7 +31,7 @@ export default function Cart() {
   };
 
   // Load cart data
-  const loadCart = async () => {
+  const loadCart = useCallback(async () => {
     if (!user) {
       setLoading(false);
       return;
@@ -51,7 +53,7 @@ export default function Cart() {
       // Debug image URLs
       console.log("=== IMAGE DEBUG ===");
       response.data.items.forEach((item, index) => {
-        console.log('Item' `${index + 1}: ${item.Product_Name}`);
+        console.log(`Item ${index + 1}: ${item.Product_Name}`);
         console.log(`  - Database Image_URL: ${item.Image_URL}`);
         console.log(`  - Full URL: ${getProductImageUrl(item.Image_URL, item.Product_Name)}`);
       });
@@ -69,18 +71,18 @@ export default function Cart() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, token, API_BASE]);
 
   useEffect(() => {
     loadCart();
-  }, [user]);
+  }, [loadCart]);
 
   // Update item quantity
   const updateQuantity = async (cartItemId, newQuantity) => {
     if (newQuantity < 1) return;
 
     try {
-      await axios.patch(`${API_BASE}`/'api'/'cart'/'item'/`${cartItemId}`, { qty: newQuantity });
+      await axios.patch(`${API_BASE}/api/cart/item/${cartItemId}`, { qty: newQuantity });
       await loadCart(); // Reload cart to get updated totals
     } catch (err) {
       alert("Failed to update quantity");
@@ -91,7 +93,7 @@ export default function Cart() {
   // Remove item from cart
   const removeItem = async (cartItemId) => {
     try {
-      await axios.delete(`${API_BASE}`/'api'/'cart'/'item'/`${cartItemId}`);
+      await axios.delete(`${API_BASE}/api/cart/item/${cartItemId}`);
       await loadCart(); // Reload cart
     } catch (err) {
       alert("Failed to remove item");
@@ -366,6 +368,6 @@ export default function Cart() {
         </div>
       </div>
       <Footer />
-    </>
-  );
+    </>
+  );
 }
