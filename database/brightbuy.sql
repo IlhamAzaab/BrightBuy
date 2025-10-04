@@ -1,9 +1,11 @@
-create database brightbuy;
+-- if one exist, drop it
+drop database brightbuy;
 
+create database brightbuy;
 use brightbuy;
 
 CREATE TABLE `Product` (
-  `Product_ID` Int not null,
+  `Product_ID` Int not null AUTO_INCREMENT,
   `Category_ID` Int,
   `Product_Name` Varchar(225),
   `Brand` Varchar(225),
@@ -20,7 +22,7 @@ CREATE TABLE `Cart` (
 );
 
 CREATE TABLE `Variant` (
-  `Variant_ID` Int not null,
+  `Variant_ID` Int not null AUTO_INCREMENT,
   `Product_ID` Int,
   `Price` decimal(10,2),
   `Stock_quantity` int,
@@ -424,4 +426,114 @@ VALUES
 (6, 'admin2 User', '$2b$10$ns35RoYdRZMFctzh8Up3Lu7gK9fIu9XiM/CeRajGqI9PRByim5jEy', NULL, NULL, 'Admin2@example.com', 'admin');
 
 
+-- Insert City data (Texas cities)
+INSERT INTO City (City_ID, City_Name, Main_City) VALUES
+(1, 'Houston', TRUE),
+(2, 'Dallas', TRUE),
+(3, 'Austin', TRUE),
+(4, 'San Antonio', TRUE),
+(5, 'Fort Worth', TRUE),
+(6, 'El Paso', FALSE),
+(7, 'Arlington', FALSE),
+(8, 'Corpus Christi', FALSE),
+(9, 'Plano', FALSE),
+(10, 'Lubbock', FALSE),
+(11, 'Garland', FALSE),
+(12, 'Irving', FALSE),
+(13, 'Laredo', FALSE),
+(14, 'Frisco', FALSE),
+(15, 'McKinney', FALSE);
+
+-- Update existing users with city information
+UPDATE User SET City_ID = 1 WHERE User_ID = 1; -- John Smith in Houston
+UPDATE User SET City_ID = 2 WHERE User_ID = 2; -- Maria Garcia in Dallas
+UPDATE User SET City_ID = 1 WHERE User_ID = 3; -- Admin User in Houston
+UPDATE User SET City_ID = 3 WHERE User_ID = 4; -- David Johnson in Austin
+UPDATE User SET City_ID = 4 WHERE User_ID = 5; -- Sarah Wilson in San Antonio
+UPDATE User SET City_ID = 1 WHERE User_ID = 6;
+
+
+-- Insert Delivery data
+INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
+(1, 'Standard Delivery', '123 Broadway Ave, Houston, TX 77002', 'Delivered', '2024-01-15'),
+(2, 'Express Delivery', '456 Elm Street, Dallas, TX 75201', 'In Transit', '2024-01-20'),
+(3, 'Standard Delivery', '321 Main Street, Austin, TX 73301', 'Processing', '2024-01-25'),
+(4, 'Express Delivery', '654 Central Ave, San Antonio, TX 78205', 'Delivered', '2024-01-18'),
+(5, 'Standard Delivery', '789 Richmond Ave, Houston, TX 77057', 'Delivered', '2024-01-12'),
+(6, 'Express Delivery', '123 Broadway Ave, Houston, TX 77002', 'In Transit', '2024-01-22'),
+(7, 'Standard Delivery', '456 Commerce St, Dallas, TX 75202', 'Processing', '2024-01-28'),
+(8, 'Express Delivery', '321 Congress Ave, Austin, TX 78701', 'Shipped', '2024-01-24'),
+(9, 'Standard Delivery', '654 Market St, San Antonio, TX 78205', 'Processing', '2024-01-30'),
+(10, 'Express Delivery', '789 Westheimer Rd, Houston, TX 77027', 'Delivered', '2024-01-16');
+
+-- Insert Cart data (one cart per user)
+INSERT INTO Cart (Cart_ID, User_ID) VALUES
+(1, 1), -- John Smith's cart
+(2, 2), -- Maria Garcia's cart
+(3, 4), -- David Johnson's cart
+(4, 5), -- Sarah Wilson's cart
+(5, 1), -- John Smith's second cart (for multiple orders)
+(6, 2), -- Maria Garcia's second cart
+(7, 4), -- David Johnson's second cart
+(8, 5); -- Sarah Wilson's second cart
+
+
+-- Insert Cart_Item data (items in various carts)
+INSERT INTO Cart_Item (Cart_Item_ID, Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES
+-- John Smith's first cart
+(1, 1, 1, 1, 1, 799.00),    -- iPhone 15 Black 128GB
+(2, 1, 5, 9, 2, 79.98),     -- 2x USB-C Charger
+(3, 1, 28, 38, 1, 249.00),  -- AirPods Pro
+
+-- Maria Garcia's first cart
+(4, 2, 2, 3, 1, 699.00),    -- Pixel 8 Porcelain 128GB
+(5, 2, 31, 41, 1, 59.00),   -- PowerCore 20K
+
+-- Sarah Wilson's first cart
+(9, 4, 4, 7, 1, 599.00),    -- iPad Air Starlight 64GB
+(10, 4, 32, 42, 1, 129.00), -- 3-in-1 MagSafe Stand
+
+-- John Smith's second cart (for another order)
+(11, 5, 6, 10, 1, 1099.00), -- iPhone 15 Pro Black 128GB
+(12, 5, 35, 45, 1, 99.00),  -- MX Master 3S
+
+-- Maria Garcia's second cart
+(13, 6, 11, 19, 1, 999.00), -- Pixel 8 Pro Obsidian 128GB
+(14, 6, 30, 40, 1, 199.00), -- Pixel Buds Pro
+
+-- David Johnson's second cart
+(15, 7, 9, 16, 1, 1199.00), -- Galaxy S23 Ultra Black 256GB
+(16, 7, 39, 49, 1, 29.00),  -- Spigen Case
+
+-- Sarah Wilson's second cart
+(17, 8, 21, 31, 1, 1099.00), -- iPad Pro 11" Silver 256GB
+(18, 8, 28, 38, 1, 249.00),  -- AirPods Pro
+(19, 8, 36, 46, 2, 38.00);   -- 2x microSD 128GB
+
+-- Insert Order data
+INSERT INTO `Order` (Order_ID, User_ID, Cart_ID, `Total Amount`, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
+(3, 4, 3, 1877.00, 'Credit Card', 3, '2024-01-14', 1003),
+(4, 3, 4, 728.00, 'Debit Card', 4, '2024-01-15', 1004),
+(5, 1, 5, 1198.00, 'Credit Card', 5, '2024-01-08', 1005),
+(7, 4, 7, 1228.00, 'Credit Card', 7, '2024-01-18', 1007),
+(8, 2, 8, 1386.00, 'Apple Pay', 8, '2024-01-19', 1008);
+
+-- Add foreign key constraint for Product -> Category (if not already added)
+ALTER TABLE Product 
+ADD CONSTRAINT fk_product_category 
+FOREIGN KEY (Category_ID) REFERENCES Category(Category_ID);
+
+-- Add foreign key constraint for Order -> Delivery (if not already added)
+ALTER TABLE `Order` 
+ADD CONSTRAINT fk_order_delivery 
+FOREIGN KEY (Delivery_ID) REFERENCES Delivery(Delivery_ID);
+
+-- Add foreign key constraint for Order -> Cart (if not already added)
+ALTER TABLE `Order` 
+ADD CONSTRAINT fk_order_cart 
+FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
+
+-- add profile image column to user table
+Alter table user
+Add column image_URL varchar(300);
 
