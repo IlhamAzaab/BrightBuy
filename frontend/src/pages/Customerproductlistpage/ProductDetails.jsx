@@ -66,14 +66,14 @@ export default function ProductDetails() {
     }
   };
 
-  // Add to cart then navigate to checkout (requires login)
+  // Add to cart then navigate to cart page (requires login)
   const handleBuyNow = async () => {
     if (!user) {
       navigate("/login");
       return;
     }
     await handleAddToCart(); // Ensure item exists in server cart
-    navigate("/checkout");   // Go to checkout page
+    navigate("/cart");   // Go to cart page
   };
 
   if (!product) {
