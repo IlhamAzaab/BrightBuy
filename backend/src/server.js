@@ -42,6 +42,10 @@ app.use("/auth", authRoutes);
 import addAdminRoutes from "../routes/addadmin.js";
 app.use("/addadmin", addAdminRoutes);
 
+import addProductRouter from "../routes/addproduct.js";
+app.use('/api/addproduct', addProductRouter);
+
+
 import productsRouter from "../routes/products.js";
 app.use("/api/products", productsRouter);
 

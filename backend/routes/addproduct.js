@@ -8,10 +8,10 @@ const router = express.Router();
 // Get categories
 router.get("/categories", async (req, res) => {
   try {
-    const [rows] = await db.query(
+    const [categories] = await db.query(
       "SELECT Category_ID, Category_Name FROM Category"
     );
-    res.json(rows);
+    res.json(categories);
   } catch (err) {
     console.error("Error fetching categories:", err);
     res.status(500).json({ error: "Failed to fetch categories" });

@@ -17,8 +17,10 @@ export default function Signup() {
       await signup(name, email, password);
       navigate("/"); // redirect after signup
     } catch (err) {
-      setError("Incorrect email address. Try again.");
-    }
+  console.error(err);
+  setError(err?.response?.data?.error || "Something went wrong",err);
+}
+
   };
 
   return (

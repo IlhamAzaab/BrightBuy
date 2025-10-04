@@ -4,9 +4,6 @@ import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
-import Admin from "../pages/Admin/admin";
-import ReportsPage from "../pages/Admin/reports";
-import AddAdmin from "../pages/AddAdmin";
 import Profile from "../pages/profile";
 
 // Existing pages
