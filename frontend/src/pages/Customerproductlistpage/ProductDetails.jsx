@@ -66,14 +66,32 @@ export default function ProductDetails() {
     }
   };
 
-  // Add to cart then navigate to cart page (requires login)
+  // Add to cart then navigate to cart page (requires login and variant selection)
   const handleBuyNow = async () => {
     if (!user) {
       navigate("/login");
       return;
     }
-    await handleAddToCart(); // Ensure item exists in server cart
-    navigate("/cart");   // Go to cart page
+    
+    // If there are multiple variants, require a choice
+    if ((product.Variants?.length ?? 0) > 1 && !selectedVariant) {
+      alert("Please choose a variant first");
+      return; // Don't navigate to cart if no variant selected
+    }
+    
+    // Prefer the selected variant; otherwise use the first available one
+    const variantId =
+      selectedVariant?.Variant_ID ?? product.Variants?.[0]?.Variant_ID ?? null;
+
+    try {
+      // Call backend to add variant to the user's cart (JWT is auto-set by AuthProvider)
+      await axios.post(`${API_BASE}/api/cart/add`, { variantId, qty: 1 });
+      // Only navigate to cart if the item was successfully added
+      navigate("/cart");
+    } catch (e) {
+      alert(e.response?.data?.error || "Failed to add to cart");
+      // Don't navigate to cart if there was an error adding the item
+    }
   };
 
   if (!product) {

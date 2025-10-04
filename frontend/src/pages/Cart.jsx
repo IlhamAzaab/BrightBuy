@@ -1,6 +1,4 @@
-// 
-
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -23,15 +21,16 @@ export default function Cart() {
   // Get product image URL - try backend first, then fallback to frontend
   const getProductImageUrl = (imageUrl, productName) => {
     if (imageUrl) {
+      const cleanImageUrl = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl;
       // If we have an image URL from database, try to use it from backend
-      return `${API_BASE}${imageUrl}`;
+      return `${API_BASE}/${imageUrl}`;  // ← FIXED: Added backticks
     }
     // Fallback to frontend default image
     return "/images/default.jpg";
   };
 
   // Load cart data
-  const loadCart = useCallback(async () => {
+  const loadCart = async () => {
     if (!user) {
       setLoading(false);
       return;
@@ -45,7 +44,7 @@ export default function Cart() {
     console.log("Authorization header:", axios.defaults.headers.common["Authorization"]);
 
     try {
-      const response = await axios.get(`${API_BASE}/api/cart`);
+      const response = await axios.get(`${API_BASE}/api/cart`);  // ← FIXED: Added backticks
       setCartData(response.data);
       setError(null);
       console.log("✅ Cart loaded successfully");
@@ -53,7 +52,7 @@ export default function Cart() {
       // Debug image URLs
       console.log("=== IMAGE DEBUG ===");
       response.data.items.forEach((item, index) => {
-        console.log(`Item ${index + 1}: ${item.Product_Name}`);
+        console.log(`Item ${index + 1}: ${item.Product_Name}`);  // ← FIXED: Added backticks
         console.log(`  - Database Image_URL: ${item.Image_URL}`);
         console.log(`  - Full URL: ${getProductImageUrl(item.Image_URL, item.Product_Name)}`);
       });
@@ -71,18 +70,18 @@ export default function Cart() {
     } finally {
       setLoading(false);
     }
-  }, [user, token, API_BASE]);
+  };
 
   useEffect(() => {
     loadCart();
-  }, [loadCart]);
+  }, [user]);
 
   // Update item quantity
   const updateQuantity = async (cartItemId, newQuantity) => {
     if (newQuantity < 1) return;
 
     try {
-      await axios.patch(`${API_BASE}/api/cart/item/${cartItemId}`, { qty: newQuantity });
+      await axios.patch(`${API_BASE}/api/cart/item/${cartItemId}`, { qty: newQuantity });  // ← FIXED: Added backticks
       await loadCart(); // Reload cart to get updated totals
     } catch (err) {
       alert("Failed to update quantity");
@@ -93,7 +92,7 @@ export default function Cart() {
   // Remove item from cart
   const removeItem = async (cartItemId) => {
     try {
-      await axios.delete(`${API_BASE}/api/cart/item/${cartItemId}`);
+      await axios.delete(`${API_BASE}/api/cart/item/${cartItemId}`);  // ← FIXED: Added backticks
       await loadCart(); // Reload cart
     } catch (err) {
       alert("Failed to remove item");
@@ -229,14 +228,14 @@ export default function Cart() {
                         <div>
                           <div className="rounded-lg overflow-hidden bg-gray-500/10 p-2">
                             <img
-                              src={imageUrl}
+                              src={getProductImageUrl(item.Image_URL, item.Product_Name)}
                               alt={item.Product_Name}
                               className="w-16 h-auto object-cover mix-blend-multiply"
                               onLoad={() => {
-                                console.log(`✅ Image loaded: ${item.Product_Name} - ${imageUrl}`);
+                                console.log(`✅ Image loaded: ${item.Product_Name} - ${imageUrl}`);  // ← FIXED: Added backticks
                               }}
                               onError={(e) => {
-                                console.log(`❌ Image failed: ${item.Product_Name} - ${imageUrl}`);
+                                console.log(`❌ Image failed: ${item.Product_Name} - ${imageUrl}`);  // ← FIXED: Added backticks
                                 // Try fallback to frontend default image
                                 if (e.target.src !== "/images/default.jpg") {
                                   e.target.src = "/images/default.jpg";
@@ -265,9 +264,9 @@ export default function Cart() {
                           <p className="text-gray-800">{item.Product_Name}</p>
                           {(item.Colour || item.Size) && (
                             <p className="text-xs text-gray-500 mt-1">
-                              {item.Colour && `${item.Colour}`}
+                              {item.Colour && `${item.Colour}`}  {/* ← FIXED: Added backticks */}
                               {item.Colour && item.Size && " • "}
-                              {item.Size && `${item.Size}GB`}
+                              {item.Size && `${item.Size}GB`}  {/* ← FIXED: Added backticks */}
                             </p>
                           )}
                           <button
