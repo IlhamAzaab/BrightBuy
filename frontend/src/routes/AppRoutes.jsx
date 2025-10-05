@@ -38,7 +38,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProductList />} />
         <Route path="/products/:id" element={<ProductDetails />} />
-        <Route path="/products/cart" element={<Cart />} />
+        <Route path="/products/:id/cart" element={<Cart />} />
       <Route path="/products/cart/checkout" element={<Checkout />} />
 
         {/* Auth routes */}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [city, setCity] = useState("");
+  //const [city, setCity] = useState("");
   const [estimate, setEstimate] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
 
@@ -15,7 +15,7 @@ const Checkout = () => {
         const data = await res.json();
 
         setCartItems(data.cartItems);
-        setCity(data.city);
+        //setCity(data.city);
         setTotalAmount(data.total);
 
         // Estimate delivery
