@@ -2,45 +2,65 @@ import React from "react";
 import {assets} from "../assets/assets";
 
 const Footer = () => {
-  const year = new Date().getFullYear();
   return (
-    <footer className="flex md:flex-row flex-col-reverse items-center justify-between text-left w-full px-10 py-4 gap-4">
-      <div className="flex items-center gap-4">
-        <img className="hidden md:block" src={assets.logo} alt="BrightBuy logo" />
-        <div className="hidden md:block h-7 w-px bg-gray-500/60" aria-hidden="true"></div>
-        <p className="text-xs md:text-sm text-gray-500">
-          &copy; {year} BrightBuy. All rights reserved.
-        </p>
+    <footer>
+      <div className="flex flex-col md:flex-row items-start justify-center px-6 md:px-16 lg:px-32 gap-10 py-14 border-b border-gray-500/30 text-gray-500">
+        {/* Logo & Description */}
+        <div className="w-4/5">
+          <img className="w-28 md:w-32" src={assets.logo} alt="logo" />
+          <p className="mt-6 text-sm">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry's standard dummy text
+            ever since the 1500s, when an unknown printer took a galley of type
+            and scrambled it to make a type specimen book.
+          </p>
+        </div>
+
+        {/* Company Links */}
+        <div className="w-1/2 flex items-center justify-start md:justify-center">
+          <div>
+            <h2 className="font-medium text-gray-900 mb-5">Company</h2>
+            <ul className="text-sm space-y-2">
+              <li>
+                <a className="hover:underline transition" href="https://www.google.com">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a className="hover:underline transition" href="https://www.google.comv">
+                  About us
+                </a>
+              </li>
+              <li>
+                <a className="hover:underline transition" href="https://www.google.com">
+                  Contact us
+                </a>
+              </li>
+              <li>
+                <a className="hover:underline transition" href="https://www.google.com">
+                  Privacy policy
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Contact Info */}
+        <div className="w-1/2 flex items-start justify-start md:justify-center">
+          <div>
+            <h2 className="font-medium text-gray-900 mb-5">Get in touch</h2>
+            <div className="text-sm space-y-2">
+              <p>+94 75-958-7979</p>
+              <p>@mimilhamazaab51@gmail.com</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <nav aria-label="Social media" className="flex items-center gap-3">
-        <a
-          href="https://www.facebook.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Facebook"
-          className="inline-flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded"
-        >
-          <img src={assets.facebook_icon} alt="Facebook" />
-        </a>
-        <a
-          href="https://x.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="X (Twitter)"
-          className="inline-flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded"
-        >
-          <img src={assets.twitter_icon} alt="X (Twitter)" />
-        </a>
-        <a
-          href="https://www.instagram.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Instagram"
-          className="inline-flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 rounded"
-        >
-          <img src={assets.instagram_icon} alt="Instagram" />
-        </a>
-      </nav>
+
+      {/* Footer Bottom */}
+      <p className="py-4 text-center text-xs md:text-sm">
+        Copyright 2025 © ilhamazaab All Right Reserved.
+      </p>
     </footer>
   );
 };

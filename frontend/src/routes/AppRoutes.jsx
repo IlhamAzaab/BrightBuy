@@ -11,6 +11,7 @@ import Home from "../pages/Home";
 import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList";
 import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 import Cart from "../pages/Cart";
+import Checkout from "../pages/Checkout";
 
 // New Admin pages
 import Admin from "../pages/Admin/admin";
@@ -37,6 +38,8 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProductList />} />
         <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/products/cart" element={<Cart />} />
+      <Route path="/products/cart/checkout" element={<Checkout />} />
 
         {/* Auth routes */}
         <Route path="/products/:id" element={<ProductDetails />} />
@@ -59,15 +62,6 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <Cart />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/my-orders"
-          element={
-            <ProtectedRoute>
-              <Orders />
             </ProtectedRoute>
           }
         />

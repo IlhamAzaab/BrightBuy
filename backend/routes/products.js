@@ -11,7 +11,7 @@ router.get("/", async (_req, res) => {
   try {
     const [rows] = await pool.query(`
       SELECT
-        p.Product_ID, p.Product_Name, p.Brand, p.SKU, p.Image_URL, p.Description,
+        p.Product_ID, p.Product_Name, p.Brand, p.SKU, v.Image_URL, p.Description,
         v.Variant_ID, v.Colour, v.Size, v.Price
       FROM product p
       LEFT JOIN variant v ON v.Product_ID = p.Product_ID
