@@ -1,25 +1,22 @@
+// backend/routes/products.js
 import { Router } from "express";
 import pool from "../db.js";
 
 const router = Router();
 
-/**
- * GET /api/products
- * Returns all products grouped with their variants
- */
+// GET /api/products  (all)
 router.get("/", async (_req, res) => {
   try {
     const [rows] = await pool.query(`
       SELECT
-        p.Product_ID, p.Product_Name, p.Brand, p.SKU, p.Image_URL, p.Description,
-        v.Variant_ID, v.Colour, v.Size, v.Price
+        p.Product_ID, p.Product_Name, p.Brand, p.SKU, p.Description,
+        v.Variant_ID, v.Colour, v.Size, v.Price, v.Image_URL
       FROM product p
       LEFT JOIN variant v ON v.Product_ID = p.Product_ID
       ORDER BY p.Product_ID ASC, v.Variant_ID ASC
     `);
 
     const grouped = Object.create(null);
-
     for (const r of rows) {
       const pid = r.Product_ID;
       if (!grouped[pid]) {
@@ -28,18 +25,17 @@ router.get("/", async (_req, res) => {
           Product_Name: r.Product_Name,
           Brand: r.Brand,
           SKU: r.SKU,
-          Image_URL: r.Image_URL,
           Description: r.Description,
           Variants: [],
         };
       }
-
       if (r.Variant_ID != null) {
         grouped[pid].Variants.push({
           Variant_ID: r.Variant_ID,
           Colour: r.Colour,
           Size: r.Size,
           Price: r.Price == null ? null : Number(r.Price),
+          Image_URL: r.Image_URL ?? null,
         });
       }
     }
@@ -51,22 +47,17 @@ router.get("/", async (_req, res) => {
   }
 });
 
-/**
- * GET /api/products/:id
- * Returns a single product with its variants
- */
+// GET /api/products/:id  (single)
 router.get("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (!Number.isInteger(id)) {
-    return res.status(400).json({ error: "Invalid id" });
-  }
+  if (!Number.isInteger(id)) return res.status(400).json({ error: "Invalid id" });
 
   try {
     const [rows] = await pool.query(
       `
       SELECT
-        p.Product_ID, p.Product_Name, p.Brand, p.SKU, p.Image_URL, p.Description,
-        v.Variant_ID, v.Colour, v.Size, v.Price, v.Stock_quantity
+        p.Product_ID, p.Product_Name, p.Brand, p.SKU, p.Description,
+        v.Variant_ID, v.Colour, v.Size, v.Price, v.Stock_quantity, v.Image_URL
       FROM product p
       LEFT JOIN variant v ON v.Product_ID = p.Product_ID
       WHERE p.Product_ID = ?
@@ -82,7 +73,6 @@ router.get("/:id", async (req, res) => {
       Product_Name: rows[0].Product_Name,
       Brand: rows[0].Brand,
       SKU: rows[0].SKU,
-      Image_URL: rows[0].Image_URL,
       Description: rows[0].Description,
       Variants: [],
     };
@@ -95,11 +85,10 @@ router.get("/:id", async (req, res) => {
           Size: r.Size,
           Price: r.Price == null ? null : Number(r.Price),
           Stock_quantity: r.Stock_quantity,
+          Image_URL: r.Image_URL ?? null,
         });
       }
     }
-
-   
 
     res.json(prod);
   } catch (err) {

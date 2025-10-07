@@ -6,43 +6,54 @@ import Footer from "../../components/Footer";
 export default function CustomerProductList() {
   const [products, setProducts] = useState([]);
 
-  // figure out how many columns your Tailwind grid shows at this width
+  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
+  const normalize = (s) => (s || "").replace(/\\/g, "/");
+
   const getColsForWidth = () => {
     const w = window.innerWidth;
-    if (w >= 1280) return 5;   // xl:grid-cols-5
-    if (w >= 1024) return 4;   // lg:grid-cols-4
-    if (w >= 768)  return 3;   // md:grid-cols-3
-    return 2;                  // grid-cols-2
+    if (w >= 1280) return 5;
+    if (w >= 1024) return 4;
+    if (w >= 768) return 3;
+    return 2;
   };
 
-  const [cols, setCols] = useState(() => (typeof window !== "undefined" ? getColsForWidth() : 5));
+  const [cols, setCols] = useState(() =>
+    typeof window !== "undefined" ? getColsForWidth() : 5
+  );
   const [page, setPage] = useState(1);
 
-  // fetch once
   useEffect(() => {
-    fetch("http://localhost:9000/api/products")
+    fetch(`${API_BASE}/api/products`)
       .then(async (res) => {
         if (!res.ok) throw new Error(await res.text() || res.statusText);
         return res.json();
       })
-      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .then((data) => {
+        const withFirstVariantImage = (Array.isArray(data) ? data : []).map((p) => {
+          const firstVarImg = p?.Variants?.[0]?.Image_URL || null;
+          return {
+            ...p,
+            // make ProductCard use the first variant’s image by default
+            Image_URL: firstVarImg ? normalize(firstVarImg) : p.Image_URL,
+          };
+        });
+        setProducts(withFirstVariantImage);
+      })
       .catch((err) => {
         console.error("Failed to load products:", err);
         setProducts([]);
       });
-  }, []);
+  }, [API_BASE]);
 
-  // update columns on resize (keeps "4 rows per page" consistent with your grid)
   useEffect(() => {
     const onResize = () => setCols(getColsForWidth());
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const itemsPerPage = cols * 4; // 4 rows per page
+  const itemsPerPage = cols * 4;
   const totalPages = Math.max(1, Math.ceil(products.length / itemsPerPage));
 
-  // when cols or product count changes, make sure current page is valid
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
   }, [page, totalPages]);
@@ -66,7 +77,6 @@ export default function CustomerProductList() {
           <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
         </div>
 
-        {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-12 w-full">
           {pageItems.length === 0 ? (
             <p className="col-span-full text-sm text-gray-500">No products to show.</p>
@@ -75,7 +85,6 @@ export default function CustomerProductList() {
           )}
         </div>
 
-        {/* Pagination */}
         <div className="w-full flex justify-center items-center gap-2 mt-10 pb-14">
           <button
             onClick={() => goToPage(Math.max(1, page - 1))}
