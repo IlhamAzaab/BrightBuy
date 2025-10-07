@@ -64,7 +64,7 @@ CREATE TABLE `User` (
   `City_ID` Int,
   `Email` Varchar(25),
   `Role` Varchar(10),
-  `image_URL` varchar(300)
+  `image_URL` varchar(300),
   PRIMARY KEY (`User_ID`),
   FOREIGN KEY (`City_ID`)
       REFERENCES `City`(`City_ID`)
@@ -466,6 +466,4 @@ FOREIGN KEY (Delivery_ID) REFERENCES Delivery(Delivery_ID);
 ALTER TABLE `Order` 
 ADD CONSTRAINT fk_order_cart 
 FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
-
-
 
