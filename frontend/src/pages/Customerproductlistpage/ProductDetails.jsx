@@ -73,7 +73,7 @@ const handleAddToCart = async () => {
 
 
     // ✅ Navigate to cart page after successful add
-    navigate("/products/cart");
+    navigate("/cart");
   } catch (e) {
     alert(e.response?.data?.error || "Failed to add to cart");
   }
