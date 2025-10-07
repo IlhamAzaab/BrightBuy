@@ -91,10 +91,15 @@ export default function ProductDetails() {
         {/* Image */}
         <div className="bg-gray-100 rounded-xl p-2 flex items-center justify-center">
           <img
-            src={`${API_BASE}${normalize(mainImagePath)}`}
-            alt={product.Product_Name}
-            className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
-          />
+  src={
+    mainImagePath?.startsWith("http")
+      ? mainImagePath
+      : `${API_BASE}${normalize(mainImagePath)}`
+  }
+  alt={product.Product_Name}
+  className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
+/>
+
 
         </div>
 
