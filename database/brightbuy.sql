@@ -11,7 +11,6 @@ CREATE TABLE `Product` (
   `Brand` Varchar(225),
   `SKU` Varchar(255),
   `Description` TEXT,
-  `Image_URL` Varchar(2500),
   PRIMARY KEY (`Product_ID`)
 );
 
@@ -28,6 +27,7 @@ CREATE TABLE `Variant` (
   `Stock_quantity` int,
   `Colour` varchar(25),
   `Size` Int,
+  `Image_URL` Varchar(2500),
   PRIMARY KEY (`Variant_ID`),
   FOREIGN KEY (`Product_ID`)
       REFERENCES `Product`(`Product_ID`)
@@ -64,6 +64,7 @@ CREATE TABLE `User` (
   `City_ID` Int,
   `Email` Varchar(25),
   `Role` Varchar(10),
+  `image_URL` varchar(300)
   PRIMARY KEY (`User_ID`),
   FOREIGN KEY (`City_ID`)
       REFERENCES `City`(`City_ID`)
@@ -295,126 +296,60 @@ INSERT INTO variant (Variant_ID, Product_ID, Colour, Size, Price, Stock_quantity
 (49, 39, 'Black',   NULL, 29.00,  70),
 (50, 40, 'Black',   NULL, 99.00,  40);
 
-UPDATE product SET Image_URL = '/assets/images/Iphone15.jpeg'
-WHERE Product_ID = 1;
+-- Add image URLs to variants
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SpigenMagArmorCase(iPhone 15).jpg' WHERE (Variant_ID = '49');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\UGREENUSB-CtoHDMIAdapter.jpg' WHERE (Variant_ID = '48');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\KingstonDataTraveler64GB.webp' WHERE (Variant_ID = '47');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SanDiskUltramicroSD128GB.webp' WHERE (Variant_ID = '46');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\LogitechMXMaster3S.jpg' WHERE (Variant_ID = '45');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\SonyWH-CH520.jpg' WHERE (Variant_ID = '44');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = '\\assets\\images\\JBLTune510BT.png' WHERE (Variant_ID = '43');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\Belkin3-in-1MagSafeStand.jpg' WHERE (Variant_ID = '42');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\AnkerPowerCore20K.webp' WHERE (Variant_ID = '41');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = '\\assets\\images\\PixelBudsPro.webp' WHERE (Variant_ID = '40');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhone-15-Blue.jpg' WHERE (Variant_ID = '2');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhone-15-Pro-Max-Black.jpg' WHERE (Variant_ID = '1');
 
-UPDATE product SET Image_URL = '/assets/images/Pixel8.jpg'
-WHERE Product_ID = 2;
 
-UPDATE product SET Image_URL = '/assets/images/Galaxys23.jpg'
-WHERE Product_ID = 3;
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = '\\assets\\images\\SamsungBuds2Pro.jpg' WHERE (Variant_ID = '39');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\airpodspro21.webp' WHERE (Variant_ID = '38');
+UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = '\\assets\\images\\AmazonFireHD10.webp' WHERE (Variant_ID = '37');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\LenovoTabP12.jpg' WHERE (Variant_ID = '36');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\XiaomiPad6.jpg' WHERE (Variant_ID = '35');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SamsungGalaxyTabA9.webp' WHERE (Variant_ID = '34');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SamsungTabS9.jpg' WHERE (Variant_ID = '33');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPad(10thGen).png' WHERE (Variant_ID = '32');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\iPadPro11.jpg' WHERE (Variant_ID = '31');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Xperia10.png' WHERE (Variant_ID = '30');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\NokiaG42.webp' WHERE (Variant_ID = '29');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\NothingPhone2aplus.webp' WHERE (Variant_ID = '28');
+UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = '\\assets\\images\\MotorolaEdge40.png' WHERE (Variant_ID = '27');
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = '\\assets\\images\\RedmiNote13Pro.png' WHERE (Variant_ID = '26');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Xiaomi13TPro.png' WHERE (Variant_ID = '25');
+UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = '\\assets\\images\\OnePlusNordCE4.jpg' WHERE (Variant_ID = '24');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\OnePlus12.png' WHERE (Variant_ID = '23');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\oneplus-12-75.webp' WHERE (Variant_ID = '22');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Pixel7a.png' WHERE (Variant_ID = '21');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Pixel8Pro.avif' WHERE (Variant_ID = '19');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\71YIwcMJ6YL.jpg' WHERE (Variant_ID = '20');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = '\\assets\\images\\SamsungA55.webp' WHERE (Variant_ID = '18');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SamsungS23Ultra.webp' WHERE (Variant_ID = '16');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\71EYdOx09+L.jpg' WHERE (Variant_ID = '17');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhoneSE3rdGen.webp' WHERE (Variant_ID = '15');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iphoneSERed.avif' WHERE (Variant_ID = '14');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhone14.webp' WHERE (Variant_ID = '12');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Apple-iPhone-14-128GB-4.png' WHERE (Variant_ID = '13');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iphone 15 pro black.png' WHERE (Variant_ID = '10');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhone-15-Pro-Max-4.jpg' WHERE (Variant_ID = '11');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\AnkerUSBCcharger.jpg' WHERE (Variant_ID = '9');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Ipadair.jpg' WHERE (Variant_ID = '8');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\ipad air starlight.avif' WHERE (Variant_ID = '7');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\71eJEScDW2L.AC_SL1500.jpg' WHERE (Variant_ID = '6');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\71RnJXDexML.jpg' WHERE (Variant_ID = '5');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\61DQRUHhvDL.UF894,1000_QL80.jpg' WHERE (Variant_ID = '4');
+UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Pixel8.jpg' WHERE (Variant_ID = '3');
 
-UPDATE product SET Image_URL = '/assets/images/Ipadair.jpg'
-WHERE Product_ID = 4;
-
-UPDATE product SET Image_URL = '/assets/images/AnkerUSBCcharger.jpg'
-WHERE Product_ID = 5;
-
-UPDATE product SET Image_URL = '/assets/images/iPhone 15 Pro.webp'
-WHERE Product_ID = 6;
-
-UPDATE product SET Image_URL = '/assets/images/iPhone14.webp'
-WHERE Product_ID = 7;
-
-UPDATE product SET Image_URL = '/assets/images/iPhoneSE3rdGen.webp'
-WHERE Product_ID = 8;
-
-UPDATE product SET Image_URL = '/assets/images/SamsungS23Ultra.webp'
-WHERE Product_ID = 9;
-
-UPDATE product SET Image_URL = '/assets/images/SamsungA55.webp'
-WHERE Product_ID = 10;
-
-UPDATE product SET Image_URL = '/assets/images/Pixel8Pro.avif'
-WHERE Product_ID = 11;
-
-UPDATE product SET Image_URL = '/assets/images/Pixel7a.png'
-WHERE Product_ID = 12;
-
-UPDATE product SET Image_URL = '/assets/images/OnePlus12.png'
-WHERE Product_ID = 13;
-
-UPDATE product SET Image_URL = '/assets/images/OnePlusNordCE4.jpg'
-WHERE Product_ID = 14;
-
-UPDATE product SET Image_URL = '/assets/images/Xiaomi13TPro.png'
-WHERE Product_ID = 15;
-
-UPDATE product SET Image_URL = '/assets/images/RedmiNote13Pro.png'
-WHERE Product_ID = 16;
-
-UPDATE product SET Image_URL = '/assets/images/MotorolaEdge40.png'
-WHERE Product_ID = 17;
-
-UPDATE product SET Image_URL = '/assets/images/NothingPhone2aplus.webp'
-WHERE Product_ID = 18;
-
-UPDATE product SET Image_URL = '/assets/images/NokiaG42.webp'
-WHERE Product_ID = 19;
-
-UPDATE product SET Image_URL = '/assets/images/Xperia10.png'
-WHERE Product_ID = 20;
-
-UPDATE product SET Image_URL = '/assets/images/iPadPro11.jpg'
-WHERE Product_ID = 21;
-
-UPDATE product SET Image_URL = '/assets/images/iPad(10thGen).png'
-WHERE Product_ID = 22;
-
-UPDATE product SET Image_URL = '/assets/images/SamsungTabS9.jpg'
-WHERE Product_ID = 23;
-
-UPDATE product SET Image_URL = '/assets/images/SamsungGalaxyTabA9.webp'
-WHERE Product_ID = 24;
-
-UPDATE product SET Image_URL = '/assets/images/XiaomiPad6.jpg'
-WHERE Product_ID = 25;
-
-UPDATE product SET Image_URL = '/assets/images/LenovoTabP12.jpg'
-WHERE Product_ID = 26;
-
-UPDATE product SET Image_URL = '/assets/images/AmazonFireHD10.webp'
-WHERE Product_ID = 27;
-
-UPDATE product SET Image_URL = '/assets/images/airpodspro21.webp'
-WHERE Product_ID = 28;
-
-UPDATE product SET Image_URL = '/assets/images/SamsungBuds2Pro.jpg'
-WHERE Product_ID = 29;
-
-UPDATE product SET Image_URL = '/assets/images/PixelBudsPro.webp'
-WHERE Product_ID = 30;
-
-UPDATE product SET Image_URL = '/assets/images/AnkerPowerCore20K.webp'
-WHERE Product_ID = 31;
-
-UPDATE product SET Image_URL = '/assets/images/Belkin3-in-1MagSafeStand.jpg'
-WHERE Product_ID = 32;
-
-UPDATE product SET Image_URL = '/assets/images/JBLTune510BT.png'
-WHERE Product_ID = 33;
-
-UPDATE product SET Image_URL = '/assets/images/SonyWH-CH520.jpg'
-WHERE Product_ID = 34;
-
-UPDATE product SET Image_URL = '/assets/images/LogitechMXMaster3S.jpg'
-WHERE Product_ID = 35;
-
-UPDATE product SET Image_URL = '/assets/images/SanDiskUltramicroSD128GB.webp'
-WHERE Product_ID = 36;
-
-UPDATE product SET Image_URL = '/assets/images/KingstonDataTraveler64GB.webp'
-WHERE Product_ID = 37;
-
-UPDATE product SET Image_URL = '/assets/images/UGREENUSB-CtoHDMIAdapter.jpg'
-WHERE Product_ID = 38;
-
-UPDATE product SET Image_URL = '/assets/images/SpigenMagArmorCase(iPhone 15).jpg'
-WHERE Product_ID = 39;
-
-UPDATE product SET Image_URL = '/assets/images/RazerKishiV2.webp'
-WHERE Product_ID = 40;
-
+-- Insert User data (6 users: 4 customers, 2 admins)
 INSERT INTO `user` 
 (user_id, name, password, address, city_ID, email, role)
 VALUES
@@ -424,7 +359,6 @@ VALUES
 (4, 'David Johnson', '$2b$10$0nM9Hx3QnFUkzqD95v7eReN2/NnQ5LbYfY8zjYl4V7PmVvN49hw5u', '321 Main Street', NULL, 'david.johnson@email.com', 'customer'),
 (5, 'Sarah Wilson', '$2b$10$gW3ap0LJGyjWJpVk6k6GeOlDq5Uu0g7qB4zF6wA5p1pCBP.jkW5Rm', '654 Central Ave', NULL, 'sarah.wilson@email.com', 'customer'),
 (6, 'admin2 User', '$2b$10$ns35RoYdRZMFctzh8Up3Lu7gK9fIu9XiM/CeRajGqI9PRByim5jEy', NULL, NULL, 'Admin2@example.com', 'admin');
-
 
 -- Insert City data (Texas cities)
 INSERT INTO City (City_ID, City_Name, Main_City) VALUES
@@ -533,7 +467,5 @@ ALTER TABLE `Order`
 ADD CONSTRAINT fk_order_cart 
 FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
 
--- add profile image column to user table
-Alter table user
-Add column image_URL varchar(300);
+
 
