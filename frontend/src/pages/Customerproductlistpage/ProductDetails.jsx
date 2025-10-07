@@ -5,107 +5,73 @@ import Footer from "../../components/Footer";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 
-
 export default function ProductDetails() {
-
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
 
-  // Base URL for the backend API
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
-
-  // Current logged-in user (null if not logged in)
   const { user } = useContext(AuthContext);
 
+  const normalize = (s) => (s || "").replace(/\\/g, "/");
+
   useEffect(() => {
-    // Load single product (with its Variants) from backend
     fetch(`${API_BASE}/api/products/${id}`)
       .then((r) => r.json())
-      .then(setProduct)
-      .catch(() => setProduct(null));
+      .then((data) => {
+        setProduct(data);
+        // pick the first variant by Variant_ID (your query already orders asc)
+        const first = data?.Variants?.[0] ?? null;
+        setSelectedVariant(first);
+      })
+      .catch(() => {
+        setProduct(null);
+        setSelectedVariant(null);
+      });
   }, [id, API_BASE]);
 
   const prices = useMemo(() => {
-    // Compute min/max price from variants
     const arr = (product?.Variants ?? [])
       .map((v) => Number(v.Price))
       .filter((n) => !Number.isNaN(n));
     if (!arr.length) return null;
-    const min = Math.min(...arr),
-      max = Math.max(...arr);
-    return { min, max };
+    return { min: Math.min(...arr), max: Math.max(...arr) };
   }, [product]);
 
   const priceFormat = (n) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 
-  // Add the selected variant to the user's cart on the server (or redirect to login)
-const handleAddToCart = async () => {
-  // If not logged in, send to login page
-  if (!user) {
-    navigate("/login");
-    return;
-  }
+  // Choose which image to show:
+  // 1) selected variant image, 2) first variant image, 3) (legacy) product image (if any)
+  const mainImagePath =
+    selectedVariant?.Image_URL ||
+    product?.Variants?.[0]?.Image_URL ||
+    product?.Image_URL ||
+    "";
 
-  // If there are multiple variants, require a choice
-  if ((product.Variants?.length ?? 0) > 1 && !selectedVariant) {
-    alert("Please choose a variant first");
-    return;
-  }
-
-  // Prefer the selected variant; otherwise use the first available one
-  const variantId =
-    selectedVariant?.Variant_ID ?? product.Variants?.[0]?.Variant_ID ?? null;
-
-  try {
-    // Call backend to add variant to the user's cart (JWT is auto-set by AuthProvider)
-    await axios.post(
-  `${API_BASE}/api/cart/add`,
-  { variantId, qty: 1 },
-  {
-    headers: {
-      Authorization: `Bearer ${user.token}` // make sure your user object has token
-    }
-  }
-);
-
-
-    // ✅ Navigate to cart page after successful add
-    navigate("/cart");
-  } catch (e) {
-    alert(e.response?.data?.error || "Failed to add to cart");
-  }
-};
-
-
-  // Add to cart then navigate to cart page (requires login and variant selection)
-  const handleBuyNow = async () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    
-    // If there are multiple variants, require a choice
+  const handleAddToCart = async () => {
+    if (!user) return navigate("/login");
     if ((product.Variants?.length ?? 0) > 1 && !selectedVariant) {
       alert("Please choose a variant first");
       return; // Don't navigate to cart if no variant selected
     }
-    
-    // Prefer the selected variant; otherwise use the first available one
     const variantId =
       selectedVariant?.Variant_ID ?? product.Variants?.[0]?.Variant_ID ?? null;
 
     try {
-      // Call backend to add variant to the user's cart (JWT is auto-set by AuthProvider)
       await axios.post(`${API_BASE}/api/cart/add`, { variantId, qty: 1 });
       // Only navigate to cart if the item was successfully added
       navigate("/cart");
     } catch (e) {
       alert(e.response?.data?.error || "Failed to add to cart");
-      // Don't navigate to cart if there was an error adding the item
     }
+  };
+
+  const handleBuyNow = async () => {
+    if (!user) return navigate("/login");
+    await handleAddToCart();
+    navigate("/checkout");
   };
 
   if (!product) {
@@ -125,7 +91,7 @@ const handleAddToCart = async () => {
         {/* Image */}
         <div className="bg-gray-100 rounded-xl p-2 flex items-center justify-center">
           <img
-            src={product.Image_URL}
+            src={`${API_BASE}${normalize(mainImagePath)}`}
             alt={product.Product_Name}
             className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
           />
@@ -167,8 +133,7 @@ const handleAddToCart = async () => {
                     }`}
                     title={`${v.Colour ?? "—"} ${v.Size ? `• ${v.Size}GB` : ""}`}
                   >
-                    {v.Colour ?? "Default"} {v.Size ? `· ${v.Size}GB` : ""}{" "}
-                    {" · "}
+                    {v.Colour ?? "Default"} {v.Size ? `· ${v.Size}GB` : ""} {" · "}
                     {priceFormat(Number(v.Price))}
                   </button>
                 ))}
