@@ -1,24 +1,16 @@
-// src/pages/AdminProductList.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
+const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000") + "";
 
-
+// normalize and prefix with API if needed
 const resolveImageUrl = (u) => {
   if (!u) return null;
-  // normalize slashes
   const clean = String(u).trim().replace(/\\/g, "/");
-  // absolute url? keep as-is
   if (/^https?:\/\//i.test(clean)) return clean;
-  // ensure leading slash, then prefix API
   const path = clean.startsWith("/") ? clean : `/${clean}`;
   return `${API}${path}`;
 };
-
-
-const API =
-  (process.env.REACT_APP_API_BASE ||
-    "http://localhost:9000") + "";
 
 function Spinner() {
   return <div style={{ padding: 24, color: "#6b7280" }}>Loading…</div>;
@@ -47,7 +39,7 @@ function IconBtn({ onClick, disabled, title, children }) {
 
 export default function AdminProductList() {
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState([]); // [{ Product_ID,..., variants:[...] }]
+  const [rows, setRows] = useState([]); // [{ Product_ID,..., variants:[{... Image_URL }]}]
   const [open, setOpen] = useState({}); // { [productId]: bool }
   const [dirty, setDirty] = useState({}); // { [variantId]: { price?, stock? } }
   const [saving, setSaving] = useState(false);
@@ -97,7 +89,6 @@ export default function AdminProductList() {
     try {
       await axios.delete(`${API}/api/admin/products/${productId}`);
       setRows((r) => r.filter((p) => p.Product_ID !== productId));
-      // clear dirty variants of that product
       setDirty((prev) => {
         const next = { ...prev };
         const prod = rows.find((p) => p.Product_ID === productId);
@@ -122,7 +113,6 @@ export default function AdminProductList() {
       }));
       await axios.patch(`${API}/api/admin/variants/bulk`, { updates });
 
-      // reflect in local state
       setRows((prev) =>
         prev.map((p) => ({
           ...p,
@@ -182,8 +172,7 @@ export default function AdminProductList() {
                 borderRadius: 8,
                 border: "none",
                 color: "#fff",
-                background:
-                  dirtyCount === 0 || saving ? "#9ca3af" : "#059669",
+                background: dirtyCount === 0 || saving ? "#9ca3af" : "#059669",
                 cursor: dirtyCount === 0 || saving ? "not-allowed" : "pointer",
               }}
             >
@@ -224,12 +213,7 @@ export default function AdminProductList() {
 
                 return (
                   <React.Fragment key={p.Product_ID}>
-                    <tr
-                      style={{
-                        borderTop: "1px solid #e5e7eb",
-                        background: "#fff",
-                      }}
-                    >
+                    <tr style={{ borderTop: "1px solid #e5e7eb", background: "#fff" }}>
                       <td style={{ padding: "10px 16px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <button
@@ -252,7 +236,13 @@ export default function AdminProductList() {
                             <img
                               src={resolveImageUrl(p.Image_URL)}
                               alt=""
-                              style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 6, background: "#f3f4f6" }}
+                              style={{
+                                width: 48,
+                                height: 48,
+                                objectFit: "cover",
+                                borderRadius: 6,
+                                background: "#f3f4f6",
+                              }}
                               onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                             />
                           ) : null}
@@ -292,6 +282,7 @@ export default function AdminProductList() {
                               <table style={{ width: "100%", fontSize: 13 }}>
                                 <thead>
                                   <tr style={{ color: "#4b5563" }}>
+                                    <th style={{ padding: "8px 0", textAlign: "left" }}>Photo</th>
                                     <th style={{ padding: "8px 0", textAlign: "left" }}>Variant</th>
                                     <th style={{ padding: "8px 0" }}>Price</th>
                                     <th style={{ padding: "8px 0" }}>Quantity</th>
@@ -300,9 +291,32 @@ export default function AdminProductList() {
                                 <tbody>
                                   {p.variants.map((v) => (
                                     <tr key={v.Variant_ID} style={{ borderTop: "1px solid #e5e7eb" }}>
+                                      {/* Variant photo */}
+                                      <td style={{ padding: "8px 10px" }}>
+                                        {v.Image_URL ? (
+                                          <img
+                                            src={resolveImageUrl(v.Image_URL)}
+                                            alt=""
+                                            style={{
+                                              width: 40,
+                                              height: 40,
+                                              objectFit: "cover",
+                                              borderRadius: 6,
+                                              background: "#f3f4f6",
+                                            }}
+                                            onError={(e) =>
+                                              (e.currentTarget.style.visibility = "hidden")
+                                            }
+                                          />
+                                        ) : null}
+                                      </td>
+
+                                      {/* Variant name */}
                                       <td style={{ padding: "8px 0" }}>
                                         {(v.Colour || "—") + (v.Size ? ` • ${v.Size}` : "")}
                                       </td>
+
+                                      {/* Price controls */}
                                       <td style={{ padding: "8px 0" }}>
                                         <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                                           <IconBtn title="-1" onClick={() => adjust(v, "price", -1)}>
@@ -322,6 +336,8 @@ export default function AdminProductList() {
                                           </IconBtn>
                                         </div>
                                       </td>
+
+                                      {/* Stock controls */}
                                       <td style={{ padding: "8px 0" }}>
                                         <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                                           <IconBtn title="-1" onClick={() => adjust(v, "stock", -1)}>

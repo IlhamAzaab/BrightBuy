@@ -1,4 +1,3 @@
-// backend/routes/adminProducts.js
 import { Router } from "express";
 import db from "../db.js";
 
@@ -6,29 +5,29 @@ const router = Router();
 
 /**
  * GET /api/admin/products
- * Returns products with their variants
+ * Returns products with their variants (each variant has its own Image_URL)
  */
 router.get("/products", async (_req, res) => {
   try {
-    // basic product fields (adjust columns if you want more)
+    // product no longer has Image_URL
     const [products] = await db.query(
-      `SELECT p.Product_ID, p.Product_Name, p.Image_URL, p.Category_ID
+      `SELECT p.Product_ID, p.Product_Name, p.Category_ID
        FROM product p
        ORDER BY p.Product_ID DESC`
     );
-
     if (!products.length) return res.json([]);
 
     const ids = products.map((p) => p.Product_ID);
 
+    // include v.Image_URL now
     const [variants] = await db.query(
-      `SELECT v.Variant_ID, v.Product_ID, v.Price, v.Stock_quantity, v.Colour, v.Size
+      `SELECT v.Variant_ID, v.Product_ID, v.Price, v.Stock_quantity, v.Colour, v.Size, v.Image_URL
        FROM variant v
-       WHERE v.Product_ID IN (?)`,
+       WHERE v.Product_ID IN (?)
+       ORDER BY v.Product_ID DESC, v.Variant_ID ASC`,
       [ids]
     );
 
-    // group variants under their product
     const byProduct = Object.create(null);
     for (const v of variants) {
       (byProduct[v.Product_ID] ||= []).push({
@@ -38,13 +37,18 @@ router.get("/products", async (_req, res) => {
       });
     }
 
-    const payload = products.map((p) => ({
-      Product_ID: p.Product_ID,
-      Product_Name: p.Product_Name,
-      Image_URL: p.Image_URL,
-      Category_ID: p.Category_ID,
-      variants: byProduct[p.Product_ID] || [],
-    }));
+    // For the collapsed row, show the first variant's image (if any)
+    const payload = products.map((p) => {
+      const vlist = byProduct[p.Product_ID] || [];
+      const firstVar = vlist[0] || null;
+      return {
+        Product_ID: p.Product_ID,
+        Product_Name: p.Product_Name,
+        Category_ID: p.Category_ID,
+        Image_URL: firstVar?.Image_URL || null, // thumbnail in collapsed row
+        variants: vlist,                        // each has its own Image_URL
+      };
+    });
 
     res.json(payload);
   } catch (err) {
@@ -55,8 +59,6 @@ router.get("/products", async (_req, res) => {
 
 /**
  * PATCH /api/admin/variants/bulk
- * Body: { updates: [{ variantId, price?, stock? }, ...] }
- * Updates only the provided fields for each variant (transactional).
  */
 router.patch("/variants/bulk", async (req, res) => {
   const { updates } = req.body || {};
@@ -67,7 +69,6 @@ router.patch("/variants/bulk", async (req, res) => {
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
-
     for (const u of updates) {
       const variantId = Number(u.variantId);
       if (!Number.isInteger(variantId)) continue;
@@ -83,14 +84,10 @@ router.patch("/variants/bulk", async (req, res) => {
         set.push("Stock_quantity = ?");
         params.push(Number(u.stock));
       }
-
-      if (set.length === 0) continue; // nothing to update for this row
+      if (set.length === 0) continue;
 
       params.push(variantId);
-      await conn.query(
-        `UPDATE variant SET ${set.join(", ")} WHERE Variant_ID = ?`,
-        params
-      );
+      await conn.query(`UPDATE variant SET ${set.join(", ")} WHERE Variant_ID = ?`, params);
     }
 
     await conn.commit();
@@ -106,7 +103,6 @@ router.patch("/variants/bulk", async (req, res) => {
 
 /**
  * DELETE /api/admin/products/:productId
- * Deletes a product and its variants (manual cascade here)
  */
 router.delete("/products/:productId", async (req, res) => {
   const productId = Number(req.params.productId);
@@ -117,16 +113,11 @@ router.delete("/products/:productId", async (req, res) => {
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
-
-    // If you already have FK ON DELETE CASCADE, the first DELETE is optional
     await conn.query(`DELETE FROM variant WHERE Product_ID = ?`, [productId]);
     const [result] = await conn.query(`DELETE FROM product WHERE Product_ID = ?`, [productId]);
-
     await conn.commit();
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    if (result.affectedRows === 0) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product removed" });
   } catch (err) {
     await conn.rollback();
