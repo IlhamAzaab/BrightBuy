@@ -62,7 +62,7 @@ export default function ProductDetails() {
     try {
       await axios.post(`${API_BASE}/api/cart/add`, { variantId, qty: 1 });
       // Only navigate to cart if the item was successfully added
-      navigate("/cart");
+      navigate("/products/cart");
     } catch (e) {
       alert(e.response?.data?.error || "Failed to add to cart");
     }
@@ -71,7 +71,7 @@ export default function ProductDetails() {
   const handleBuyNow = async () => {
     if (!user) return navigate("/login");
     await handleAddToCart();
-    navigate("/checkout");
+    navigate("/products/cart/checkout");
   };
 
   if (!product) {

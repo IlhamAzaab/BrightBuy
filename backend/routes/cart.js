@@ -34,7 +34,7 @@ router.post("/add", auth, async (req, res) => {
     if (existing.length) {
       await conn.query(
         "UPDATE cart_item SET Quantity = Quantity + ? WHERE Cart_Item_ID = ?",
-        [qty, existing[0].Cart_Item_ID]
+        [qty, existing[0].CartItem_ID]
       );
     } else {
       const [vrows] = await conn.query("SELECT Product_ID FROM variant WHERE Variant_ID = ?", [variantId]);

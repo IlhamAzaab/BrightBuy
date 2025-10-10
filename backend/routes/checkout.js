@@ -1,41 +1,62 @@
-import express from "express";
-import db from "../db.js"; // mysql2/promise connection
+// backend/routes/checkout.js
+import { Router } from "express";
+import auth from "../middleware/auth.js";
+import pool from "../db.js";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/", async (req, res) => {
-  const { name, address, phone, email, paymentMethod, cartItems } = req.body;
+// POST /api/checkout → create order
+router.post("/", auth, async (req, res) => {
+  const userId = req.user.id;
+  const { deliveryMethod, paymentMethod, address } = req.body;
 
-  if (!name || !address || !phone || !email || !paymentMethod || !cartItems) {
-    return res.status(400).json({ message: "All fields required" });
-  }
-
-  const connection = await db.getConnection();
+  const conn = await pool.getConnection();
   try {
-    await connection.beginTransaction();
+    await conn.beginTransaction();
 
-    const [orderResult] = await connection.query(
-      "INSERT INTO Orders (name, address, phone, email, payment_method, created_at) VALUES (?, ?, ?, ?, ?, NOW())",
-      [name, address, phone, email, paymentMethod]
+    // Get user's cart
+    const [cartRows] = await conn.query("SELECT Cart_ID FROM cart WHERE User_ID = ?", [userId]);
+    if (!cartRows.length) throw new Error("Cart is empty");
+    const cartId = cartRows[0].Cart_ID;
+
+    // Get cart items
+    const [items] = await conn.query(
+      `SELECT ci.Cart_Item_ID, ci.Quantity, v.Price, ci.Variant_ID 
+       FROM cart_item ci 
+       JOIN variant v ON ci.Variant_ID = v.Variant_ID 
+       WHERE ci.Cart_ID = ?`,
+      [cartId]
     );
 
-    const orderId = orderResult.insertId;
+    if (!items.length) throw new Error("No items in cart");
 
-    for (const item of cartItems) {
-      await connection.query(
-        "INSERT INTO OrderItems (order_id, product_id, product_name, price) VALUES (?, ?, ?, ?)",
-        [orderId, item.Product_ID, item.Product_Name, item.Price]
-      );
-    }
+    // Calculate total
+    const totalAmount = items.reduce((sum, it) => sum + it.Quantity * Number(it.Price), 0);
 
-    await connection.commit();
-    res.json({ message: "Order placed successfully!", orderId });
-  } catch (error) {
-    await connection.rollback();
-    console.error(error);
-    res.status(500).json({ message: "Order failed" });
+    // Create delivery record
+    const [deliveryResult] = await conn.query(
+      "INSERT INTO delivery (Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES (?, ?, ?, ?)",
+      [deliveryMethod, address, "Pending", new Date()]
+    );
+    const deliveryId = deliveryResult.insertId;
+
+    // Create order
+    const [orderResult] = await conn.query(
+      "INSERT INTO `Order` (User_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES (?, ?, ?, ?, ?, NOW(), FLOOR(RAND()*1000000))",
+      [userId, cartId, totalAmount, paymentMethod, deliveryId]
+    );
+
+    // Clear cart items
+    await conn.query("DELETE FROM cart_item WHERE Cart_ID = ?", [cartId]);
+
+    await conn.commit();
+    res.json({ success: true, orderId: orderResult.insertId });
+  } catch (err) {
+    await conn.rollback();
+    console.error(err);
+    res.status(500).json({ error: err.message });
   } finally {
-    connection.release();
+    conn.release();
   }
 });
 

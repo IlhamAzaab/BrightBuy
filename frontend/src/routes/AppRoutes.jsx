@@ -24,10 +24,11 @@ import Report from "../pages/Admin/reports";
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
 
-  const ProtectedRoute = ({ children }) => {
+  const ProtectedRoute = ({ children,role }) => {
     if (!user) {
       return <Navigate to="/signup" replace />;
     }
+     if (role && user.role !== role) return <Navigate to="/" />;
     return children;
   };
 
@@ -47,7 +48,7 @@ export default function AppRoutes() {
         <Route path="/signup" element={<Signup />} />
 
         {/* Admin routes */}
-        <Route path="/admin" element={<Admin />}>
+        <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>}>
           {/* Default page when admin visits /admin */}
           <Route index element={<Navigate to="addproduct" />} />
           <Route path="addproduct" element={<AddProduct />} />
@@ -65,20 +66,13 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+          
         <Route
           path="/orders"
           element={
             <ProtectedRoute>
               <Orders />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
             </ProtectedRoute>
           }
         />

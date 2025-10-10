@@ -1,133 +1,113 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
-const Checkout = () => {
-  const [cartItems, setCartItems] = useState([]);
-  //const [city, setCity] = useState("");
-  const [estimate, setEstimate] = useState("");
-  const [totalAmount, setTotalAmount] = useState(0);
+export default function Checkout() {
+  const { user } = useContext(AuthContext);
+  const [cartData, setCartData] = useState({ items: [], summary: { subTotal: 0 } });
+  const [loading, setLoading] = useState(true);
 
-  // 🧩 Fetch data (replace these API endpoints later)
-  useEffect(() => {
-    const fetchCheckoutData = async () => {
-      try {
-        // Fetch cart items with variant details
-        const res = await fetch("http://localhost:9000/api/cart/checkout");
-        const data = await res.json();
+  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
 
-        setCartItems(data.cartItems);
-        //setCity(data.city);
-        setTotalAmount(data.total);
+  const formatPrice = (amount) =>
+    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 
-        // Estimate delivery
-        const est = calculateEstimate(data.city, data.cartItems);
-        setEstimate(est);
-      } catch (err) {
-        console.error("Failed to fetch checkout data:", err);
-      }
-    };
-    fetchCheckoutData();
-  }, []);
+  const normalize = (s) => (s || "").replace(/\\/g, "/");
 
-  // 🚚 Estimate delivery logic
-  const calculateEstimate = (city, items) => {
-    const inStock = items.every((item) => item.stock > 0);
-    const isMainCity = ["Colombo", "Kandy", "Galle", "Jaffna", "Trincomalee"].includes(city);
-    let days = isMainCity ? 5 : 7;
-    if (!inStock) days += 3;
-    return `${days} days`;
+  // Load cart items
+  const loadCart = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await axios.get(`${API_BASE}/api/cart`);
+      setCartData(res.data);
+    } catch (err) {
+      console.error("Failed to load cart", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    loadCart();
+  }, [user]);
+
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="px-6 md:px-16 lg:px-32 py-12 text-center">
+          <p className="text-gray-600 mb-4">Please log in to proceed to checkout.</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="px-6 md:px-16 lg:px-32 py-12 text-center">Loading...</div>
+        <Footer />
+      </>
+    );
+  }
+
   return (
-    <div className="flex flex-col md:flex-row justify-center gap-8 p-6 bg-gray-50 min-h-screen">
-      
-      {/* LEFT: Delivery + Payment + Products */}
-      <div className="flex-1 space-y-6 max-w-2xl">
-        {/* Delivery Method */}
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Delivery Method</h2>
-          <div className="space-y-3">
-            <label className="flex items-center gap-3">
-              <input type="radio" name="delivery" defaultChecked className="w-4 h-4 text-orange-600" />
-              <span>Home Delivery</span>
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="radio" name="delivery" className="w-4 h-4 text-orange-600" />
-              <span>Store Pickup</span>
-            </label>
+    <>
+      <Navbar />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      {cartData.items.map((item) => (
+        <div
+          key={item.Cart_Item_ID}
+          className="border p-2 rounded-lg flex flex-col items-center"
+        >
+          {/* Product Image */}
+          <img
+            src={item.Image_URL || "/images/default.jpg"}
+            alt={item.Product_Name}
+            className="w-32 h-32 object-cover rounded mb-2"
+          />
+
+          {/* Product Details */}
+          <div className="text-center">
+            <p className="font-semibold text-gray-800">{item.Product_Name}</p>
+            <p className="text-gray-500 text-sm">
+              {item.Colour && `• ${item.Colour}`}{" "}
+              {item.Size && `• ${item.Size}GB`}
+            </p>
+            <p className="text-gray-700 text-sm mt-1">
+              Price: {formatPrice(item.Price)}
+            </p>
+            <p className="text-gray-700 text-sm mt-1">Quantity: {item.Quantity}</p>
+            <p className="text-gray-800 font-bold mt-1">
+              Subtotal: {formatPrice(item.Price * item.Quantity)}
+            </p>
           </div>
         </div>
-
-        {/* Payment Method */}
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Payment Method</h2>
-          <div className="space-y-3">
-            <label className="flex items-center gap-3">
-              <input type="radio" name="payment" defaultChecked className="w-4 h-4 text-orange-600" />
-              <span>Cash on Delivery</span>
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="radio" name="payment" className="w-4 h-4 text-orange-600" />
-              <span>Online Payment</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Product Details */}
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Product Details</h2>
-          <div className="divide-y">
-            {cartItems.map((item, i) => (
-              <div key={i} className="py-3 flex justify-between items-center text-gray-700">
-                <div>
-                  <p className="font-medium">{item.product_name}</p>
-                  <p className="text-sm text-gray-500">
-                    Variant: {item.variant_name} | Qty: {item.quantity}
-                  </p>
-                </div>
-                <p className="font-semibold text-gray-800">Rs. {item.price}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT: Order Summary */}
-      <div className="w-full md:w-96 bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Order Summary</h2>
-        <div className="space-y-4 text-gray-700">
-          <div className="flex justify-between">
-            <p>Items</p>
-            <p>{cartItems.length}</p>
-          </div>
-          <div className="flex justify-between">
-            <p>Subtotal</p>
-            <p>Rs. {totalAmount}</p>
-          </div>
-          <div className="flex justify-between">
-            <p>Tax (2%)</p>
-            <p>Rs. {Math.floor(totalAmount * 0.02)}</p>
-          </div>
-          <div className="flex justify-between font-semibold border-t pt-3">
-            <p>Total</p>
-            <p>Rs. {Math.floor(totalAmount * 1.02)}</p>
-          </div>
-
-          <div className="flex justify-between border-t pt-3">
-            <p>Estimated Delivery</p>
-            <p className="font-medium text-orange-600">{estimate}</p>
-          </div>
-
-          <div className="text-sm text-gray-500 pt-1">
-            (Estimated based on stock and delivery location)
-          </div>
-        </div>
-
-        <button className="w-full mt-6 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg font-medium">
-          Place Order
-        </button>
-      </div>
+      ))}
     </div>
-  );
-};
 
-export default Checkout;
+  {/* Order Total */}
+  {cartData.items.length > 0 && (
+    <div className="text-right mt-6 text-lg font-bold text-green-700">
+      Total: {formatPrice(cartData.items.reduce((sum, i) => sum + i.Price * i.Quantity, 0))}
+    </div>
+  )}
+
+{/* Order Total */}
+{cartData.items.length > 0 && (
+  <div className="text-right mt-4 text-lg font-bold text-green-700">
+    Total: {formatPrice(cartData.items.reduce((sum, i) => sum + i.Price * i.Quantity, 0))}
+  </div>
+)}
+
+      <Footer />
+    </>
+  );
+}

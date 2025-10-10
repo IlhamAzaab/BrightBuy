@@ -54,7 +54,9 @@ import cartRoute from "../routes/cart.js";
 import customersRoute from "../routes/customers.js";
 import adminProductsRoutes from "../routes/adminProducts.js";
 import profileroute from "../routes/profile.js"
+import checkoutRoute from "../routes/checkout.js";
 
+app.use("/api/checkout", checkoutRoute);
 app.use("/api/orders", ordersRoute);
 app.use("/api/cart", cartRoute);
 app.use("/api/customers", customersRoute);

@@ -56,7 +56,7 @@ const Navbar = () => {
       <div className="flex items-center gap-4 lg:gap-10 max-md:hidden">
         <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
         <button onClick={() => navigate("/products")} className="hover:text-black">Shop</button>
-        <button onClick={() => navigate("/my-orders")} className="hover:text-black">My orders</button>
+        <button onClick={() => navigate("/orders")} className="hover:text-black">My orders</button>
         <button onClick={() => navigate("/about")} className="hover:text-black">About Us</button>
         <button onClick={() => navigate("/contact")} className="hover:text-black">Contact</button>
 
@@ -92,7 +92,7 @@ const Navbar = () => {
 
             {desktopDropdownOpen && isCustomer && (
               <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg flex flex-col z-50">
-                <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
+                <button onClick={() => handleNavigation("/products/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
                 <button onClick={() => handleNavigation("/orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
                 <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
                 <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
