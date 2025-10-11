@@ -15,7 +15,8 @@ const uploadFolder = async () => {
       });
 
       console.log(`✅ Uploaded: ${file} -> ${result.secure_url}`);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error(`❌ Failed to upload ${file}:`, error.message);
     }
   }

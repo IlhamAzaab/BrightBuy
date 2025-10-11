@@ -19,7 +19,7 @@ app.use(
     origin: process.env.CORS_ORIGIN || "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: false,
+    credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
   })
@@ -45,6 +45,11 @@ app.use("/addadmin", addAdminRoutes);
 import addProductRouter from "../routes/addproduct.js";
 app.use('/api/addproduct', addProductRouter);
 
+import userRoutes from "../routes/user.js";
+app.use("/api/user", userRoutes);
+
+import estimateTimeRoutes from "../routes/estimateTime.js";
+app.use("/api/estimate", estimateTimeRoutes);
 
 import productsRouter from "../routes/products.js";
 app.use("/api/products", productsRouter);
