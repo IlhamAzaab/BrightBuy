@@ -447,11 +447,11 @@ INSERT INTO Cart_Item (Cart_Item_ID, Cart_ID, Product_ID, Variant_ID, Quantity, 
 
 -- Insert Order data
 INSERT INTO `Order` (Order_ID, User_ID, Cart_ID, `Total Amount`, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
-(3, 4, 3, 1877.00, 'Credit Card', 3, '2024-01-14', 1003),
-(4, 3, 4, 728.00, 'Debit Card', 4, '2024-01-15', 1004),
-(5, 1, 5, 1198.00, 'Credit Card', 5, '2024-01-08', 1005),
-(7, 4, 7, 1228.00, 'Credit Card', 7, '2024-01-18', 1007),
-(8, 2, 8, 1386.00, 'Apple Pay', 8, '2024-01-19', 1008);
+(3, 4, 3, 1877.00, 'Cash on Delivery', 3, '2024-01-14', 1003),
+(4, 3, 4, 728.00, 'Cash on Delivery', 4, '2024-01-15', 1004),
+(5, 1, 5, 1198.00, 'Online Payment', 5, '2024-01-08', 1005),
+(7, 4, 7, 1228.00, 'Cash on Delivery', 7, '2024-01-18', 1007),
+(8, 2, 8, 1386.00, 'Online Payment', 8, '2024-01-19', 1008);
 
 -- Add foreign key constraint for Product -> Category (if not already added)
 ALTER TABLE Product 
