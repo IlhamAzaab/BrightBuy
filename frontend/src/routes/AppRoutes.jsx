@@ -18,8 +18,8 @@ import Admin from "../pages/Admin/admin";
 import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
-import Report from "../pages/Admin/reports";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
+import QuarterlySalesReport from "../pages/Admin/quarterlysales";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -58,13 +58,13 @@ export default function AppRoutes() {
           <Route path="addadmin" element={<AddAdmin />} />
           <Route path="productlist" element={<ProductList />} />
 
-          {/* Reports hub */}
-          <Route path="report" element={<Report />} />
+          
           {/* Customer Summary & Payments (no navbar in that page component) */}
           <Route
             path="report/customer-summary"
             element={<CustomerSummaryReport />}
           />
+          <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
           {/*
             Optional: Add the other report routes as you build them:
             <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
