@@ -1,9 +1,10 @@
 import React from 'react'
+import AdminProductList from '../AdminProductList';
 
 const ProductList = () => {
   return (
     <div>
-      <h1>this is the product list</h1>
+      <AdminProductList/>
     </div>
   )
 }
