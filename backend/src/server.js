@@ -60,6 +60,7 @@ import customersRoute from "../routes/customers.js";
 import adminProductsRoutes from "../routes/adminProducts.js";
 import profileroute from "../routes/profile.js"
 import checkoutRoute from "../routes/checkout.js";
+import quarterlyRoute from "../routes/quarterlysales.js";
 
 app.use("/api/checkout", checkoutRoute);
 app.use("/api/orders", ordersRoute);
@@ -67,6 +68,7 @@ app.use("/api/cart", cartRoute);
 app.use("/api/customers", customersRoute);
 app.use("/api/admin", adminProductsRoutes);
 app.use("/api/profile", profileroute);
+app.use("/api/quartreport", quarterlyRoute);
 
 // Health check & debug endpoints retained
 import db from "../db.js";
