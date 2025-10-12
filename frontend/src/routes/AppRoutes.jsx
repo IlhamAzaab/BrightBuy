@@ -5,6 +5,7 @@ import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
 import Profile from "../pages/profile";
+import Animation from "../pages/animation";
 
 // Existing pages
 import Home from "../pages/Home";
@@ -15,7 +16,7 @@ import Checkout from "../pages/Checkout";
 
 // New Admin pages
 import Admin from "../pages/Admin/admin";
-import AddProduct from "../pages/Admin/AddProduct";
+import AddProduct from "../pages/Admin/addproduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import Report from "../pages/Admin/reports";
@@ -66,6 +67,9 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+  {/* ... other routes */}
+  <Route path="/animation" element={<Animation />} />
 
           
         <Route
