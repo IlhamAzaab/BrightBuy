@@ -8,12 +8,24 @@ dotenv.config();
 
 const router = express.Router();
 
-// Helper functions
-const ACCESS_SECRET = process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET || "dev_access_secret";
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || "dev_refresh_secret";
+// ---- Secrets (single source of truth) ----
+const ACCESS_SECRET =
+  process.env.JWT_ACCESS_SECRET ||
+  process.env.JWT_SECRET ||
+  "dev_access_secret";
 
+const REFRESH_SECRET =
+  process.env.JWT_REFRESH_SECRET ||
+  process.env.JWT_SECRET ||
+  "dev_refresh_secret";
+
+// ---- Token helpers ----
 const generateAccessToken = (user) =>
-  jwt.sign({ id: user.User_ID, role: user.Role }, process.env.JWT_SECRET, { expiresIn: "60m" });
+  jwt.sign(
+    { id: user.User_ID, role: user.Role },
+    ACCESS_SECRET,                
+    { expiresIn: "60m" }
+  );
 
 const generateRefreshToken = (user) =>
   jwt.sign(
@@ -26,31 +38,30 @@ const generateRefreshToken = (user) =>
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
-
     if (!name || !email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Name, email and password are required" });
+      return res.status(400).json({ error: "Name, email and password are required" });
     }
 
-    // Check if user exists
     const [existing] = await db.execute(
       "SELECT 1 FROM `user` WHERE `Email` = ? LIMIT 1",
       [email]
     );
-    if (existing.length > 0) {
+    if (existing.length) {
       return res.status(400).json({ error: "User already exists" });
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const role = "customer";
     await db.execute(
-      "INSERT INTO `user` (`Name`, `Password`, `Email`, `Role`) VALUES (?, ?, ?, ?)",
-      [name, hashed, email, role]
+      "INSERT INTO `user` (`Name`, `Password`, `Email`, `Role`) VALUES (?, ?, ?, 'customer')",
+      [name, hashed, email]
     );
 
-    const [users] = await db.execute("SELECT * FROM `user` WHERE `Email` = ? LIMIT 1", [email]);
+    const [users] = await db.execute(
+      "SELECT * FROM `user` WHERE `Email` = ? LIMIT 1",
+      [email]
+    );
     const user = users[0];
+
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
@@ -60,23 +71,11 @@ router.post("/signup", async (req, res) => {
       refreshToken
     });
   } catch (err) {
-    console.error("Signup error:", {
-      message: err?.message,
-      code: err?.code,
-      errno: err?.errno,
-      sqlState: err?.sqlState,
-      sqlMessage: err?.sqlMessage,
-    });
-
-    if (err && err.code === "ER_DUP_ENTRY") {
+    console.error("Signup error:", err);
+    if (err?.code === "ER_DUP_ENTRY") {
       return res.status(400).json({ error: "Email already in use" });
     }
-
-    const isDev = process.env.NODE_ENV !== "production";
-    return res.status(500).json({
-      error: "Server error during signup",
-      detail: isDev ? err?.sqlMessage || err?.message : undefined,
-    });
+    res.status(500).json({ error: "Server error during signup" });
   }
 });
 
@@ -84,39 +83,30 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
-
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Look up by correct column name `Email`
     const [users] = await db.execute(
       "SELECT * FROM `user` WHERE `Email` = ? LIMIT 1",
       [email]
     );
+    if (!users.length) return res.status(401).json({ error: "Invalid email or password" });
 
-    if (users.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
     const user = users[0];
-
-    if (!user.Password) {
-      return res.status(500).json({ error: "User account misconfigured" });
-    }
     const match = await bcrypt.compare(password, user.Password);
-    if (!match) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
+    if (!match) return res.status(401).json({ error: "Invalid email or password" });
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
+
     res.json({
-      user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role , image_URL: user.image_URL },
+      user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role, image_URL: user.image_URL },
       accessToken,
       refreshToken
     });
   } catch (err) {
-    console.error("Login error", err);
+    console.error("Login error:", err);
     res.status(500).json({ error: "Server error during login" });
   }
 });
@@ -129,28 +119,29 @@ router.post("/refresh", async (req, res) => {
     const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
     const [users] = await db.execute("SELECT * FROM `user` WHERE `User_ID` = ? LIMIT 1", [decoded.id]);
     if (!users.length) return res.status(401).json({ error: "User not found" });
-    const user = users[0];
-    const accessToken = generateAccessToken(user);
+    const accessToken = generateAccessToken(users[0]);
     res.json({ accessToken });
-  } catch (err) {
-    return res.status(403).json({ error: "Invalid refresh token" });
+  } catch {
+    res.status(403).json({ error: "Invalid refresh token" });
   }
 });
 
 // -------------------- Profile (protected) --------------------
 router.get("/profile", async (req, res) => {
-  const authHeader = req.headers["authorization"]; 
+  const authHeader = req.headers["authorization"];
   if (!authHeader) return res.status(401).json({ error: "No token provided" });
+
   const token = authHeader.split(" ")[1];
   if (!token) return res.status(401).json({ error: "No token provided" });
+
   try {
-    const decoded = jwt.verify(token, ACCESS_SECRET);
+    const decoded = jwt.verify(token, ACCESS_SECRET); 
     const [users] = await db.execute("SELECT * FROM `user` WHERE `User_ID` = ? LIMIT 1", [decoded.id]);
     if (!users.length) return res.status(404).json({ error: "User not found" });
-    const user = users[0];
-    res.json({ user: { id: user.User_ID, name: user.Name, email: user.Email, role: user.Role, image_URL: user.image_URL } });
-  } catch (err) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+    const u = users[0];
+    res.json({ user: { id: u.User_ID, name: u.Name, email: u.Email, role: u.Role, image_URL: u.image_URL } });
+  } catch {
+    res.status(401).json({ error: "Invalid or expired token" });
   }
 });
 
