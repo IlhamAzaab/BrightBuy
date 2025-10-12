@@ -312,7 +312,7 @@ UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudina
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106536/dfqpkjvh8/oqpbta0mu0ylixfcl5o0.jpg' WHERE (Variant_ID = '2');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106539/dfqpkjvh8/zj1rak94ub2jtxlu39zt.jpg' WHERE (Variant_ID = '1');
 
-UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106521/dfqpkjvh8/airpodspro21.webp' WHERE (Variant_ID = '39');
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760247910/dfqpkjvh8/wm0i2mgnpltqy1t0yk4j.jpg' WHERE (Variant_ID = '39');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106520/dfqpkjvh8/iv3sasd35vmybf1ombrh.webp' WHERE (Variant_ID = '38');
 UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106522/dfqpkjvh8/rq2ofeijp6whnixbuaew.webp' WHERE (Variant_ID = '37');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106552/dfqpkjvh8/jrjb9ktrzff2hceybbwu.jpg' WHERE (Variant_ID = '36');
@@ -467,4 +467,13 @@ FOREIGN KEY (Delivery_ID) REFERENCES Delivery(Delivery_ID);
 ALTER TABLE `Order` 
 ADD CONSTRAINT fk_order_cart 
 FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
+
+-- Modify Main_City column to have default value FALSE and update existing cities accordingly
+ALTER TABLE city
+CHANGE Main_City Main_City BOOL DEFAULT 0;
+UPDATE city SET Main_City=0 WHERE City_ID=5;
+UPDATE city SET Main_City=0 WHERE City_ID=6;
+UPDATE city SET Main_City=0 WHERE City_ID=7;
+UPDATE city SET Main_City=0 WHERE City_ID=8;
+UPDATE city SET Main_City=0 WHERE City_ID=9;
 
