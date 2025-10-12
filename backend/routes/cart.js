@@ -1,103 +1,190 @@
-// backend/routes/cart.js (ESM)
+// backend/routes/cart.js
 import { Router } from "express";
 import auth from "../middleware/auth.js";
 import pool from "../db.js";
+
 const router = Router();
 
-// Make sure the logged-in user has a cart; if not, create one and return its ID
+/**
+ * Ensure the logged-in user has a cart row; create one if not.
+ * @returns {Promise<number>} Cart_ID
+ */
 async function ensureUserCart(conn, userId) {
-  const [rows] = await conn.query("SELECT Cart_ID FROM cart WHERE User_ID = ?", [userId]);
+  const [rows] = await conn.query(
+    "SELECT Cart_ID FROM cart WHERE User_ID = ?",
+    [userId]
+  );
   if (rows.length) return rows[0].Cart_ID;
-  const [ins] = await conn.query("INSERT INTO cart (User_ID) VALUES (?)", [userId]);
+
+  const [ins] = await conn.query(
+    "INSERT INTO cart (User_ID) VALUES (?)",
+    [userId]
+  );
   return ins.insertId;
 }
 
-// Add a product variant to the user's cart (or increase quantity if it already exists)
+/**
+ * POST /api/cart/add
+ * Body: { variantId: number, qty?: number }
+ * Creates the user's cart if needed, then inserts/updates a cart_item.
+ */
 router.post("/add", auth, async (req, res) => {
-  if (!req.user?.id) return res.status(401).json({ error: "Unauthorized" }); // safety guard
-  const { variantId, qty = 1 } = req.body;
-  const userId = req.user.id;
+  if (!req.user?.id) return res.status(401).json({ error: "Unauthorized" });
 
+  const { variantId, qty = 1 } = req.body;
   if (!variantId) return res.status(400).json({ error: "variantId required" });
+  if (!Number.isFinite(qty) || qty < 1)
+    return res.status(400).json({ error: "qty must be >= 1" });
 
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
 
-    const cartId = await ensureUserCart(conn, userId);
+    const cartId = await ensureUserCart(conn, req.user.id);
 
+    // Do we already have this variant in the cart?
     const [existing] = await conn.query(
-      "SELECT Cart_Item_ID FROM cart_item WHERE Cart_ID = ? AND Variant_ID = ?",
+      "SELECT Cart_Item_ID, Quantity FROM cart_item WHERE Cart_ID = ? AND Variant_ID = ?",
       [cartId, variantId]
     );
 
     if (existing.length) {
+      // Bump quantity and recompute total using current variant price
       await conn.query(
-        "UPDATE cart_item SET Quantity = Quantity + ? WHERE Cart_Item_ID = ?",
-        [qty, existing[0].CartItem_ID]
+        `UPDATE cart_item ci
+         JOIN variant v ON v.Variant_ID = ci.Variant_ID
+         SET ci.Quantity   = ci.Quantity + ?,
+             ci.Total_price = (ci.Quantity + ?) * v.Price
+         WHERE ci.Cart_Item_ID = ?`,
+        [qty, qty, existing[0].Cart_Item_ID] // ✅ correct property name
       );
     } else {
-      const [vrows] = await conn.query("SELECT Product_ID FROM variant WHERE Variant_ID = ?", [variantId]);
+      // Need product id & price for this variant
+      const [vrows] = await conn.query(
+        "SELECT Product_ID, Price FROM variant WHERE Variant_ID = ?",
+        [variantId]
+      );
       if (!vrows.length) throw new Error("Variant not found");
-      const productId = vrows[0].Product_ID;
+      const { Product_ID: productId, Price } = vrows[0];
 
       await conn.query(
-        "INSERT INTO cart_item (Cart_ID, Product_ID, Variant_ID, Quantity) VALUES (?,?,?,?)",
-        [cartId, productId, variantId, qty]
+        "INSERT INTO cart_item (Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES (?,?,?,?,?)",
+        [cartId, productId, variantId, qty, qty * Number(Price)]
       );
     }
 
     await conn.commit();
-    res.json({ success: true, cartId });
-  } catch (e) {
+    return res.json({ success: true });
+  } catch (err) {
     await conn.rollback();
-    console.error(e);
-    res.status(500).json({ error: "Failed to add to cart" });
+    console.error("Add to cart failed:", err);
+    return res.status(500).json({ error: "Failed to add to cart" });
   } finally {
     conn.release();
   }
 });
 
-// Get all items in the logged-in user's cart with product/variant details
+/**
+ * GET /api/cart
+ * Returns the user's cart items with a subtotal.
+ */
 router.get("/", auth, async (req, res) => {
-  const userId = req.user.id;
   try {
-    const [cartRows] = await pool.query("SELECT Cart_ID FROM cart WHERE User_ID = ?", [userId]);
-    if (!cartRows.length) return res.json({ items: [], summary: { subTotal: 0 } });
+    const userId = req.user.id;
+
+    const [cartRows] = await pool.query(
+      "SELECT Cart_ID FROM cart WHERE User_ID = ?",
+      [userId]
+    );
+    if (!cartRows.length)
+      return res.json({ items: [], summary: { subTotal: 0 } });
 
     const cartId = cartRows[0].Cart_ID;
 
     const [items] = await pool.query(
-      `
-      SELECT ci.Cart_Item_ID, ci.Cart_ID, ci.Quantity, ci.Total_price,
-             p.Product_ID, p.Product_Name, p.Brand,
-             v.Variant_ID, v.Colour, v.Size, v.Price,v.Image_URL
-      FROM cart_item ci
-      JOIN variant v ON v.Variant_ID = ci.Variant_ID
-      JOIN product p ON p.Product_ID = ci.Product_ID
-      WHERE ci.Cart_ID = ?
-      `,
+      `SELECT
+          ci.Cart_Item_ID,
+          ci.Cart_ID,
+          ci.Quantity,
+          ci.Total_price,
+          p.Product_ID,
+          p.Product_Name,
+          p.Brand,
+          v.Variant_ID,
+          v.Colour,
+          v.Size,
+          v.Price,
+          v.Image_URL
+        FROM cart_item ci
+        JOIN variant v ON v.Variant_ID = ci.Variant_ID
+        JOIN product p ON p.Product_ID = ci.Product_ID
+        WHERE ci.Cart_ID = ?`,
       [cartId]
     );
 
-    const subTotal = items.reduce((sum, it) => sum + (it.Total_price ?? it.Price * it.Quantity), 0);
-    res.json({ cartId, items, summary: { subTotal } });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Failed to load cart" });
+    const subTotal = items.reduce(
+      (sum, it) =>
+        sum + Number(it.Total_price ?? Number(it.Price) * Number(it.Quantity)),
+      0
+    );
+
+    return res.json({ cartId, items, summary: { subTotal } });
+  } catch (err) {
+    console.error("Load cart failed:", err);
+    return res.status(500).json({ error: "Failed to load cart" });
   }
 });
 
+/**
+ * PATCH /api/cart/item/:id
+ * Body: { qty: number }
+ */
 router.patch("/item/:id", auth, async (req, res) => {
+  const cartItemId = req.params.id;
   const { qty } = req.body;
-  if (qty < 1) return res.status(400).json({ error: "qty must be >= 1" });
-  await pool.query("UPDATE cart_item SET Quantity = ? WHERE Cart_Item_ID = ?", [qty, req.params.id]);
-  res.json({ success: true });
+
+  if (!Number.isFinite(qty) || qty < 1)
+    return res.status(400).json({ error: "qty must be >= 1" });
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // Update qty and total atomically (recalc with variant price)
+    await conn.query(
+      `UPDATE cart_item ci
+       JOIN variant v ON v.Variant_ID = ci.Variant_ID
+       SET ci.Quantity = ?,
+           ci.Total_price = ? * v.Price
+       WHERE ci.Cart_Item_ID = ?`,
+      [qty, qty, cartItemId]
+    );
+
+    await conn.commit();
+    return res.json({ success: true });
+  } catch (err) {
+    await conn.rollback();
+    console.error("Update cart item failed:", err);
+    return res.status(500).json({ error: "Failed to update item" });
+  } finally {
+    conn.release();
+  }
 });
 
+/**
+ * DELETE /api/cart/item/:id
+ */
 router.delete("/item/:id", auth, async (req, res) => {
-  await pool.query("DELETE FROM cart_item WHERE Cart_Item_ID = ?", [req.params.id]);
-  res.json({ success: true });
+  try {
+    await pool.query(
+      "DELETE FROM cart_item WHERE Cart_Item_ID = ?",
+      [req.params.id]
+    );
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("Delete cart item failed:", err);
+    return res.status(500).json({ error: "Failed to delete item" });
+  }
 });
 
 export default router;
