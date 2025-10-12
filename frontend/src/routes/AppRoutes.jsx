@@ -15,7 +15,7 @@ import Checkout from "../pages/Checkout";
 
 // New Admin pages
 import Admin from "../pages/Admin/admin";
-import AddProduct from "../pages/Admin/addproduct";
+import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import Report from "../pages/Admin/reports";
