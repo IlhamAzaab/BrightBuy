@@ -55,7 +55,7 @@ import productsRouter from "../routes/products.js";
 app.use("/api/products", productsRouter);
 
 import ordersRoute from "../routes/orders.js";
-import cartRoute from "../routes/cart.js";
+import cartRoutes from "../routes/cart.js";
 import customersRoute from "../routes/customers.js";
 import adminProductsRoutes from "../routes/adminProducts.js";
 import profileroute from "../routes/profile.js"
@@ -63,7 +63,7 @@ import checkoutRoute from "../routes/checkout.js";
 
 app.use("/api/checkout", checkoutRoute);
 app.use("/api/orders", ordersRoute);
-app.use("/api/cart", cartRoute);
+app.use("/api/cart", cartRoutes);
 app.use("/api/customers", customersRoute);
 app.use("/api/admin", adminProductsRoutes);
 app.use("/api/profile", profileroute);
