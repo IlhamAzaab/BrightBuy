@@ -14,22 +14,20 @@ import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 import Cart from "../pages/Cart";
 import Checkout from "../pages/Checkout";
 
-// New Admin pages
+// Admin pages
 import Admin from "../pages/Admin/admin";
 import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import Report from "../pages/Admin/reports";
-
+import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
 
-  const ProtectedRoute = ({ children,role }) => {
-    if (!user) {
-      return <Navigate to="/signup" replace />;
-    }
-     if (role && user.role !== role) return <Navigate to="/" />;
+  const ProtectedRoute = ({ children, role }) => {
+    if (!user) return <Navigate to="/signup" replace />;
+    if (role && user.role !== role) return <Navigate to="/" replace />;
     return children;
   };
 
@@ -40,25 +38,44 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProductList />} />
         <Route path="/products/:id" element={<ProductDetails />} />
-        {/* <Route path="/products/:id/cart" element={<Cart />} /> */}
-      <Route path="/products/cart/checkout" element={<Checkout />} />
+        <Route path="/products/cart/checkout" element={<Checkout />} />
 
         {/* Auth routes */}
-        <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
         {/* Admin routes */}
-        <Route path="/admin" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>}>
-          {/* Default page when admin visits /admin */}
-          <Route index element={<Navigate to="addproduct" />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute role="admin">
+              <Admin />
+            </ProtectedRoute>
+          }
+        >
+          {/* Default page when admin hits /admin */}
+          <Route index element={<Navigate to="addproduct" replace />} />
           <Route path="addproduct" element={<AddProduct />} />
           <Route path="addadmin" element={<AddAdmin />} />
           <Route path="productlist" element={<ProductList />} />
+
+          {/* Reports hub */}
           <Route path="report" element={<Report />} />
+          {/* Customer Summary & Payments (no navbar in that page component) */}
+          <Route
+            path="report/customer-summary"
+            element={<CustomerSummaryReport />}
+          />
+          {/*
+            Optional: Add the other report routes as you build them:
+            <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
+            <Route path="report/top-products" element={<TopProductsReport />} />
+            <Route path="report/category-orders" element={<CategoryOrdersReport />} />
+            <Route path="report/delivery-time" element={<DeliveryTimeReport />} />
+          */}
         </Route>
 
-        {/* Protected routes */}
+        {/* Protected customer routes */}
         <Route
           path="/products/cart"
           element={
@@ -67,9 +84,6 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
-  {/* ... other routes */}
-  <Route path="/animation" element={<Animation />} />
 
           
         <Route
@@ -80,7 +94,6 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/profile"
           element={

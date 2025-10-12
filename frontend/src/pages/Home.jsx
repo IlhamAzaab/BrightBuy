@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "../components/Navbar";
+//import Navbar from "../components/Navbar";
 import HeaderSlider from "../components/HeaderSlider";
 // import HomeProducts from "../components/HomeProducts";
 // import Banner from "../components/Banner";

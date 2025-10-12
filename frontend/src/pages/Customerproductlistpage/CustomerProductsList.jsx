@@ -10,11 +10,12 @@ export default function CustomerProductList() {
   const normalize = (s) => (s || "").replace(/\\/g, "/");
 
   const getColsForWidth = () => {
-    const w = window.innerWidth;
+    const w = typeof window !== "undefined" ? window.innerWidth : 1440;
     if (w >= 1280) return 5;
     if (w >= 1024) return 4;
     if (w >= 768) return 3;
     return 2;
+    
   };
 
   const [cols, setCols] = useState(() =>
@@ -22,22 +23,35 @@ export default function CustomerProductList() {
   );
   const [page, setPage] = useState(1);
 
+  // Fisher–Yates shuffle (unbiased)
+  const shuffle = (arr) => {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
   useEffect(() => {
     fetch(`${API_BASE}/api/products`)
       .then(async (res) => {
-        if (!res.ok) throw new Error(await res.text() || res.statusText);
+        if (!res.ok) throw new Error((await res.text()) || res.statusText);
         return res.json();
       })
       .then((data) => {
-        const withFirstVariantImage = (Array.isArray(data) ? data : []).map((p) => {
+        const list = (Array.isArray(data) ? data : []).map((p) => {
           const firstVarImg = p?.Variants?.[0]?.Image_URL || null;
           return {
             ...p,
-            // make ProductCard use the first variant’s image by default
+            
             Image_URL: firstVarImg ? normalize(firstVarImg) : p.Image_URL,
           };
         });
-        setProducts(withFirstVariantImage);
+
+        // Jumble order
+        const randomized = shuffle([...list]);
+        setProducts(randomized);
+        setPage(1); 
       })
       .catch((err) => {
         console.error("Failed to load products:", err);

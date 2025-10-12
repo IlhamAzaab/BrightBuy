@@ -6,7 +6,7 @@ const Footer = () => {
     <div className="flex md:flex-row flex-col-reverse items-center justify-between text-left w-full px-10">
       <div className="flex items-center gap-4">
         {/* Replace next/image with regular img for React */}
-        <img className="hidden md:block" src={assets.logo} alt="logo" />
+        <img className="w-20 md:w-24" src={assets.logo} alt="logo" />
         <div className="hidden md:block h-7 w-px bg-gray-500/60"></div>
         <p className="py-4 text-center text-xs md:text-sm text-gray-500">
           Copyright 2025 © greatstack.dev All Right Reserved.
