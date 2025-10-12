@@ -5,6 +5,7 @@ import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
 import Profile from "../pages/profile";
+import Animation from "../pages/animation";
 
 // Existing pages
 import Home from "../pages/Home";
@@ -83,6 +84,11 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+  {/* ... other routes */}
+  <Route path="/animation" element={<Animation />} />
+
+          
         <Route
           path="/orders"
           element={
