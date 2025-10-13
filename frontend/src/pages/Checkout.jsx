@@ -84,6 +84,7 @@ useEffect(() => {
 
     if (res.status === 201) {
       alert("Order placed successfully!");
+      setCartData({ items: [], summary: { subTotal: 0 } });
       navigate("/orders"); // redirect to orders page
     }
   } catch (err) {
