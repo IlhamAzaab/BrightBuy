@@ -11,13 +11,13 @@ const router = Router();
  */
 async function ensureUserCart(conn, userId) {
   const [rows] = await conn.query(
-    "SELECT Cart_ID FROM cart WHERE User_ID = ?",
+    "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active'",
     [userId]
   );
   if (rows.length) return rows[0].Cart_ID;
 
   const [ins] = await conn.query(
-    "INSERT INTO cart (User_ID) VALUES (?)",
+    "INSERT INTO cart (User_ID, Status) VALUES (?, 'Active')",
     [userId]
   );
   return ins.insertId;
@@ -92,14 +92,23 @@ router.get("/", auth, async (req, res) => {
   try {
     const userId = req.user.id;
 
+    // 1️⃣ Get the user's ACTIVE cart only
     const [cartRows] = await pool.query(
-      "SELECT Cart_ID FROM cart WHERE User_ID = ?",
+      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active'",
       [userId]
     );
-    if (!cartRows.length)
-      return res.json({ items: [], summary: { subTotal: 0 } });
 
-    const cartId = cartRows[0].Cart_ID;
+    // If no active cart exists, create a new one automatically
+    let cartId;
+    if (!cartRows.length) {
+      const [newCart] = await pool.query(
+        "INSERT INTO cart (User_ID, Status) VALUES (?, 'Active')",
+        [userId]
+      );
+      cartId = newCart.insertId;
+    } else {
+      cartId = cartRows[0].Cart_ID;
+    }
 
     const [items] = await pool.query(
       `SELECT
