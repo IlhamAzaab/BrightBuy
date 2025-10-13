@@ -21,6 +21,7 @@ import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import Report from "../pages/Admin/reports";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
+import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -66,6 +67,12 @@ export default function AppRoutes() {
             path="report/customer-summary"
             element={<CustomerSummaryReport />}
           />
+
+          <Route 
+            path="report/category-orders" 
+            element={<CategoryWiseOrders />} 
+          />
+
           {/*
             Optional: Add the other report routes as you build them:
             <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
