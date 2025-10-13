@@ -51,22 +51,34 @@ export default function ProductDetails() {
     "";
 
   const handleAddToCart = async () => {
-    if (!user) return navigate("/login");
-    if ((product.Variants?.length ?? 0) > 1 && !selectedVariant) {
-      alert("Please choose a variant first");
-      return; // Don't navigate to cart if no variant selected
-    }
-    const variantId =
-      selectedVariant?.Variant_ID ?? product.Variants?.[0]?.Variant_ID ?? null;
+  if (!user) return navigate("/login");
 
-    try {
-      await axios.post(`${API_BASE}/api/cart/add`, { variantId, qty: 1 });
-      // Only navigate to cart if the item was successfully added
-      navigate("/products/cart");
-    } catch (e) {
-      alert(e.response?.data?.error || "Failed to add to cart");
+  if ((product.Variants?.length ?? 0) > 1 && !selectedVariant) {
+    alert("Please choose a variant first");
+    return;
+  }
+
+  const variantId = selectedVariant?.Variant_ID ?? product.Variants?.[0]?.Variant_ID;
+  const qty = 1; // default 1 for now
+
+  try {
+    const res = await axios.post(
+      `${API_BASE}/api/cart/add`,
+      { variantId, qty },
+      { withCredentials: true }
+    );
+
+    if (res.data?.success) {
+      alert("Added to cart successfully!");
+      // Optional: refresh cart data in UI
+      // await loadCart();  // only if you have a cart context or state
     }
-  };
+  } catch (err) {
+    console.error("Failed to add to cart", err);
+    if (!user) return navigate("/login");
+  }
+};
+
 
   const handleBuyNow = async () => {
     if (!user) return navigate("/login");

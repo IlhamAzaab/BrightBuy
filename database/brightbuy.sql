@@ -477,3 +477,4 @@ UPDATE city SET Main_City=0 WHERE City_ID=7;
 UPDATE city SET Main_City=0 WHERE City_ID=8;
 UPDATE city SET Main_City=0 WHERE City_ID=9;
 
+ALTER TABLE cart ADD COLUMN Status ENUM('Active', 'CheckedOut') DEFAULT 'Active';
