@@ -128,4 +128,62 @@ router.delete("/products/:productId", async (req, res) => {
   }
 });
 
+router.get("/outofstock", async (_req, res) => {
+  try {
+    // Fetch all products
+    const [products] = await db.query(
+      `SELECT p.Product_ID, p.Product_Name, p.Category_ID
+       FROM product p
+       ORDER BY p.Product_ID DESC`
+    );
+
+    if (!products.length) return res.json([]); // No products at all
+
+    const ids = products.map((p) => p.Product_ID);
+
+    let variants = [];
+    if (ids.length) {
+      // Fetch variants with stock <= 0
+      [variants] = await db.query(
+        `SELECT v.Variant_ID, v.Product_ID, v.Price, v.Stock_quantity, v.Colour, v.Size, v.Image_URL
+         FROM variant v
+         WHERE v.Product_ID IN (?) AND v.Stock_quantity <= 0
+         ORDER BY v.Product_ID DESC, v.Variant_ID ASC`,
+        [ids]
+      );
+    }
+
+    // Group variants by Product_ID
+    const byProduct = Object.create(null);
+    for (const v of variants) {
+      (byProduct[v.Product_ID] ||= []).push({
+        ...v,
+        Price: v.Price == null ? null : Number(v.Price),
+        Stock_quantity: Number(v.Stock_quantity ?? 0),
+      });
+    }
+
+    // Build payload: only include products that have out-of-stock variants
+    const payload = products
+      .map((p) => {
+        const vlist = byProduct[p.Product_ID] || [];
+        if (!vlist.length) return null; // skip products with no out-of-stock variants
+        const firstVar = vlist[0];
+        return {
+          Product_ID: p.Product_ID,
+          Product_Name: p.Product_Name,
+          Category_ID: p.Category_ID,
+          Image_URL: firstVar?.Image_URL || null,
+          variants: vlist,
+        };
+      })
+      .filter(Boolean); // remove nulls
+
+    res.json(payload);
+  } catch (err) {
+    console.error("GET /api/outofstock/products error:", err);
+    res.status(500).json({ message: "Failed to load products" });
+  }
+});
+
 export default router;

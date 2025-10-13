@@ -62,7 +62,7 @@ const QuarterlyReport = () => {
       ) : reportData.length === 0 ? (
         <div className="text-sm text-gray-500">No sales data found for {year}.</div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-lg">
           <table className="w-full border-collapse border border-gray-300 shadow-inner rounded-md">
             <thead>
               <tr className="bg-gray-100 text-gray-800">

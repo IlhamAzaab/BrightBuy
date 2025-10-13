@@ -21,6 +21,7 @@ import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
 import QuarterlySalesReport from "../pages/Admin/quarterlysales";
+import Outofstocklist from "../pages/Admin/outofstocklist";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -58,6 +59,7 @@ export default function AppRoutes() {
           <Route path="addproduct" element={<AddProduct />} />
           <Route path="addadmin" element={<AddAdmin />} />
           <Route path="productlist" element={<ProductList />} />
+          <Route path="outofstocklist" element={<Outofstocklist />} />
 
           
           {/* Customer Summary & Payments (no navbar in that page component) */}
