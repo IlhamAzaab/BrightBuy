@@ -297,57 +297,58 @@ INSERT INTO variant (Variant_ID, Product_ID, Colour, Size, Price, Stock_quantity
 (50, 40, 'Black',   NULL, 99.00,  40);
 
 -- Add image URLs to variants
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SpigenMagArmorCase(iPhone 15).jpg' WHERE (Variant_ID = '49');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\UGREENUSB-CtoHDMIAdapter.jpg' WHERE (Variant_ID = '48');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\KingstonDataTraveler64GB.webp' WHERE (Variant_ID = '47');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SanDiskUltramicroSD128GB.webp' WHERE (Variant_ID = '46');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\LogitechMXMaster3S.jpg' WHERE (Variant_ID = '45');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\SonyWH-CH520.jpg' WHERE (Variant_ID = '44');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = '\\assets\\images\\JBLTune510BT.png' WHERE (Variant_ID = '43');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\Belkin3-in-1MagSafeStand.jpg' WHERE (Variant_ID = '42');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\AnkerPowerCore20K.webp' WHERE (Variant_ID = '41');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = '\\assets\\images\\PixelBudsPro.webp' WHERE (Variant_ID = '40');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhone-15-Blue.jpg' WHERE (Variant_ID = '2');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhone-15-Pro-Max-Black.jpg' WHERE (Variant_ID = '1');
 
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106569/dfqpkjvh8/oltkqyv4b2fyndyvi6tc.webp' WHERE (Variant_ID = '50');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106582/dfqpkjvh8/o9c55qshxpm5kmgeixhi.jpg' WHERE (Variant_ID = '49');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106583/dfqpkjvh8/uvmsedjynyw99hykk4k2.jpg' WHERE (Variant_ID = '48');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106551/dfqpkjvh8/rneahqssp8qdkxp4dmcj.webp' WHERE (Variant_ID = '47');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106578/dfqpkjvh8/rjqnou7lc4yldsivcrux.webp' WHERE (Variant_ID = '46');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106554/dfqpkjvh8/xsfn8yicrw3lthu2lryy.jpg' WHERE (Variant_ID = '45');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106580/dfqpkjvh8/ljuxtochd2wozogbendv.jpg' WHERE (Variant_ID = '44');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106549/dfqpkjvh8/mhjrvav9lftv28vnf00r.png' WHERE (Variant_ID = '43');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106526/dfqpkjvh8/sev8nlq8mfsyhdoaep0o.jpg' WHERE (Variant_ID = '42');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106523/dfqpkjvh8/coms2xptzjfkmbwfm5uq.webp' WHERE (Variant_ID = '41');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106565/dfqpkjvh8/sb3algkpn82zygwhzkcx.webp' WHERE (Variant_ID = '40');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106536/dfqpkjvh8/oqpbta0mu0ylixfcl5o0.jpg' WHERE (Variant_ID = '2');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106539/dfqpkjvh8/zj1rak94ub2jtxlu39zt.jpg' WHERE (Variant_ID = '1');
 
-UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = '\\assets\\images\\SamsungBuds2Pro.jpg' WHERE (Variant_ID = '39');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\airpodspro21.webp' WHERE (Variant_ID = '38');
-UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = '\\assets\\images\\AmazonFireHD10.webp' WHERE (Variant_ID = '37');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\LenovoTabP12.jpg' WHERE (Variant_ID = '36');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\XiaomiPad6.jpg' WHERE (Variant_ID = '35');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SamsungGalaxyTabA9.webp' WHERE (Variant_ID = '34');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SamsungTabS9.jpg' WHERE (Variant_ID = '33');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPad(10thGen).png' WHERE (Variant_ID = '32');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\iPadPro11.jpg' WHERE (Variant_ID = '31');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Xperia10.png' WHERE (Variant_ID = '30');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\NokiaG42.webp' WHERE (Variant_ID = '29');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\NothingPhone2aplus.webp' WHERE (Variant_ID = '28');
-UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = '\\assets\\images\\MotorolaEdge40.png' WHERE (Variant_ID = '27');
-UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = '\\assets\\images\\RedmiNote13Pro.png' WHERE (Variant_ID = '26');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Xiaomi13TPro.png' WHERE (Variant_ID = '25');
-UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = '\\assets\\images\\OnePlusNordCE4.jpg' WHERE (Variant_ID = '24');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\OnePlus12.png' WHERE (Variant_ID = '23');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\oneplus-12-75.webp' WHERE (Variant_ID = '22');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Pixel7a.png' WHERE (Variant_ID = '21');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Pixel8Pro.avif' WHERE (Variant_ID = '19');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\71YIwcMJ6YL.jpg' WHERE (Variant_ID = '20');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = '\\assets\\images\\SamsungA55.webp' WHERE (Variant_ID = '18');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\SamsungS23Ultra.webp' WHERE (Variant_ID = '16');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\71EYdOx09+L.jpg' WHERE (Variant_ID = '17');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhoneSE3rdGen.webp' WHERE (Variant_ID = '15');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iphoneSERed.avif' WHERE (Variant_ID = '14');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhone14.webp' WHERE (Variant_ID = '12');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Apple-iPhone-14-128GB-4.png' WHERE (Variant_ID = '13');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iphone 15 pro black.png' WHERE (Variant_ID = '10');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\iPhone-15-Pro-Max-4.jpg' WHERE (Variant_ID = '11');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = '\\assets\\images\\AnkerUSBCcharger.jpg' WHERE (Variant_ID = '9');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Ipadair.jpg' WHERE (Variant_ID = '8');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\ipad air starlight.avif' WHERE (Variant_ID = '7');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\71eJEScDW2L.AC_SL1500.jpg' WHERE (Variant_ID = '6');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\71RnJXDexML.jpg' WHERE (Variant_ID = '5');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\61DQRUHhvDL.UF894,1000_QL80.jpg' WHERE (Variant_ID = '4');
-UPDATE brightbuy.variant SET Image_URL = '\\assets\\images\\Pixel8.jpg' WHERE (Variant_ID = '3');
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760247910/dfqpkjvh8/wm0i2mgnpltqy1t0yk4j.jpg' WHERE (Variant_ID = '39');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106520/dfqpkjvh8/iv3sasd35vmybf1ombrh.webp' WHERE (Variant_ID = '38');
+UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106522/dfqpkjvh8/rq2ofeijp6whnixbuaew.webp' WHERE (Variant_ID = '37');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106552/dfqpkjvh8/jrjb9ktrzff2hceybbwu.jpg' WHERE (Variant_ID = '36');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106587/dfqpkjvh8/rbxts3an7nopde4aewf3.jpg' WHERE (Variant_ID = '35');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106575/dfqpkjvh8/quwuir8fpnu1mebzzl1y.webp' WHERE (Variant_ID = '34');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106577/dfqpkjvh8/nhnpi6ly4qsspqgwv2na.jpg' WHERE (Variant_ID = '33');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106529/dfqpkjvh8/xytqzmdvgw4jwiz8o0gx.png' WHERE (Variant_ID = '32');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106533/dfqpkjvh8/rrsbucas3wooqiwwrm3y.jpg' WHERE (Variant_ID = '31');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106588/dfqpkjvh8/th07jk1tlntjuqtolnht.png' WHERE (Variant_ID = '30');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106556/dfqpkjvh8/nzjqqoru1s7ibr6a1elw.webp' WHERE (Variant_ID = '29');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106557/dfqpkjvh8/ezuf0itfvm5czbnf06pu.webp' WHERE (Variant_ID = '28');
+UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106555/dfqpkjvh8/bjdzn41uyhjkhyzpdeqg.png' WHERE (Variant_ID = '27');
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106571/dfqpkjvh8/qrkwplwrebdlfyy4qhkm.png' WHERE (Variant_ID = '26');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106571/dfqpkjvh8/qrkwplwrebdlfyy4qhkm.png' WHERE (Variant_ID = '25');
+UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106560/dfqpkjvh8/whue1zhtlen59innvc6t.jpg' WHERE (Variant_ID = '24');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106559/dfqpkjvh8/bjajvdkwc2q07xzeq1be.png' WHERE (Variant_ID = '23');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106558/dfqpkjvh8/nslwyc5nm1xkcbcrvxtu.webp' WHERE (Variant_ID = '22');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106562/dfqpkjvh8/p7ekjm2pxjgxjv38gwn5.png' WHERE (Variant_ID = '21');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106564/dfqpkjvh8/romtr0mck7lggahk2mjj.avif' WHERE (Variant_ID = '19');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106519/dfqpkjvh8/lz6xd5ntzunpbji3p8fv.jpg' WHERE (Variant_ID = '20');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106572/dfqpkjvh8/wb0x0jwzifxizeqliqbd.webp' WHERE (Variant_ID = '18');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106576/dfqpkjvh8/soc7fa9y4b7wnzc2cul1.webp' WHERE (Variant_ID = '16');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106516/dfqpkjvh8/czcrnkhjk7xmv3rruzyy.jpg' WHERE (Variant_ID = '17');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106543/dfqpkjvh8/zbdru69e2tafcax2xrtb.webp' WHERE (Variant_ID = '15');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106546/dfqpkjvh8/h8hkgnhnym1kdgby4weh.avif' WHERE (Variant_ID = '14');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106540/dfqpkjvh8/uw4lhvy5chjmncj3m8zs.webp' WHERE (Variant_ID = '12');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106525/dfqpkjvh8/wowfcblcgxjvczikicn0.png' WHERE (Variant_ID = '13');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106534/dfqpkjvh8/w5zvgtq4suhvlhx4ybs2.png' WHERE (Variant_ID = '10');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106538/dfqpkjvh8/qpgun6ioljn4ptqfkrbv.jpg' WHERE (Variant_ID = '11');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106524/dfqpkjvh8/yvakdeuqp3xecqpbqbqo.jpg' WHERE (Variant_ID = '9');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106531/dfqpkjvh8/kfpv2oxhknfu3b6uhlpf.jpg' WHERE (Variant_ID = '8');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106528/dfqpkjvh8/f9kd3lk8atkxjjz2sge0.avif' WHERE (Variant_ID = '7');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106514/dfqpkjvh8/x1ynh57etupksqfscecr.jpg' WHERE (Variant_ID = '6');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106518/dfqpkjvh8/p5h3hr6g7cvpinuwjyr1.jpg' WHERE (Variant_ID = '5');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106513/dfqpkjvh8/bnl0jvuw3myjy3ooqvk9.jpg' WHERE (Variant_ID = '4');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106563/dfqpkjvh8/yjl79thhm1wsen8wakvl.jpg' WHERE (Variant_ID = '3');
 
 -- Insert User data (6 users: 4 customers, 2 admins)
 INSERT INTO `user` 
@@ -446,11 +447,11 @@ INSERT INTO Cart_Item (Cart_Item_ID, Cart_ID, Product_ID, Variant_ID, Quantity, 
 
 -- Insert Order data
 INSERT INTO `Order` (Order_ID, User_ID, Cart_ID, `Total Amount`, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
-(3, 4, 3, 1877.00, 'Credit Card', 3, '2024-01-14', 1003),
-(4, 3, 4, 728.00, 'Debit Card', 4, '2024-01-15', 1004),
-(5, 1, 5, 1198.00, 'Credit Card', 5, '2024-01-08', 1005),
-(7, 4, 7, 1228.00, 'Credit Card', 7, '2024-01-18', 1007),
-(8, 2, 8, 1386.00, 'Apple Pay', 8, '2024-01-19', 1008);
+(3, 4, 3, 1877.00, 'Cash on Delivery', 3, '2024-01-14', 1003),
+(4, 3, 4, 728.00, 'Cash on Delivery', 4, '2024-01-15', 1004),
+(5, 1, 5, 1198.00, 'Online Payment', 5, '2024-01-08', 1005),
+(7, 4, 7, 1228.00, 'Cash on Delivery', 7, '2024-01-18', 1007),
+(8, 2, 8, 1386.00, 'Online Payment', 8, '2024-01-19', 1008);
 
 -- Add foreign key constraint for Product -> Category (if not already added)
 ALTER TABLE Product 
@@ -466,4 +467,13 @@ FOREIGN KEY (Delivery_ID) REFERENCES Delivery(Delivery_ID);
 ALTER TABLE `Order` 
 ADD CONSTRAINT fk_order_cart 
 FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
+
+-- Modify Main_City column to have default value FALSE and update existing cities accordingly
+ALTER TABLE city
+CHANGE Main_City Main_City BOOL DEFAULT 0;
+UPDATE city SET Main_City=0 WHERE City_ID=5;
+UPDATE city SET Main_City=0 WHERE City_ID=6;
+UPDATE city SET Main_City=0 WHERE City_ID=7;
+UPDATE city SET Main_City=0 WHERE City_ID=8;
+UPDATE city SET Main_City=0 WHERE City_ID=9;
 
