@@ -7,7 +7,13 @@ const router = express.Router();
 
 router.post("/", auth, async (req, res) => {
   const userId = req.user.id;
-  const { deliveryAddress, deliveryMethod, paymentMethod, estimatedDate, cartItems } = req.body;
+  const {
+    deliveryAddress,
+    deliveryMethod,
+    paymentMethod,
+    estimatedDate,
+    cartItems,
+  } = req.body;
 
   if (!deliveryAddress || !deliveryMethod || !paymentMethod || !estimatedDate) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -38,7 +44,8 @@ router.post("/", auth, async (req, res) => {
 
     // 3️⃣ Calculate total amount
     const totalAmount = cartItems.reduce(
-      (sum, item) => sum + item.Price * item.Quantity, 0
+      (sum, item) => sum + item.Price * item.Quantity,
+      0
     );
 
     // 4️⃣ Insert order record
