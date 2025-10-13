@@ -14,19 +14,12 @@ async function ensureActiveCart(conn, userId) {
   // If already in a txn, this safely prevents two concurrent creations.
   const [rows] = await conn.query(
     "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active'",
-    `SELECT Cart_ID
-       FROM cart
-      WHERE User_ID = ? AND Status = 'active'
-      ORDER BY Cart_ID DESC
-      LIMIT 1
-      FOR UPDATE`,
     [userId]
   );
   if (rows.length) return rows[0].Cart_ID;
 
   const [ins] = await conn.query(
     "INSERT INTO cart (User_ID, Status) VALUES (?, 'Active')",
-    "INSERT INTO cart (User_ID, Status) VALUES (?, 'active')",
     [userId]
   );
   return ins.insertId;
