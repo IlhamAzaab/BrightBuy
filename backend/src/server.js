@@ -54,6 +54,9 @@ app.use("/api/estimate", estimateTimeRoutes);
 import productsRouter from "../routes/products.js";
 app.use("/api/products", productsRouter);
 
+import reportDeliveryRouter from "../routes/reportDelivery.js";
+app.use("/api/admin/reports", reportDeliveryRouter);
+
 import ordersRoute from "../routes/orders.js";
 import cartRoutes from "../routes/cart.js";
 import customersRoute from "../routes/customers.js";

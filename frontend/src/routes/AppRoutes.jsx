@@ -20,6 +20,7 @@ import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import Report from "../pages/Admin/reports";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
+import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -65,13 +66,13 @@ export default function AppRoutes() {
             path="report/customer-summary"
             element={<CustomerSummaryReport />}
           />
-          {/*
+         
             Optional: Add the other report routes as you build them:
-            <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
+            {/* <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
             <Route path="report/top-products" element={<TopProductsReport />} />
-            <Route path="report/category-orders" element={<CategoryOrdersReport />} />
-            <Route path="report/delivery-time" element={<DeliveryTimeReport />} />
-          */}
+            <Route path="report/category-orders" element={<CategoryOrdersReport />} /> */}
+            <Route path="report/delivery-time" element={<DeliveryTimeEstimates />} />
+         
         </Route>
 
         {/* Protected customer routes */}
