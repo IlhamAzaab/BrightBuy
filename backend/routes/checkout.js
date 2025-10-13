@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/", auth, async (req, res) => {
   const userId = req.user.id;
-  const { deliveryAddress, deliveryMethod, paymentMethod, estimatedDate,cartItems } = req.body;
+  const { deliveryAddress, deliveryMethod, paymentMethod, estimatedDate, cartItems } = req.body;
 
   if (!deliveryAddress || !deliveryMethod || !paymentMethod || !estimatedDate || !cartItems) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -16,9 +16,9 @@ router.post("/", auth, async (req, res) => {
   try {
     await connection.beginTransaction();
 
-    // Get user's cart
+    // 1️⃣ Get user's current cart
     const [cartRows] = await connection.query(
-      "SELECT Cart_ID FROM cart WHERE User_ID = ?",
+      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active'",
       [userId]
     );
     if (!cartRows.length) {
@@ -27,25 +27,27 @@ router.post("/", auth, async (req, res) => {
     }
     const cartId = cartRows[0].Cart_ID;
 
-    // Insert delivery details
+    // 2️⃣ Insert delivery details
     const [deliveryResult] = await connection.query(
       `INSERT INTO delivery (Delivery_Address, Delivery_Method, Delivery_Status, Estimated_Delivery_Date)
        VALUES (?, ?, ?, ?)`,
       [deliveryAddress, deliveryMethod, "Pending", estimatedDate]
     );
     const deliveryId = deliveryResult.insertId;
+
+    // 3️⃣ Calculate total amount
     const totalAmount = cartItems.reduce(
-        (sum, item) => sum + item.Price * item.Quantity,0);
+      (sum, item) => sum + item.Price * item.Quantity, 0
+    );
 
-
-    // Insert order record
+    // 4️⃣ Insert order record
     const [orderResult] = await connection.query(
       `INSERT INTO \`order\` (User_ID, Cart_ID, Total_Amount, Delivery_ID, Payment_Method, Order_Date)
        VALUES (?, ?, ?, ?, ?, NOW())`,
       [userId, cartId, totalAmount, deliveryId, paymentMethod]
     );
 
-    // 4️⃣ Reduce stock and notify admin if needed
+    // 5️⃣ Reduce stock quantities
     const [dbcartItems] = await connection.query(
       `SELECT ci.Variant_ID, ci.Quantity, v.Stock_quantity
        FROM cart_item ci
@@ -60,6 +62,12 @@ router.post("/", auth, async (req, res) => {
         "UPDATE variant SET Stock_quantity = ? WHERE Variant_ID = ?",
         [newStock < 0 ? 0 : newStock, item.Variant_ID]
       );
+    }
+    // 6️⃣ Mark the old cart as "CheckedOut"
+    await connection.query(
+    "UPDATE cart SET Status = 'CheckedOut' WHERE Cart_ID = ?",
+    [cartId]
+    );
 
     await connection.commit();
 
@@ -68,8 +76,9 @@ router.post("/", auth, async (req, res) => {
       orderId: orderResult.insertId,
       deliveryId,
       estimatedDate,
+      cartId,
     });
-  }
+
   } catch (error) {
     console.error("Checkout error:", error);
     await connection.rollback();
