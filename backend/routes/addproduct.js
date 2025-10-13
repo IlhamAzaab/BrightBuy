@@ -1,6 +1,6 @@
 import express from "express";
 import upload from "../config/multer.js";
-import cloudinary from "../config/cloudinary.js";
+import cloudinary, { isConfigured as isCloudinaryConfigured } from "../config/cloudinary.js";
 import db from "../db.js";
 
 const router = express.Router();
@@ -24,6 +24,12 @@ router.post(
   upload.array("variantImages"), // Changed: each variant has one image
   async (req, res) => {
     try {
+      if (!isCloudinaryConfigured) {
+        return res.status(503).json({
+          error: "Image service not configured",
+          detail: "Cloudinary credentials are missing. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in backend/.env and restart the server.",
+        });
+      }
       const {
         categoryId,
         productName,

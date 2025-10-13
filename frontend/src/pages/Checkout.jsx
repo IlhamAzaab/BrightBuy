@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Checkout() {
   const { user } = useContext(AuthContext);
@@ -17,6 +18,7 @@ export default function Checkout() {
   const [hasAddress, setHasAddress] = useState(false);
   const [editing, setEditing] = useState(false);
   const [estimatedDate, setEstimatedDate] = useState(0);
+  const [success, setSuccess] = useState(false);
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
   const navigate = useNavigate();
   const formatPrice = (amount) =>
@@ -83,10 +85,12 @@ useEffect(() => {
     }, { withCredentials: true });
 
     if (res.status === 201) {
-      alert("Order placed successfully!");
-      setCartData({ items: [], summary: { subTotal: 0 } });
-      navigate("/orders"); // redirect to orders page
-    }
+      setSuccess(true); // show success message
+      // redirect after 2 seconds
+      setTimeout(() => {
+        navigate("/orders");
+      }, 3000);
+  }
   } catch (err) {
     console.error("Failed to place order", err);
     alert("Failed to place order: " + err.response?.data?.error || err.message);
@@ -131,6 +135,23 @@ useEffect(() => {
 
   return (
   <>
+    <div className="relative">
+    <AnimatePresence>
+      {success && (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            transition={{ duration: 0.5, type: "spring" }}
+            className="fixed top-16 left-0 w-full flex justify-center z-50"
+          >
+            <div className="text-m tracking-wide text-green-700 bg-green-100 border-2 border-green-300 px-12 py-2 rounded-full shadow-xl">
+              Order Placed Successfully
+            </div>
+          </motion.div>
+        )}
+    </AnimatePresence>
+    </div>
     <Navbar />
     <div className="px-6 md:px-16 lg:px-32 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* LEFT SECTION - Details */}
@@ -294,12 +315,12 @@ useEffect(() => {
           )}
 
           <button
-  disabled={!estimatedDate || !hasAddress}
-  className="w-full bg-orange-600 text-white py-3 rounded hover:bg-orange-700 transition disabled:opacity-50"
-  onClick={placeOrder}
->
-  Place Order
-</button>
+            disabled={!estimatedDate || !hasAddress}
+            className="w-full bg-orange-600 text-white py-3 rounded hover:bg-orange-700 transition disabled:opacity-50"
+            onClick={placeOrder}>
+              Place Order
+          </button>
+          
 
         </div>
       </div>

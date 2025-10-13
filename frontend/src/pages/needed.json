@@ -22,5 +22,27 @@ home(first page when started) -ilham
 about(about our site) - ilham
 contactUs(contact details) - ilham
 
-product->select product->product details->click(add to cart)->cart page->click(checkout)->checkout page(delivery method,payement method,estimate time,products,net total)->click(place order)->order success page(show the summary of the order)->click(my orders)->my orders page(order history,pending orders)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+product->select product->product details->click(add to cart)->add the product to cart navigate to product page->click(checkout)->checkout page(delivery method,payement method,estimate time,products,net total)->click(place order)->order success page(show the summary of the order)->click(my orders)->my orders page(order history,pending orders)
 product->select product->product details->click(buy now)->checkout page with only the one selected item(delivery method,payement method,estimate time,product,net total)->click(place order)->order success page(show the summary of the order)->click(my orders)->my orders page(order history,pending orders)
