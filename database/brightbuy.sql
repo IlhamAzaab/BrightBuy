@@ -17,6 +17,7 @@ CREATE TABLE `Product` (
 CREATE TABLE `Cart` (
   `Cart_ID` Int AUTO_INCREMENT,
   `User_ID` Int,
+  Status ENUM('Active', 'CheckedOut') DEFAULT 'Active',
   PRIMARY KEY (`Cart_ID`)
 );
 
@@ -94,7 +95,7 @@ CREATE TABLE `Delivery` (
   `Delivery_ID` Int AUTO_INCREMENT,
   `Delivery_Method` Varchar(25),
   `Delivery_Address` Varchar(50),
-  `Delivery_Status` Varchar(25),
+  `Delivery_Status` ENUM('Delivered', 'Pending') default NULL,
   `Estimated_delivery_Date` DATE,
   PRIMARY KEY (`Delivery_ID`)
 );
@@ -297,7 +298,6 @@ INSERT INTO variant (Variant_ID, Product_ID, Colour, Size, Price, Stock_quantity
 (50, 40, 'Black',   NULL, 99.00,  40);
 
 -- Add image URLs to variants
-
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106569/dfqpkjvh8/oltkqyv4b2fyndyvi6tc.webp' WHERE (Variant_ID = '50');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106582/dfqpkjvh8/o9c55qshxpm5kmgeixhi.jpg' WHERE (Variant_ID = '49');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106583/dfqpkjvh8/uvmsedjynyw99hykk4k2.jpg' WHERE (Variant_ID = '48');
@@ -477,3 +477,23 @@ UPDATE city SET Main_City=0 WHERE City_ID=7;
 UPDATE city SET Main_City=0 WHERE City_ID=8;
 UPDATE city SET Main_City=0 WHERE City_ID=9;
 
+-- Create indexes to optimize queries
+CREATE INDEX idx_delivery_estimated_date ON delivery (Estimated_delivery_Date);
+CREATE INDEX idx_delivery_status ON delivery (Delivery_Status);
+
+-- Create stored procedure to get quarterly sales report
+DELIMITER $$
+CREATE PROCEDURE GetQuarterlySales(IN selectedYear INT)
+BEGIN
+  SELECT
+    YEAR(Order_Date) AS Year,
+    QUARTER(Order_Date) AS Quarter,
+    SUM(Total_Amount) AS Total_Sales,
+    COUNT(Order_ID) AS Total_Orders,
+    AVG(Total_Amount) AS Avg_Order_Value
+  FROM brightbuy.`Order`
+  WHERE YEAR(Order_Date) = selectedYear
+  GROUP BY Year, Quarter
+  ORDER BY Quarter;
+END $$
+DELIMITER ;
