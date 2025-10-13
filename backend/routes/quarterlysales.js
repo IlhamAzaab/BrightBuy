@@ -12,9 +12,9 @@ router.get("/quarterly", async (req, res) => {
     SELECT
       YEAR(Order_Date) AS Year,
       QUARTER(Order_Date) AS Quarter,
-      SUM(\`Total Amount\`) AS Total_Sales,
+      SUM(Total_Amount) AS Total_Sales,
       COUNT(Order_ID) AS Total_Orders,
-      AVG(\`Total Amount\`) AS Avg_Order_Value
+      AVG(Total_Amount) AS Avg_Order_Value
     FROM \`Order\`
     WHERE YEAR(Order_Date) = ?
     GROUP BY Year, Quarter

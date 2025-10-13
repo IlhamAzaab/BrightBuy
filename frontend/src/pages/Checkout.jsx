@@ -85,12 +85,10 @@ useEffect(() => {
     }, { withCredentials: true });
 
     if (res.status === 201) {
-      setSuccess(true); // show success message
-      // redirect after 2 seconds
-      setTimeout(() => {
-        navigate("/orders");
-      }, 3000);
-  }
+      alert("Order placed successfully!");
+      setCartData({ items: [], summary: { subTotal: 0 } });
+      navigate("/orders"); // redirect to orders page
+    }
   } catch (err) {
     console.error("Failed to place order", err);
     alert("Failed to place order: " + err.response?.data?.error || err.message);
