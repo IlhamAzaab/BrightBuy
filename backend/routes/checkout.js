@@ -79,7 +79,7 @@ router.post("/", auth, async (req, res) => {
 
     // 7) Mark current cart as checked_out (snapshot preserved for the order)
     await connection.query(
-      "UPDATE cart SET Status = 'checked_out' WHERE Cart_ID = ?",
+      "UPDATE cart SET Status = 'CheckedOut' WHERE Cart_ID = ?",
       [cartId]
     );
 

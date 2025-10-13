@@ -15,7 +15,7 @@ async function ensureActiveCart(conn, userId) {
   const [rows] = await conn.query(
     `SELECT Cart_ID
        FROM cart
-      WHERE User_ID = ? AND Status = 'active'
+      WHERE User_ID = ? AND Status = 'Active'
       ORDER BY Cart_ID DESC
       LIMIT 1
       FOR UPDATE`,
@@ -24,7 +24,7 @@ async function ensureActiveCart(conn, userId) {
   if (rows.length) return rows[0].Cart_ID;
 
   const [ins] = await conn.query(
-    "INSERT INTO cart (User_ID, Status) VALUES (?, 'active')",
+    "INSERT INTO cart (User_ID, Status) VALUES (?, 'Active')",
     [userId]
   );
   return ins.insertId;
@@ -100,7 +100,7 @@ router.get("/", auth, async (req, res) => {
     const userId = req.user.id;
 
     const [cartRows] = await pool.query(
-      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'active' LIMIT 1",
+      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active' LIMIT 1",
       [userId]
     );
     if (!cartRows.length)
