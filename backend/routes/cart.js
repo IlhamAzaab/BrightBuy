@@ -6,18 +6,27 @@ import pool from "../db.js";
 const router = Router();
 
 /**
- * Ensure the logged-in user has a cart row; create one if not.
+ * Ensure the logged-in user has an ACTIVE cart; create one if not.
+ * Use inside a transaction when possible.
  * @returns {Promise<number>} Cart_ID
  */
-async function ensureUserCart(conn, userId) {
+async function ensureActiveCart(conn, userId) {
+  // If already in a txn, this safely prevents two concurrent creations.
   const [rows] = await conn.query(
     "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active'",
+    `SELECT Cart_ID
+       FROM cart
+      WHERE User_ID = ? AND Status = 'active'
+      ORDER BY Cart_ID DESC
+      LIMIT 1
+      FOR UPDATE`,
     [userId]
   );
   if (rows.length) return rows[0].Cart_ID;
 
   const [ins] = await conn.query(
     "INSERT INTO cart (User_ID, Status) VALUES (?, 'Active')",
+    "INSERT INTO cart (User_ID, Status) VALUES (?, 'active')",
     [userId]
   );
   return ins.insertId;
@@ -26,7 +35,7 @@ async function ensureUserCart(conn, userId) {
 /**
  * POST /api/cart/add
  * Body: { variantId: number, qty?: number }
- * Creates the user's cart if needed, then inserts/updates a cart_item.
+ * Creates the user's active cart if needed, then inserts/updates a cart_item.
  */
 router.post("/add", auth, async (req, res) => {
   if (!req.user?.id) return res.status(401).json({ error: "Unauthorized" });
@@ -40,7 +49,7 @@ router.post("/add", auth, async (req, res) => {
   try {
     await conn.beginTransaction();
 
-    const cartId = await ensureUserCart(conn, req.user.id);
+    const cartId = await ensureActiveCart(conn, req.user.id);
 
     // Do we already have this variant in the cart?
     const [existing] = await conn.query(
@@ -52,11 +61,11 @@ router.post("/add", auth, async (req, res) => {
       // Bump quantity and recompute total using current variant price
       await conn.query(
         `UPDATE cart_item ci
-         JOIN variant v ON v.Variant_ID = ci.Variant_ID
-         SET ci.Quantity   = ci.Quantity + ?,
-             ci.Total_price = (ci.Quantity + ?) * v.Price
+           JOIN variant v ON v.Variant_ID = ci.Variant_ID
+           SET ci.Quantity   = ci.Quantity + ?,
+               ci.Total_price = (ci.Quantity + ?) * v.Price
          WHERE ci.Cart_Item_ID = ?`,
-        [qty, qty, existing[0].Cart_Item_ID] // ✅ correct property name
+        [qty, qty, existing[0].Cart_Item_ID]
       );
     } else {
       // Need product id & price for this variant
@@ -86,7 +95,7 @@ router.post("/add", auth, async (req, res) => {
 
 /**
  * GET /api/cart
- * Returns the user's cart items with a subtotal.
+ * Returns the user's ACTIVE cart items with a subtotal.
  */
 router.get("/", auth, async (req, res) => {
   try {
@@ -95,6 +104,7 @@ router.get("/", auth, async (req, res) => {
     // 1️⃣ Get the user's ACTIVE cart only
     const [cartRows] = await pool.query(
       "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active'",
+      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'active' LIMIT 1",
       [userId]
     );
 
@@ -127,7 +137,7 @@ router.get("/", auth, async (req, res) => {
         FROM cart_item ci
         JOIN variant v ON v.Variant_ID = ci.Variant_ID
         JOIN product p ON p.Product_ID = ci.Product_ID
-        WHERE ci.Cart_ID = ?`,
+       WHERE ci.Cart_ID = ?`,
       [cartId]
     );
 
@@ -162,9 +172,9 @@ router.patch("/item/:id", auth, async (req, res) => {
     // Update qty and total atomically (recalc with variant price)
     await conn.query(
       `UPDATE cart_item ci
-       JOIN variant v ON v.Variant_ID = ci.Variant_ID
-       SET ci.Quantity = ?,
-           ci.Total_price = ? * v.Price
+         JOIN variant v ON v.Variant_ID = ci.Variant_ID
+         SET ci.Quantity = ?,
+             ci.Total_price = ? * v.Price
        WHERE ci.Cart_Item_ID = ?`,
       [qty, qty, cartItemId]
     );
@@ -185,10 +195,9 @@ router.patch("/item/:id", auth, async (req, res) => {
  */
 router.delete("/item/:id", auth, async (req, res) => {
   try {
-    await pool.query(
-      "DELETE FROM cart_item WHERE Cart_Item_ID = ?",
-      [req.params.id]
-    );
+    await pool.query("DELETE FROM cart_item WHERE Cart_Item_ID = ?", [
+      req.params.id,
+    ]);
     return res.json({ success: true });
   } catch (err) {
     console.error("Delete cart item failed:", err);

@@ -1,3 +1,4 @@
+// backend/routes/checkout.js
 import express from "express";
 import pool from "../db.js";
 import auth from "../middleware/auth.js";
@@ -8,7 +9,7 @@ router.post("/", auth, async (req, res) => {
   const userId = req.user.id;
   const { deliveryAddress, deliveryMethod, paymentMethod, estimatedDate, cartItems } = req.body;
 
-  if (!deliveryAddress || !deliveryMethod || !paymentMethod || !estimatedDate || !cartItems) {
+  if (!deliveryAddress || !deliveryMethod || !paymentMethod || !estimatedDate) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -23,15 +24,15 @@ router.post("/", auth, async (req, res) => {
     );
     if (!cartRows.length) {
       await connection.rollback();
-      return res.status(400).json({ error: "Cart not found" });
+      return res.status(400).json({ error: "Active cart not found" });
     }
     const cartId = cartRows[0].Cart_ID;
 
     // 2️⃣ Insert delivery details
     const [deliveryResult] = await connection.query(
       `INSERT INTO delivery (Delivery_Address, Delivery_Method, Delivery_Status, Estimated_Delivery_Date)
-       VALUES (?, ?, ?, ?)`,
-      [deliveryAddress, deliveryMethod, "Pending", estimatedDate]
+       VALUES (?, ?, 'Pending', ?)`,
+      [deliveryAddress, deliveryMethod, estimatedDate]
     );
     const deliveryId = deliveryResult.insertId;
 
@@ -71,9 +72,9 @@ router.post("/", auth, async (req, res) => {
 
     await connection.commit();
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Order placed successfully",
-      orderId: orderResult.insertId,
+      orderId,
       deliveryId,
       estimatedDate,
       cartId,
@@ -82,7 +83,7 @@ router.post("/", auth, async (req, res) => {
   } catch (error) {
     console.error("Checkout error:", error);
     await connection.rollback();
-    res.status(500).json({ error: "Failed to complete checkout" });
+    return res.status(500).json({ error: "Failed to complete checkout" });
   } finally {
     connection.release();
   }
