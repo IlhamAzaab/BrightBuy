@@ -96,8 +96,7 @@ router.get("/", auth, async (req, res) => {
 
     // 1️⃣ Get the user's ACTIVE cart only
     const [cartRows] = await pool.query(
-      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active'",
-      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'active' LIMIT 1",
+      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active' LIMIT 1",
       [userId]
     );
 

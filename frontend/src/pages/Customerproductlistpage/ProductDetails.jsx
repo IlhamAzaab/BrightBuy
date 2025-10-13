@@ -75,7 +75,7 @@ export default function ProductDetails() {
     }
   } catch (err) {
     console.error("Failed to add to cart", err);
-    alert(err.response?.data?.error || "Failed to add to cart");
+    if (!user) return navigate("/login");
   }
 };
 
