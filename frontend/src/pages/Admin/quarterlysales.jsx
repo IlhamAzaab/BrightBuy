@@ -31,6 +31,13 @@ const QuarterlyReport = () => {
     return value ? Number(value).toFixed(2) : "0.00";
   };
 
+  const Months = {
+    1: "Jan-Mar",
+    2: "Apr-Jun",
+    3: "Jul-Sep",
+    4: "Oct-Dec"
+  };
+
   return (
     <div className="w-full p-4 md:p-6 bg-gray-50 text-gray-900 rounded-lg border border-gray-200 shadow-sm">
       {/* Year selector */}
@@ -68,7 +75,9 @@ const QuarterlyReport = () => {
             <tbody className="divide-y divide-gray-100">
               {reportData.map((row) => (
                 <tr key={row.Quarter} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2 text-center font-semibold bg-white">Q{row.Quarter}</td>
+                  <td className="border border-gray-300 p-2 text-center font-semibold bg-white">
+                   Q{row.Quarter} <span className="text-gray-500 text-sm">({Months[row.Quarter]})</span>
+                  </td>
                   <td className="border border-gray-300 p-2 text-center bg-white">${formatCurrency(row.Total_Sales)}</td>
                   <td className="border border-gray-300 p-2 text-center bg-white">{row.Total_Orders ?? 0}</td>
                   <td className="border border-gray-300 p-2 text-center bg-white">${formatCurrency(row.Avg_Order_Value)}</td>

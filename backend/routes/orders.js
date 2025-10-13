@@ -82,7 +82,7 @@ router.put("/:id/status", async (req, res) => {
   };
 
   // Allowed direct delivery statuses (extend if you add more)
-  const allowedDeliveryStatuses = new Set(['Delivered', 'Processing', 'In Transit', 'Shipped']);
+  const allowedDeliveryStatuses = new Set(['Delivered', 'Pending']);
 
   // Decide target delivery status
   let targetDeliveryStatus;
