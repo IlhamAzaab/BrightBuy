@@ -89,6 +89,7 @@ export default function ProductDetails() {
   const handleBuyNow = async () => {
     if (!user) return navigate("/login");
     setShowBadge(true);
+    await handleAddToCart();
     setTimeout(() => setShowBadge(false), 1000);
     setTimeout(() => navigate("/products/cart"),1000);
   };

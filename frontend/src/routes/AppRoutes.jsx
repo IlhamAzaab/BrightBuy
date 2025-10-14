@@ -74,6 +74,10 @@ export default function AppRoutes() {
             path="report/quarterly-sales"
             element={<QuarterlySalesReport />}
           />
+          <Route
+            path="/admin/report/category-orders"
+            element={<CategoryWiseOrders />}
+          />
           <Route path="report/top-products" element={<TopProductsReport />} />
           <Route
             path="/admin/report/top-selling"
@@ -83,10 +87,6 @@ export default function AppRoutes() {
               </ProtectedRoute>
             }
           />
-          <Route
-          path="/admin/report/category-wise-orders"
-          element={<CategoryWiseOrders />}
-        />
         </Route>
 
         {/* Protected customer routes */}

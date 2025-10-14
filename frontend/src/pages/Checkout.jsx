@@ -5,11 +5,14 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Checkout() {
   const { user } = useContext(AuthContext);
   const [cartData, setCartData] = useState({ items: [] });
   const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState(false);
+
   const [deliveryMethod, setDeliveryMethod] = useState("Standard Delivery");
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [address, setAddress] = useState("");
