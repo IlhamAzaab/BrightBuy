@@ -13,18 +13,13 @@ const router = Router();
 async function ensureActiveCart(conn, userId) {
   // If already in a txn, this safely prevents two concurrent creations.
   const [rows] = await conn.query(
-    `SELECT Cart_ID
-       FROM cart
-      WHERE User_ID = ? AND Status = 'active'
-      ORDER BY Cart_ID DESC
-      LIMIT 1
-      FOR UPDATE`,
+    "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active'",
     [userId]
   );
   if (rows.length) return rows[0].Cart_ID;
 
   const [ins] = await conn.query(
-    "INSERT INTO cart (User_ID, Status) VALUES (?, 'active')",
+    "INSERT INTO cart (User_ID, Status) VALUES (?, 'Active')",
     [userId]
   );
   return ins.insertId;
@@ -99,14 +94,23 @@ router.get("/", auth, async (req, res) => {
   try {
     const userId = req.user.id;
 
+    // 1️⃣ Get the user's ACTIVE cart only
     const [cartRows] = await pool.query(
-      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'active' LIMIT 1",
+      "SELECT Cart_ID FROM cart WHERE User_ID = ? AND Status = 'Active' LIMIT 1",
       [userId]
     );
-    if (!cartRows.length)
-      return res.json({ items: [], summary: { subTotal: 0 } });
 
-    const cartId = cartRows[0].Cart_ID;
+    // If no active cart exists, create a new one automatically
+    let cartId;
+    if (!cartRows.length) {
+      const [newCart] = await pool.query(
+        "INSERT INTO cart (User_ID, Status) VALUES (?, 'Active')",
+        [userId]
+      );
+      cartId = newCart.insertId;
+    } else {
+      cartId = cartRows[0].Cart_ID;
+    }
 
     const [items] = await pool.query(
       `SELECT

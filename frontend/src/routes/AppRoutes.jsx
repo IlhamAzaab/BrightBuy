@@ -5,10 +5,11 @@ import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
 import Profile from "../pages/profile";
-import Animation from "../pages/animation";
 
 // Existing pages
 import Home from "../pages/Home";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
 import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList";
 import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 import Cart from "../pages/Cart";
@@ -21,6 +22,10 @@ import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
 import QuarterlySalesReport from "../pages/Admin/quarterlysales";
+import TopProductsReport from "../pages/Admin/TopProductsReport";
+import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
+import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
+import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
 import Outofstocklist from "../pages/Admin/outofstocklist";
 
 export default function AppRoutes() {
@@ -40,7 +45,8 @@ export default function AppRoutes() {
         <Route path="/products" element={<CustomerProductList />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/products/cart/checkout" element={<Checkout />} />
-
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -60,21 +66,33 @@ export default function AppRoutes() {
           <Route path="addadmin" element={<AddAdmin />} />
           <Route path="productlist" element={<ProductList />} />
           <Route path="outofstocklist" element={<Outofstocklist />} />
-
-          
+          {/* Reports hub */}
           {/* Customer Summary & Payments (no navbar in that page component) */}
           <Route
             path="report/customer-summary"
             element={<CustomerSummaryReport />}
           />
-          <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
-          {/*
-            Optional: Add the other report routes as you build them:
-            <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
-            <Route path="report/top-products" element={<TopProductsReport />} />
-            <Route path="report/category-orders" element={<CategoryOrdersReport />} />
-            <Route path="report/delivery-time" element={<DeliveryTimeReport />} />
-          */}
+          <Route
+            path="report/quarterly-sales"
+            element={<QuarterlySalesReport />}
+          />
+          <Route
+            path="/admin/report/delivery-time"
+            element={<DeliveryTimeEstimates />}
+          />
+          <Route
+            path="/admin/report/category-orders"
+            element={<CategoryWiseOrders />}
+          />
+          <Route path="report/top-products" element={<TopProductsReport />} />
+          <Route
+            path="/admin/report/top-selling"
+            element={
+              <ProtectedRoute role="admin">
+                <TopSellingProductsReport />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         {/* Protected customer routes */}
@@ -86,11 +104,6 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
-  {/* ... other routes */}
-  <Route path="/animation" element={<Animation />} />
-
-          
         <Route
           path="/orders"
           element={
