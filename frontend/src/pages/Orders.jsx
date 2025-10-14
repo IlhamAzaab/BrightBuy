@@ -77,6 +77,8 @@ const Orders = () => {
       if (tab === "completed" && data.alreadyDelivered) {
         fetchOrders("completed");
       }
+      // Always reconcile with server to avoid drift
+      fetchOrders(tab);
       // If user currently on pending and wants to view in completed automatically (optional)
       // fetchOrders(tab); // still refresh to stay in sync (uncomment if needed)
     } catch (err) {
