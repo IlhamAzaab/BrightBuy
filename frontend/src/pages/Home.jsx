@@ -5,14 +5,15 @@ import HeaderSlider from "../components/HeaderSlider";
 // import Banner from "../components/Banner";
 // import NewsLetter from "../components/NewsLetter";
 // import FeaturedProduct from "../components/FeaturedProduct";
-import CustomerProductList from "./Customerproductlistpage/CustomerProductsList";
 import MostPopular from "../components/MostPopular";
+import Footer from "../components/Footer";
 const Home = () => {
   return (
     <>
       <Navbar />
       <HeaderSlider />
       <MostPopular />
+      <Footer />
 
       {/* 
       <div className="px-6 md:px-16 lg:px-32">

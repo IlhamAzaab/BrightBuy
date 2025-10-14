@@ -49,7 +49,7 @@ const HeaderSlider = () => {
   }
 
   return (
-    <div className="overflow-hidden relative w-full">
+    <div className="overflow-hidden relative w-screen">
       {/* Slides */}
       <div
         className="flex transition-transform duration-700 ease-in-out"

@@ -38,7 +38,7 @@ const MostPopular = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50">
+    <div className="py-2 px-6">
       <div className="flex flex-col items-start px-10 md:px-16 lg:px-50">
         <div className="flex flex-col items-end pt-12 py-10">
           <p className="text-2xl font-medium">Most Popular Products</p>

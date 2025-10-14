@@ -20,7 +20,6 @@ import Admin from "../pages/Admin/admin";
 import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
-import Report from "../pages/Admin/reports";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
 import QuarterlySalesReport from "../pages/Admin/quarterlysales";
 import TopProductsReport from "../pages/Admin/TopProductsReport";
