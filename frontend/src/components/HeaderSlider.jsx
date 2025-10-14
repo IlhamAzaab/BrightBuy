@@ -1,74 +1,84 @@
 import React, { useState, useEffect } from "react";
-import { assets } from "../assets/assets"; // ✅ Make sure your path works in React
+import { useNavigate } from "react-router-dom";
+import { assets } from "../assets/assets";
 
 const HeaderSlider = () => {
-  const sliderData = [
-    {
-      id: 1,
-      title: "Experience Pure Sound - Your Perfect Headphones Awaits!",
-      offer: "Limited Time Offer 30% Off",
-      buttonText1: "Buy now",
-      buttonText2: "Find more",
-      imgSrc: assets.header_headphone_image,
-    },
-    {
-      id: 2,
-      title: "Next-Level Gaming Starts Here - Discover PlayStation 5 Today!",
-      offer: "Hurry up only few lefts!",
-      buttonText1: "Shop Now",
-      buttonText2: "Explore Deals",
-      imgSrc: assets.header_playstation_image,
-    },
-    {
-      id: 3,
-      title: "Power Meets Elegance - Apple MacBook Pro is Here for you!",
-      offer: "Exclusive Deal 40% Off",
-      buttonText1: "Order Now",
-      buttonText2: "Learn More",
-      imgSrc: assets.header_macbook_image,
-    },
-  ];
-
+  const [sliderData, setSliderData] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
 
+  // Fetch slider data from backend
   useEffect(() => {
+    const fetchSliderData = async () => {
+      try {
+        const res = await fetch("http://localhost:9000/api/headerslider");
+        const data = await res.json();
+
+        const formatted = data.map((item, index) => ({
+          id: item.Category_ID,
+          productId: item.Product_ID, // for Add to Cart
+          title: `Explore ${item.Category_Name} - ${item.Product_Name}`,
+          offer: `Starting from $${item.Price}`,
+          buttonText1: "Shop",
+          buttonText2: "View Details",
+          imgSrc: item.Image_URL || assets.default_image,
+        }));
+
+        setSliderData(formatted);
+      } catch (error) {
+        console.error("Error fetching slider data:", error);
+      }
+    };
+
+    fetchSliderData();
+  }, []);
+
+  // Auto-slide
+  useEffect(() => {
+    if (sliderData.length === 0) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % sliderData.length);
     }, 3000);
     return () => clearInterval(interval);
   }, [sliderData.length]);
 
-  const handleSlideChange = (index) => {
-    setCurrentSlide(index);
-  };
+  const handleSlideChange = (index) => setCurrentSlide(index);
+
+  if (sliderData.length === 0) {
+    return <p className="text-center mt-10 text-gray-500">Loading slider...</p>;
+  }
 
   return (
     <div className="overflow-hidden relative w-full">
+      {/* Slides */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
-        style={{
-          transform: `translateX(-${currentSlide * 100}%)`,
-        }}
+        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {sliderData.map((slide, index) => (
           <div
-            key={slide.id}
-            className="flex flex-col-reverse md:flex-row items-center justify-between bg-[#E6E9F2] py-8 md:px-14 px-5 mt-6 rounded-xl min-w-full"
+            key={`${slide.id}-${index}`} // ✅ unique key
+            className="flex flex-col-reverse md:flex-row items-center justify-between bg-[#E6E9F2] py-5 md:px-10 px-4 mt-4 rounded-xl min-w-full"
           >
             {/* Text Section */}
-            <div className="md:pl-8 mt-10 md:mt-0">
-              <p className="md:text-base text-orange-600 pb-1">{slide.offer}</p>
-              <h1 className="max-w-lg md:text-[40px] md:leading-[48px] text-2xl font-semibold">
+            <div className="md:pl-6 mt-6 md:mt-0 flex-1">
+              <p className="text-sm text-green-500 pb-1">{slide.offer}</p>
+              <h1 className="max-w-md text-xl text-blue-900 md:text-2xl font-semibold leading-snug">
                 {slide.title}
               </h1>
-              <div className="flex items-center mt-4 md:mt-6">
-                <button className="md:px-10 px-7 md:py-2.5 py-2 bg-orange-600 rounded-full text-white font-medium">
+              <div className="flex items-center mt-3 md:mt-4 gap-2">
+                <button onClick={() => navigate(`/products/${slide.productId}`)}
+                  className="md:px-8 px-6 md:py-2 py-1.5 bg-orange-600 rounded-full text-white text-sm md:text-base font-medium"
+                >
                   {slide.buttonText1}
                 </button>
-                <button className="group flex items-center gap-2 px-6 py-2.5 font-medium">
+                <button
+                  onClick={() => navigate(`/products/${slide.productId}`)}
+                  className="group flex items-center gap-2 px-4 md:px-6 py-1.5 md:py-2.5 text-sm md:text-base font-medium"
+                >
                   {slide.buttonText2}
                   <img
-                    className="group-hover:translate-x-1 transition"
+                    className="group-hover:translate-x-1 transition w-4 md:w-5"
                     src={assets.arrow_icon}
                     alt="arrow_icon"
                   />
@@ -77,9 +87,9 @@ const HeaderSlider = () => {
             </div>
 
             {/* Image Section */}
-            <div className="flex items-center flex-1 justify-center">
+            <div className="flex items-center justify-center flex-1">
               <img
-                className="md:w-72 w-48"
+                className="md:w-56 w-40 object-contain"
                 src={slide.imgSrc}
                 alt={`Slide ${index + 1}`}
               />
@@ -89,13 +99,13 @@ const HeaderSlider = () => {
       </div>
 
       {/* Dots Navigation */}
-      <div className="flex items-center justify-center gap-2 mt-8">
+      <div className="flex items-center justify-center gap-2 mt-4">
         {sliderData.map((_, index) => (
           <div
-            key={index}
+            key={`dot-${index}`}
             onClick={() => handleSlideChange(index)}
-            className={`h-2 w-2 rounded-full cursor-pointer ${
-              currentSlide === index ? "bg-orange-600" : "bg-gray-500/30"
+            className={`h-2 w-2 rounded-full cursor-pointer transition-all ${
+              currentSlide === index ? "bg-orange-600 scale-110" : "bg-gray-500/30"
             }`}
           ></div>
         ))}

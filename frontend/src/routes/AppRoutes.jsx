@@ -8,6 +8,8 @@ import Profile from "../pages/profile";
 
 // Existing pages
 import Home from "../pages/Home";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
 import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList";
 import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 import Cart from "../pages/Cart";
@@ -18,8 +20,10 @@ import Admin from "../pages/Admin/admin";
 import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
-import Report from "../pages/Admin/reports";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
+import QuarterlySalesReport from "../pages/Admin/quarterlysales";
+import TopProductsReport from "../pages/Admin/TopProductsReport";
+import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -38,7 +42,8 @@ export default function AppRoutes() {
         <Route path="/products" element={<CustomerProductList />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/products/cart/checkout" element={<Checkout />} />
-
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -59,19 +64,24 @@ export default function AppRoutes() {
           <Route path="productlist" element={<ProductList />} />
 
           {/* Reports hub */}
-          <Route path="report" element={<Report />} />
           {/* Customer Summary & Payments (no navbar in that page component) */}
           <Route
             path="report/customer-summary"
             element={<CustomerSummaryReport />}
           />
-          {/*
-            Optional: Add the other report routes as you build them:
-            <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
-            <Route path="report/top-products" element={<TopProductsReport />} />
-            <Route path="report/category-orders" element={<CategoryOrdersReport />} />
-            <Route path="report/delivery-time" element={<DeliveryTimeReport />} />
-          */}
+          <Route
+            path="report/quarterly-sales"
+            element={<QuarterlySalesReport />}
+          />
+          <Route path="report/top-products" element={<TopProductsReport />} />
+          <Route
+            path="/admin/report/top-selling"
+            element={
+              <ProtectedRoute role="admin">
+                <TopSellingProductsReport />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         {/* Protected customer routes */}

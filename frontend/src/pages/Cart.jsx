@@ -98,7 +98,7 @@ export default function Cart() {
           <p className="text-gray-600 mb-4">Please log in to view your cart</p>
           <button
             onClick={() => navigate("/login")}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-6 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700"
           >
             Log In
           </button>
@@ -127,7 +127,7 @@ export default function Cart() {
           {error.includes("Authentication failed") && (
             <button
               onClick={() => navigate("/login")}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mt-4"
+              className="px-6 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 mt-4"
             >
               Log In Again
             </button>
@@ -142,13 +142,13 @@ export default function Cart() {
     return (
       <>
         <Navbar />
-        <div className="px-6 md:px-16 lg:px-32 py-12 text-center">
-          <p className="text-gray-600 mb-4">Your cart is empty</p>
+        <div className="px-6 md:px-16 lg:px-full py-12 text-start">
+          <p className=" text-xl text-gray-600 mb-4">Your cart is empty</p>
           <button
             onClick={() => navigate("/products")}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="group flex flex-col justify-items-center mt-6 gap-2 px-100 text-orange-600 hover:text-black"
           >
-            Continue Shopping
+            &larr; Continue Shopping
           </button>
         </div>
         <Footer />

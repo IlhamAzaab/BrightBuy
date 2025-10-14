@@ -54,6 +54,15 @@ app.use("/api/estimate", estimateTimeRoutes);
 import productsRouter from "../routes/products.js";
 app.use("/api/products", productsRouter);
 
+import topSellingroute from "../routes/topselling.js";
+app.use("/api/topselling", topSellingroute);
+
+import mostPopularRoute from "../routes/mostpopular.js";
+app.use("/api/mostpopular", mostPopularRoute);
+
+import headerSliderRoute from "../routes/headerslider.js";
+app.use("/api/headerslider", headerSliderRoute);
+
 import ordersRoute from "../routes/orders.js";
 import cartRoutes from "../routes/cart.js";
 import customersRoute from "../routes/customers.js";
