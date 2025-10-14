@@ -5,7 +5,6 @@ import Footer from "../components/Footer";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 
 export default function Checkout() {
   const { user } = useContext(AuthContext);
@@ -18,7 +17,6 @@ export default function Checkout() {
   const [hasAddress, setHasAddress] = useState(false);
   const [editing, setEditing] = useState(false);
   const [estimatedDate, setEstimatedDate] = useState(0);
-  const [success, setSuccess] = useState(false);
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
   const navigate = useNavigate();
   const formatPrice = (amount) =>

@@ -312,7 +312,7 @@ UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudina
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106536/dfqpkjvh8/oqpbta0mu0ylixfcl5o0.jpg' WHERE (Variant_ID = '2');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106539/dfqpkjvh8/zj1rak94ub2jtxlu39zt.jpg' WHERE (Variant_ID = '1');
 
-UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760247910/dfqpkjvh8/wm0i2mgnpltqy1t0yk4j.jpg' WHERE (Variant_ID = '39');
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106521/dfqpkjvh8/airpodspro21.webp' WHERE (Variant_ID = '39');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106520/dfqpkjvh8/iv3sasd35vmybf1ombrh.webp' WHERE (Variant_ID = '38');
 UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106522/dfqpkjvh8/rq2ofeijp6whnixbuaew.webp' WHERE (Variant_ID = '37');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106552/dfqpkjvh8/jrjb9ktrzff2hceybbwu.jpg' WHERE (Variant_ID = '36');

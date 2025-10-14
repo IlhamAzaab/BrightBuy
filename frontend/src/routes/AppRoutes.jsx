@@ -24,6 +24,7 @@ import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
 import QuarterlySalesReport from "../pages/Admin/quarterlysales";
 import TopProductsReport from "../pages/Admin/TopProductsReport";
 import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
+import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -82,6 +83,10 @@ export default function AppRoutes() {
               </ProtectedRoute>
             }
           />
+          <Route
+          path="/admin/report/category-wise-orders"
+          element={<CategoryWiseOrders />}
+        />
         </Route>
 
         {/* Protected customer routes */}
