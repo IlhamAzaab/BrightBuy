@@ -76,7 +76,7 @@ export default function AppRoutes() {
             element={<QuarterlySalesReport />}
           />
           <Route
-            path="/admin/report/delivery-time-estimates"
+            path="/admin/report/delivery-time"
             element={<DeliveryTimeEstimates />}
           />
           <Route
