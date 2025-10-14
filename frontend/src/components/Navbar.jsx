@@ -138,14 +138,14 @@ const Navbar = () => {
                 onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
                 className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
               >
-                <img src={user.avatar} alt="user avatar" className="w-5 h-5 rounded-full" />
+                <img src={user.image_URL ? `http://localhost:9000${user.image_URL}` : "/images/default.jpg"} alt="user avatar" className="w-5 h-5 rounded-full" />
                 <span>{user.name}</span>
               </button>
 
               {mobileDropdownOpen && isCustomer && (
                 <div className="flex flex-col mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-50">
-                  <button onClick={() => handleNavigation("/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
-                  <button onClick={() => handleNavigation("/my-orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
+                  <button onClick={() => handleNavigation("/products/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
+                  <button onClick={() => handleNavigation("/orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
                   <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
                   <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
                 </div>
