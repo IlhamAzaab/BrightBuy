@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000") + "";
 
@@ -13,7 +14,7 @@ const resolveImageUrl = (u) => {
 };
 
 function Spinner() {
-  return <div style={{ padding: 24, color: "#6b7280" }}>Loading…</div>;
+  return <div className="p-6 text-gray-500">Loading…</div>;
 }
 
 function IconBtn({ onClick, disabled, title, children }) {
@@ -23,14 +24,11 @@ function IconBtn({ onClick, disabled, title, children }) {
       title={title}
       onClick={onClick}
       disabled={disabled}
-      style={{
-        padding: "4px 8px",
-        border: "1px solid #d1d5db",
-        borderRadius: 6,
-        background: disabled ? "#f3f4f6" : "#fff",
-        color: disabled ? "#9ca3af" : "#111827",
-        cursor: disabled ? "not-allowed" : "pointer",
-      }}
+      className={`px-2 py-1 border rounded-md text-sm ${
+        disabled
+          ? "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed"
+          : "bg-white border-gray-300 text-gray-900 cursor-pointer"
+      }`}
     >
       {children}
     </button>
@@ -39,11 +37,25 @@ function IconBtn({ onClick, disabled, title, children }) {
 
 export default function AdminProductList() {
   const [loading, setLoading] = useState(true);
-  const [rows, setRows] = useState([]); // [{ Product_ID,..., variants:[{... Image_URL }]}]
-  const [open, setOpen] = useState({}); // { [productId]: bool }
-  const [dirty, setDirty] = useState({}); // { [variantId]: { price?, stock? } }
+  const [rows, setRows] = useState([]);
+  const [open, setOpen] = useState({});
+  const [dirty, setDirty] = useState({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.scrollTo && rows.length > 0) {
+      const id = location.state.scrollTo;
+      setOpen((o) => ({ ...o, [id]: true }));
+      const el = document.getElementById(`product-${id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [location.state, rows, navigate]);
 
   useEffect(() => {
     (async () => {
@@ -139,63 +151,48 @@ export default function AdminProductList() {
   if (loading) return <Spinner />;
 
   return (
-    <div style={{ minHeight: "100vh", padding: 16, display: "flex", justifyContent: "center" }}>
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 1000,
-          background: "#fff",
-          border: "1px solid #e5e7eb",
-          borderRadius: 10,
-          overflow: "hidden",
-          boxShadow: "0 1px 2px rgba(0,0,0,.05)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "12px 16px",
-            borderBottom: "1px solid #e5e7eb",
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: 18 }}>All Product</h2>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 13, color: "#6b7280" }}>
+    <div className="min-h-screen p-4 flex justify-center bg-gray-50">
+      <div className="w-full max-w-5xl bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 border-b border-gray-200">
+          <div className="flex items-center gap-5">
+            <h2 className="text-lg font-semibold">All Products</h2>
+            <button
+              onClick={() => navigate("/admin/outofstocklist")}
+              className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700"
+            >
+              Out of stock Products
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-500">
               {dirtyCount} change{dirtyCount === 1 ? "" : "s"}
             </span>
             <button
               onClick={saveChanges}
               disabled={dirtyCount === 0 || saving}
-              style={{
-                padding: "8px 14px",
-                borderRadius: 8,
-                border: "none",
-                color: "#fff",
-                background: dirtyCount === 0 || saving ? "#9ca3af" : "#059669",
-                cursor: dirtyCount === 0 || saving ? "not-allowed" : "pointer",
-              }}
+              className={`px-3 py-1 rounded-md text-white ${
+                dirtyCount === 0 || saving ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+              }`}
             >
               {saving ? "Saving…" : "Save changes"}
             </button>
           </div>
         </div>
 
-        {error && (
-          <div style={{ padding: "8px 16px", color: "#b91c1c", borderBottom: "1px solid #fee2e2" }}>
-            {error}
-          </div>
-        )}
+        {/* Error */}
+        {error && <div className="p-3 text-red-700 border-b border-red-200">{error}</div>}
 
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", fontSize: 14, borderCollapse: "collapse" }}>
-            <thead style={{ background: "#f9fafb", textAlign: "left" }}>
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border-collapse">
+            <thead className="bg-gray-100 text-left">
               <tr>
-                <th style={{ padding: "10px 16px", width: "40%" }}>Product</th>
-                <th style={{ padding: "10px 16px" }}>Category</th>
-                <th style={{ padding: "10px 16px" }}>Price</th>
-                <th style={{ padding: "10px 16px" }}>Quantity</th>
-                <th style={{ padding: "10px 16px" }}>Remove</th>
+                <th className="px-4 py-2 w-2/5">Product</th>
+                <th className="px-4 py-2">Category</th>
+                <th className="px-4 py-2">Price</th>
+                <th className="px-4 py-2">Quantity</th>
+                <th className="px-4 py-2">Remove</th>
               </tr>
             </thead>
             <tbody>
@@ -213,148 +210,93 @@ export default function AdminProductList() {
 
                 return (
                   <React.Fragment key={p.Product_ID}>
-                    <tr style={{ borderTop: "1px solid #e5e7eb", background: "#fff" }}>
-                      <td style={{ padding: "10px 16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {/* Main product row */}
+                    <tr
+                      id={`product-${p.Product_ID}`}
+                      className="border-t border-gray-200 bg-white"
+                    >
+                      <td className="px-4 py-2">
+                        <div className="flex items-center gap-2">
                           <button
-                            onClick={() =>
-                              setOpen((o) => ({ ...o, [p.Product_ID]: !o[p.Product_ID] }))
-                            }
-                            style={{
-                              padding: "2px 8px",
-                              border: "1px solid #d1d5db",
-                              borderRadius: 6,
-                              background: "#fff",
-                              cursor: "pointer",
-                            }}
+                            onClick={() => setOpen((o) => ({ ...o, [p.Product_ID]: !o[p.Product_ID] }))}
                             title={open[p.Product_ID] ? "Hide variants" : "Show variants"}
+                            className="px-2 py-0.5 border rounded-md text-gray-600 hover:bg-gray-100"
                           >
                             {open[p.Product_ID] ? "▾" : "▸"}
                           </button>
-
-                          {p.Image_URL ? (
+                          {p.Image_URL && (
                             <img
                               src={resolveImageUrl(p.Image_URL)}
                               alt=""
-                              style={{
-                                width: 48,
-                                height: 48,
-                                objectFit: "cover",
-                                borderRadius: 6,
-                                background: "#f3f4f6",
-                              }}
+                              className="w-12 h-12 object-cover rounded-md bg-gray-100"
                               onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                             />
-                          ) : null}
-
-                          <span style={{ fontWeight: 600 }}>{p.Product_Name}</span>
+                          )}
+                          <span className="font-medium">{p.Product_Name}</span>
                         </div>
                       </td>
-
-                      <td style={{ padding: "10px 16px" }}>{p.Category_ID}</td>
-                      <td style={{ padding: "10px 16px" }}>{priceLabel}</td>
-                      <td style={{ padding: "10px 16px" }}>{totalQty}</td>
-
-                      <td style={{ padding: "10px 16px" }}>
+                      <td className="px-4 py-2">{p.Category_ID}</td>
+                      <td className="px-4 py-2">{priceLabel}</td>
+                      <td className="px-4 py-2">{totalQty}</td>
+                      <td className="px-4 py-2">
                         <button
                           onClick={() => handleRemoveProduct(p.Product_ID)}
-                          style={{
-                            padding: "6px 10px",
-                            borderRadius: 8,
-                            border: "none",
-                            background: "#dc2626",
-                            color: "#fff",
-                            cursor: "pointer",
-                          }}
+                          className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700"
                         >
                           Remove
                         </button>
                       </td>
                     </tr>
 
+                    {/* Variant rows */}
                     {open[p.Product_ID] && (
-                      <tr style={{ background: "#fafafa" }}>
-                        <td colSpan={5} style={{ padding: "10px 16px" }}>
+                      <tr className="bg-gray-50">
+                        <td colSpan={5} className="px-4 py-2">
                           {p.variants.length === 0 ? (
-                            <div style={{ color: "#6b7280" }}>No variants.</div>
+                            <div className="text-gray-500">No variants.</div>
                           ) : (
-                            <div style={{ overflowX: "auto" }}>
-                              <table style={{ width: "100%", fontSize: 13 }}>
-                                <thead>
-                                  <tr style={{ color: "#4b5563" }}>
-                                    <th style={{ padding: "8px 0", textAlign: "left" }}>Photo</th>
-                                    <th style={{ padding: "8px 0", textAlign: "left" }}>Variant</th>
-                                    <th style={{ padding: "8px 0" }}>Price</th>
-                                    <th style={{ padding: "8px 0" }}>Quantity</th>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-xs">
+                                <thead className="text-gray-700">
+                                  <tr>
+                                    <th className="py-1 text-left">Photo</th>
+                                    <th className="py-1 text-left">Variant</th>
+                                    <th className="py-1">Price</th>
+                                    <th className="py-1">Quantity</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {p.variants.map((v) => (
-                                    <tr key={v.Variant_ID} style={{ borderTop: "1px solid #e5e7eb" }}>
-                                      {/* Variant photo */}
-                                      <td style={{ padding: "8px 10px" }}>
-                                        {v.Image_URL ? (
+                                    <tr key={v.Variant_ID} className="border-t border-gray-200">
+                                      <td className="py-1">
+                                        {v.Image_URL && (
                                           <img
                                             src={resolveImageUrl(v.Image_URL)}
                                             alt=""
-                                            style={{
-                                              width: 40,
-                                              height: 40,
-                                              objectFit: "cover",
-                                              borderRadius: 6,
-                                              background: "#f3f4f6",
-                                            }}
-                                            onError={(e) =>
-                                              (e.currentTarget.style.visibility = "hidden")
-                                            }
+                                            className="w-10 h-10 object-cover rounded-md bg-gray-100"
+                                            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                                           />
-                                        ) : null}
+                                        )}
                                       </td>
-
-                                      {/* Variant name */}
-                                      <td style={{ padding: "8px 0" }}>
+                                      <td className="py-1">
                                         {(v.Colour || "—") + (v.Size ? ` • ${v.Size}` : "")}
                                       </td>
-
-                                      {/* Price controls */}
-                                      <td style={{ padding: "8px 0" }}>
-                                        <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                                          <IconBtn title="-1" onClick={() => adjust(v, "price", -1)}>
-                                            −
-                                          </IconBtn>
-                                          <span style={{ minWidth: 70, textAlign: "center" }}>
-                                            ${displayValue(v, "price").toFixed(2)}
-                                          </span>
-                                          <IconBtn title="+1" onClick={() => adjust(v, "price", +1)}>
-                                            +
-                                          </IconBtn>
-                                          <IconBtn title="-0.10" onClick={() => adjust(v, "price", -0.1)}>
-                                            -0.10
-                                          </IconBtn>
-                                          <IconBtn title="+0.10" onClick={() => adjust(v, "price", +0.1)}>
-                                            +0.10
-                                          </IconBtn>
+                                      <td className="py-1">
+                                        <div className="inline-flex items-center gap-1">
+                                          <IconBtn title="-1" onClick={() => adjust(v, "price", -1)}>−</IconBtn>
+                                          <span className="w-16 text-center">${displayValue(v, "price").toFixed(2)}</span>
+                                          <IconBtn title="+1" onClick={() => adjust(v, "price", +1)}>+</IconBtn>
+                                          <IconBtn title="-0.10" onClick={() => adjust(v, "price", -0.1)}>-0.10</IconBtn>
+                                          <IconBtn title="+0.10" onClick={() => adjust(v, "price", +0.1)}>+0.10</IconBtn>
                                         </div>
                                       </td>
-
-                                      {/* Stock controls */}
-                                      <td style={{ padding: "8px 0" }}>
-                                        <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                                          <IconBtn title="-1" onClick={() => adjust(v, "stock", -1)}>
-                                            −
-                                          </IconBtn>
-                                          <span style={{ minWidth: 48, textAlign: "center" }}>
-                                            {displayValue(v, "stock")}
-                                          </span>
-                                          <IconBtn title="+1" onClick={() => adjust(v, "stock", +1)}>
-                                            +
-                                          </IconBtn>
-                                          <IconBtn title="-10" onClick={() => adjust(v, "stock", -10)}>
-                                            -10
-                                          </IconBtn>
-                                          <IconBtn title="+10" onClick={() => adjust(v, "stock", +10)}>
-                                            +10
-                                          </IconBtn>
+                                      <td className="py-1">
+                                        <div className="inline-flex items-center gap-1">
+                                          <IconBtn title="-1" onClick={() => adjust(v, "stock", -1)}>−</IconBtn>
+                                          <span className="w-12 text-center">{displayValue(v, "stock")}</span>
+                                          <IconBtn title="+1" onClick={() => adjust(v, "stock", +1)}>+</IconBtn>
+                                          <IconBtn title="-10" onClick={() => adjust(v, "stock", -10)}>-10</IconBtn>
+                                          <IconBtn title="+10" onClick={() => adjust(v, "stock", +10)}>+10</IconBtn>
                                         </div>
                                       </td>
                                     </tr>
@@ -376,4 +318,3 @@ export default function AdminProductList() {
     </div>
   );
 }
-

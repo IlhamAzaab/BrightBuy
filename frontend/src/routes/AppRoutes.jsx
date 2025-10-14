@@ -20,12 +20,14 @@ import Admin from "../pages/Admin/admin";
 import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
+import Report from "../pages/Admin/reports";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
 import QuarterlySalesReport from "../pages/Admin/quarterlysales";
 import TopProductsReport from "../pages/Admin/TopProductsReport";
 import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
 import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
 import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
+import Outofstocklist from "../pages/Admin/outofstocklist";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -64,7 +66,7 @@ export default function AppRoutes() {
           <Route path="addproduct" element={<AddProduct />} />
           <Route path="addadmin" element={<AddAdmin />} />
           <Route path="productlist" element={<ProductList />} />
-
+          <Route path="outofstocklist" element={<Outofstocklist />} />
           {/* Reports hub */}
           {/* Customer Summary & Payments (no navbar in that page component) */}
           <Route
