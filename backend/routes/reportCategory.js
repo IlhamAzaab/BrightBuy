@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import pool from '../db.js';
+import db from "../db.js";
 import auth from "../middleware/auth.js";
 
 const router = Router();
 
-// Add admin check middleware
+// Admin check middleware
 const adminOnly = (req, res, next) => {
-  if (!req.user?.isAdmin) {
+  if (req.user?.role !== 'admin') {
     return res.status(403).json({ error: "Admin access required" });
   }
   next();
@@ -14,24 +14,27 @@ const adminOnly = (req, res, next) => {
 
 /**
  * GET /api/reports/category
- * Returns number of confirmed orders per category
+ * Returns number of orders per category
  * Protected by auth and admin check
  */
 router.get('/', auth, adminOnly, async (req, res) => {
   try {
-    const [rows] = await pool.query(`
+    const [rows] = await db.query(`
       SELECT 
         c.Category_Name,
-        COUNT(DISTINCT o.Order_ID) as TotalOrders
-      FROM categories c
-      LEFT JOIN products p ON c.Category_ID = p.Category_ID
-      LEFT JOIN product_variants pv ON p.Product_ID = pv.Product_ID
-      LEFT JOIN order_items oi ON pv.Variant_ID = oi.Variant_ID
-      LEFT JOIN orders o ON oi.Order_ID = o.Order_ID
-      WHERE o.Status = 'Confirmed'
+        COUNT(DISTINCT o.Order_ID) AS TotalOrders
+      FROM Category c
+      LEFT JOIN Product p ON c.Category_ID = p.Category_ID
+      LEFT JOIN Variant v ON p.Product_ID = v.Product_ID
+      LEFT JOIN Cart_Item ci ON v.Variant_ID = ci.Variant_ID
+      LEFT JOIN \`Order\` o ON ci.Cart_ID = o.Cart_ID
+      WHERE o.Order_ID IS NOT NULL
       GROUP BY c.Category_ID, c.Category_Name
       ORDER BY TotalOrders DESC
     `);
+
+    // Remove this line to stop console output:
+    // console.log('Category report results:', rows);
 
     res.json({
       success: true,
