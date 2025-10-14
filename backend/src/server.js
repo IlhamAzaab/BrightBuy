@@ -63,6 +63,9 @@ app.use("/api/mostpopular", mostPopularRoute);
 import headerSliderRoute from "../routes/headerslider.js";
 app.use("/api/headerslider", headerSliderRoute);
 
+import reportDeliveryRouter from "../routes/reportDelivery.js";
+app.use("/api/admin/reports", reportDeliveryRouter);
+
 import ordersRoute from "../routes/orders.js";
 import cartRoutes from "../routes/cart.js";
 import customersRoute from "../routes/customers.js";

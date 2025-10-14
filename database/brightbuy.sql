@@ -313,6 +313,7 @@ UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/i
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106539/dfqpkjvh8/zj1rak94ub2jtxlu39zt.jpg' WHERE (Variant_ID = '1');
 
 UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106521/dfqpkjvh8/airpodspro21.webp' WHERE (Variant_ID = '39');
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106521/dfqpkjvh8/airpodspro21.webp' WHERE (Variant_ID = '39');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106520/dfqpkjvh8/iv3sasd35vmybf1ombrh.webp' WHERE (Variant_ID = '38');
 UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106522/dfqpkjvh8/rq2ofeijp6whnixbuaew.webp' WHERE (Variant_ID = '37');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106552/dfqpkjvh8/jrjb9ktrzff2hceybbwu.jpg' WHERE (Variant_ID = '36');
@@ -468,24 +469,3 @@ ALTER TABLE `Order`
 ADD CONSTRAINT fk_order_cart 
 FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
 
--- Modify Main_City column to have default value FALSE and update existing cities accordingly
-ALTER TABLE city
-CHANGE Main_City Main_City BOOL DEFAULT 0;
-UPDATE city SET Main_City=0 WHERE City_ID=5;
-UPDATE city SET Main_City=0 WHERE City_ID=6;
-UPDATE city SET Main_City=0 WHERE City_ID=7;
-UPDATE city SET Main_City=0 WHERE City_ID=8;
-UPDATE city SET Main_City=0 WHERE City_ID=9;
-
-CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
-SELECT DATE_FORMAT(o.Order_Date, '%Y-%m') AS month, -- Format date as YYYY-MM
-    p.Product_ID,
-    p.Product_Name,
-    p.Brand,
-    SUM(ci.Quantity) AS total_quantity_sold,
-    SUM(ci.Total_price) AS total_revenue
-FROM `Order` o
-JOIN Cart_Item ci ON o.Cart_ID = ci.Cart_ID
-JOIN Product p ON ci.Product_ID = p.Product_ID
-GROUP BY month, p.Product_ID
-ORDER BY month DESC, total_quantity_sold DESC;

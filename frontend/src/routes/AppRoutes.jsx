@@ -25,6 +25,7 @@ import QuarterlySalesReport from "../pages/Admin/quarterlysales";
 import TopProductsReport from "../pages/Admin/TopProductsReport";
 import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
 import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
+import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -73,6 +74,10 @@ export default function AppRoutes() {
           <Route
             path="report/quarterly-sales"
             element={<QuarterlySalesReport />}
+          />
+          <Route
+            path="/admin/report/delivery-time-estimates"
+            element={<DeliveryTimeEstimates />}
           />
           <Route
             path="/admin/report/category-orders"
