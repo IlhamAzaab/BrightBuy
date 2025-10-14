@@ -33,9 +33,8 @@ function currency(amount) {
 const statusColors = {
   Delivered: 'bg-green-100 text-green-700 border-green-200',
   Pending: 'bg-amber-100 text-amber-700 border-amber-200',
-  Shipped: 'bg-blue-100 text-blue-700 border-blue-200',
-  Processing: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  Cancelled: 'bg-red-100 text-red-700 border-red-200'
+  completed: 'bg-green-100 text-green-700 border-green-200',
+  pending: 'bg-amber-100 text-amber-700 border-amber-200'
 };
 
 export default function CustomerOrdersViewer() {
@@ -87,12 +86,12 @@ export default function CustomerOrdersViewer() {
         const data = await res.json();
         // Map backend shape to expected fields (normalize)
         const mapped = data.map(o => ({
-          id: o.id || o.Order_ID || o.OrderId || o.Order_ID, // fallback variations
+          id: o.id || o.Order_ID || o.OrderId,
           placedAt: o.date || o.Order_Date || o.placedAt,
-          // Normalize to DB enum where possible: Delivered | Pending
+          // Normalize to DB enum: only 'Delivered' and 'Pending' are supported
           status: (o.deliveryStatus === 'Delivered' || o.status === 'completed')
             ? 'Delivered'
-            : (o.deliveryStatus || o.status || 'Pending'),
+            : 'Pending',
           items: (o.items || []).map((it, i) => ({
             sku: it.sku || `${o.id}-item-${i}`,
             productName: it.product || it.productName || 'Product',

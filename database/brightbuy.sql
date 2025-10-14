@@ -392,14 +392,14 @@ UPDATE User SET City_ID = 1 WHERE User_ID = 6;
 -- Insert Delivery data
 INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
 (1, 'Standard Delivery', '123 Broadway Ave, Houston, TX 77002', 'Delivered', '2024-01-15'),
-(2, 'Express Delivery', '456 Elm Street, Dallas, TX 75201', 'In Transit', '2024-01-20'),
-(3, 'Standard Delivery', '321 Main Street, Austin, TX 73301', 'Processing', '2024-01-25'),
+(2, 'Express Delivery', '456 Elm Street, Dallas, TX 75201', 'Delivered', '2024-01-20'),
+(3, 'Standard Delivery', '321 Main Street, Austin, TX 73301', 'Pending', '2024-01-25'),
 (4, 'Express Delivery', '654 Central Ave, San Antonio, TX 78205', 'Delivered', '2024-01-18'),
 (5, 'Standard Delivery', '789 Richmond Ave, Houston, TX 77057', 'Delivered', '2024-01-12'),
-(6, 'Express Delivery', '123 Broadway Ave, Houston, TX 77002', 'In Transit', '2024-01-22'),
-(7, 'Standard Delivery', '456 Commerce St, Dallas, TX 75202', 'Processing', '2024-01-28'),
-(8, 'Express Delivery', '321 Congress Ave, Austin, TX 78701', 'Shipped', '2024-01-24'),
-(9, 'Standard Delivery', '654 Market St, San Antonio, TX 78205', 'Processing', '2024-01-30'),
+(6, 'Express Delivery', '123 Broadway Ave, Houston, TX 77002', 'Pending', '2024-01-22'),
+(7, 'Standard Delivery', '456 Commerce St, Dallas, TX 75202', 'Pending', '2024-01-28'),
+(8, 'Express Delivery', '321 Congress Ave, Austin, TX 78701', 'Delivered', '2024-01-24'),
+(9, 'Standard Delivery', '654 Market St, San Antonio, TX 78205', 'Pending', '2024-01-30'),
 (10, 'Express Delivery', '789 Westheimer Rd, Houston, TX 77027', 'Delivered', '2024-01-16');
 
 -- Insert Cart data (one cart per user)

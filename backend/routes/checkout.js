@@ -48,11 +48,12 @@ router.post("/", auth, async (req, res) => {
       0
     );
 
-    // 4️⃣ Insert order record
+    // 4️⃣ Insert order record - fix column name with backticks and add Order_Number
+    const orderNumber = Date.now(); // Simple order number generation
     const [orderResult] = await connection.query(
-      `INSERT INTO \`order\` (User_ID, Cart_ID, Total_Amount, Delivery_ID, Payment_Method, Order_Date)
-       VALUES (?, ?, ?, ?, ?, NOW())`,
-      [userId, cartId, totalAmount, deliveryId, paymentMethod]
+      `INSERT INTO \`Order\` (User_ID, Cart_ID, \`Total Amount\`, Delivery_ID, Payment_Method, Order_Date, Order_Number)
+       VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
+      [userId, cartId, totalAmount, deliveryId, paymentMethod, orderNumber]
     );
 
     // 5️⃣ Reduce stock quantities

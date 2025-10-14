@@ -9,12 +9,10 @@ router.get("/", async (req, res) => {
   if (!userId) return res.status(400).json({ error: "Missing userId" });
 
   try {
-    // Determine total column variant
-    const [cols] = await pool.query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Order'`);
-    const names = cols.map(c => c.COLUMN_NAME);
-    const totalExpr = names.includes('Total_Amount') ? 'o.Total_Amount' : names.includes('Total Amount') ? 'o.`Total Amount`' : '0';
+    // Use the correct column name with backticks for spaces
+    const totalExpr = 'o.`Total Amount`';
 
-  let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, d.Delivery_Status, d.Estimated_delivery_Date,
+    let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, d.Delivery_Status, d.Estimated_delivery_Date,
                       ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price
                FROM \`Order\` o
                JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
@@ -25,11 +23,11 @@ router.get("/", async (req, res) => {
                WHERE o.User_ID = ?`;
     const params = [userId];
 
-    // Filter by derived status using delivery status
+    // Filter by derived status using delivery status (only 'Delivered' and 'Pending' are supported)
     if (status === 'completed') {
       sql += ` AND d.Delivery_Status = 'Delivered'`;
     } else if (status === 'pending') {
-      sql += ` AND d.Delivery_Status <> 'Delivered'`;
+      sql += ` AND d.Delivery_Status = 'Pending'`;
     }
 
     sql += ' ORDER BY o.Order_Date DESC';
@@ -45,7 +43,7 @@ router.get("/", async (req, res) => {
           id: r.Order_ID,
           total: r.Total_Amount,
           status: logicalStatus,          // used for tab logic (completed vs pending)
-          deliveryStatus: r.Delivery_Status, // show real delivery status when not delivered
+          deliveryStatus: r.Delivery_Status, // show real delivery status 
           estimatedDelivery: !isDelivered ? r.Estimated_delivery_Date : null,
           date: r.Order_Date,
           items: []
@@ -78,10 +76,10 @@ router.put("/:id/status", async (req, res) => {
   // Mapping from logical UI statuses to actual Delivery.Delivery_Status values
   const logicalMap = {
     completed: 'Delivered',
-    pending: 'Processing'
+    pending: 'Pending'
   };
 
-  // Allowed direct delivery statuses (extend if you add more)
+  // Allowed direct delivery statuses (based on database ENUM: only 'Delivered' and 'Pending')
   const allowedDeliveryStatuses = new Set(['Delivered', 'Pending']);
 
   // Decide target delivery status
