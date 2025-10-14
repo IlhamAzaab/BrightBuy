@@ -497,3 +497,23 @@ BEGIN
   ORDER BY Quarter;
 END $$
 DELIMITER ;
+
+-- Create view for monthly top-selling products
+CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
+SELECT
+    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month, -- Format date as YYYY-MM
+    p.Product_ID,
+    p.Product_Name,
+    p.Brand,
+    SUM(ci.Quantity) AS total_quantity_sold,
+    SUM(ci.Total_price) AS total_revenue
+FROM
+    Order o
+JOIN
+    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
+JOIN
+    Product p ON ci.Product_ID = p.Product_ID
+GROUP BY
+    month, p.Product_ID
+ORDER BY
+    month DESC, total_quantity_sold DESC;
