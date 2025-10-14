@@ -77,6 +77,7 @@ router.post("/", auth, async (req, res) => {
       [cartId]
     );
 
+    // ✅ Commit once after all DB operations
     await connection.commit();
 
     return res.status(201).json({

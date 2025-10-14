@@ -46,10 +46,13 @@ const AddAdmin = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Add admins</h2>
+      <div className="overflow-hidden border border-gray-300 rounded-lg">
+      <div className="bg-white px-4 py-2 border-b border-gray-200">
+      <h2 className="text-xl font-bold mb-2 mt-2">Add Admins</h2>
+      </div>
       <table className="w-full border">
         <thead>
-          <tr className="bg-gray-200">
+          <tr className="bg-gray-100">
             <th className="p-2 border">ID</th>
             <th className="p-2 border">Name</th>
             <th className="p-2 border">Email</th>
@@ -80,6 +83,7 @@ const AddAdmin = () => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

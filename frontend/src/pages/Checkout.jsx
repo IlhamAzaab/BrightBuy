@@ -90,7 +90,7 @@ useEffect(() => {
       setTimeout(() => {
         navigate("/orders");
       }, 3000);
-  }
+    }
   } catch (err) {
     console.error("Failed to place order", err);
     alert("Failed to place order: " + err.response?.data?.error || err.message);
