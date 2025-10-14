@@ -93,7 +93,7 @@ const Orders = () => {
       <div className="px-6 md:px-16 lg:px-32 py-8 min-h-[70vh] bg-gray-50">
         <div className="flex flex-col items-center px-8 md:px-16">
         <div className="flex flex-col items-end pt-8 py-4">
-          <p className="text-4xl font-medium">Your Order</p>
+          <p className="text-4xl font-medium">Your Orders</p>
           <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
           <button
             onClick={() => navigate("/")}
