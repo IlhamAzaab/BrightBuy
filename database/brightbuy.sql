@@ -85,7 +85,7 @@ CREATE TABLE `Order` (
   `Payment_method` Varchar(25),
   `Delivery_ID` Int,
   `Order_Date` DATE,
-  `Order_Number` Int,
+  `Order_Number` BIGINT,
   PRIMARY KEY (`Order_ID`),
   FOREIGN KEY (`User_ID`)
       REFERENCES `User`(`User_ID`)
@@ -503,13 +503,14 @@ DELIMITER ;
 -- Create a view to summarize total orders per category
 CREATE VIEW CategoryOrderSummary AS
 SELECT 
-    c.Category_Name,
+    c.Category_Name, 
     COUNT(DISTINCT o.Order_ID) AS TotalOrders
 FROM Category c
 LEFT JOIN Product p ON c.Category_ID = p.Category_ID
 LEFT JOIN Variant v ON p.Product_ID = v.Product_ID
 LEFT JOIN Cart_Item ci ON v.Variant_ID = ci.Variant_ID
-LEFT JOIN Order o ON ci.Cart_ID = o.Cart_ID
+LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
 WHERE o.Order_ID IS NOT NULL
 GROUP BY c.Category_ID, c.Category_Name
-ORDER BY TotalOrders DESC;
+ORDER BY TotalOrders DESC;
+

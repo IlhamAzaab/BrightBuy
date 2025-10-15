@@ -73,8 +73,6 @@ useEffect(() => {
     return alert("Please fill all required details before placing the order.");
   }
 
-  console.log({ address, deliveryMethod, paymentMethod, estimatedDate });
-
   try {
     const res = await axios.post(`${API_BASE}/api/checkout`, {
       deliveryAddress: address,
