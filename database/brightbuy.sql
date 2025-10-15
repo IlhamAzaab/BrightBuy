@@ -85,7 +85,7 @@ CREATE TABLE `Order` (
   `Payment_method` Varchar(25),
   `Delivery_ID` Int,
   `Order_Date` DATE,
-  `Order_Number` Int,
+  `Order_Number` BIGINT,
   PRIMARY KEY (`Order_ID`),
   FOREIGN KEY (`User_ID`)
       REFERENCES `User`(`User_ID`)
@@ -298,6 +298,7 @@ INSERT INTO variant (Variant_ID, Product_ID, Colour, Size, Price, Stock_quantity
 (50, 40, 'Black',   NULL, 99.00,  40);
 
 -- Add image URLs to variants
+
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106569/dfqpkjvh8/oltkqyv4b2fyndyvi6tc.webp' WHERE (Variant_ID = '50');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106582/dfqpkjvh8/o9c55qshxpm5kmgeixhi.jpg' WHERE (Variant_ID = '49');
 UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106583/dfqpkjvh8/uvmsedjynyw99hykk4k2.jpg' WHERE (Variant_ID = '48');
@@ -391,14 +392,14 @@ UPDATE User SET City_ID = 1 WHERE User_ID = 6;
 -- Insert Delivery data
 INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
 (1, 'Standard Delivery', '123 Broadway Ave, Houston, TX 77002', 'Delivered', '2024-01-15'),
-(2, 'Express Delivery', '456 Elm Street, Dallas, TX 75201', 'In Transit', '2024-01-20'),
-(3, 'Standard Delivery', '321 Main Street, Austin, TX 73301', 'Processing', '2024-01-25'),
+(2, 'Express Delivery', '456 Elm Street, Dallas, TX 75201', 'Delivered', '2024-01-20'),
+(3, 'Standard Delivery', '321 Main Street, Austin, TX 73301', 'Pending', '2024-01-25'),
 (4, 'Express Delivery', '654 Central Ave, San Antonio, TX 78205', 'Delivered', '2024-01-18'),
 (5, 'Standard Delivery', '789 Richmond Ave, Houston, TX 77057', 'Delivered', '2024-01-12'),
-(6, 'Express Delivery', '123 Broadway Ave, Houston, TX 77002', 'In Transit', '2024-01-22'),
-(7, 'Standard Delivery', '456 Commerce St, Dallas, TX 75202', 'Processing', '2024-01-28'),
-(8, 'Express Delivery', '321 Congress Ave, Austin, TX 78701', 'Shipped', '2024-01-24'),
-(9, 'Standard Delivery', '654 Market St, San Antonio, TX 78205', 'Processing', '2024-01-30'),
+(6, 'Express Delivery', '123 Broadway Ave, Houston, TX 77002', 'Pending', '2024-01-22'),
+(7, 'Standard Delivery', '456 Commerce St, Dallas, TX 75202', 'Pending', '2024-01-28'),
+(8, 'Express Delivery', '321 Congress Ave, Austin, TX 78701', 'Delivered', '2024-01-24'),
+(9, 'Standard Delivery', '654 Market St, San Antonio, TX 78205', 'Pending', '2024-01-30'),
 (10, 'Express Delivery', '789 Westheimer Rd, Houston, TX 77027', 'Delivered', '2024-01-16');
 
 -- Insert Cart data (one cart per user)
@@ -498,37 +499,18 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Create view for monthly top-selling products
-CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
-SELECT
-    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month, -- Format date as YYYY-MM
-    p.Product_ID,
-    p.Product_Name,
-    p.Brand,
-    SUM(ci.Quantity) AS total_quantity_sold,
-    SUM(ci.Total_price) AS total_revenue
-FROM
-    Order o
-JOIN
-    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
-JOIN
-    Product p ON ci.Product_ID = p.Product_ID
-GROUP BY
-    month, p.Product_ID
-ORDER BY
-    month DESC, total_quantity_sold DESC;
-
 
 -- Create a view to summarize total orders per category
 CREATE VIEW CategoryOrderSummary AS
 SELECT 
-    c.Category_Name,
+    c.Category_Name, 
     COUNT(DISTINCT o.Order_ID) AS TotalOrders
 FROM Category c
 LEFT JOIN Product p ON c.Category_ID = p.Category_ID
 LEFT JOIN Variant v ON p.Product_ID = v.Product_ID
 LEFT JOIN Cart_Item ci ON v.Variant_ID = ci.Variant_ID
-LEFT JOIN Order o ON ci.Cart_ID = o.Cart_ID
+LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
 WHERE o.Order_ID IS NOT NULL
 GROUP BY c.Category_ID, c.Category_Name
-ORDER BY TotalOrders DESC;
+ORDER BY TotalOrders DESC;
+
