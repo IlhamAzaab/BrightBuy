@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
     // Use the correct column name with backticks for spaces
     const totalExpr = 'o.`Total Amount`';
 
-    let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, d.Delivery_Status, d.Estimated_delivery_Date,
+    let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date,
                       ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price
                FROM \`Order\` o
                JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
@@ -42,10 +42,11 @@ router.get("/", async (req, res) => {
         grouped[r.Order_ID] = {
           id: r.Order_ID,
           total: r.Total_Amount,
-          status: logicalStatus,          // used for tab logic (completed vs pending)
-          deliveryStatus: r.Delivery_Status, // show real delivery status 
+          status: logicalStatus,    
+          deliveryStatus: r.Delivery_Status, 
           estimatedDelivery: !isDelivered ? r.Estimated_delivery_Date : null,
           date: r.Order_Date,
+          Number: r.Order_Number,
           items: []
         };
       }
