@@ -514,3 +514,24 @@ WHERE o.Order_ID IS NOT NULL
 GROUP BY c.Category_ID, c.Category_Name
 ORDER BY TotalOrders DESC;
 
+-- Create view for monthly top-selling products
+CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
+SELECT
+    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month,
+    p.Product_ID,
+    p.Product_Name,
+    p.Brand,
+    SUM(ci.Quantity) AS total_quantity_sold,
+    SUM(ci.Total_price) AS total_revenue
+FROM
+    `Order` o
+JOIN
+    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
+JOIN
+    Variant v ON ci.Variant_ID = v.Variant_ID
+JOIN
+    Product p ON v.Product_ID = p.Product_ID
+GROUP BY
+    month, p.Product_ID
+ORDER BY
+    month, total_quantity_sold DESC;
