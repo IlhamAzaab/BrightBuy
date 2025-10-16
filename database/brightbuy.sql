@@ -81,7 +81,7 @@ CREATE TABLE `Order` (
   `Order_ID` Int AUTO_INCREMENT,
   `User_ID` Int,
   `Cart_ID` Int,
-  `Total Amount` Numeric(9,2),
+  `Total_Amount` Numeric(9,2),
   `Payment_method` Varchar(25),
   `Delivery_ID` Int,
   `Order_Date` DATE,
