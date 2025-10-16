@@ -55,7 +55,7 @@ export default function AdminProductList() {
         navigate(location.pathname, { replace: true, state: {} });
       }
     }
-  }, [location.state, rows, navigate]);
+  }, [location.state, rows, navigate, location.pathname]);
 
   useEffect(() => {
     (async () => {
