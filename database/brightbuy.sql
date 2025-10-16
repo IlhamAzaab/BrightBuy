@@ -100,14 +100,6 @@ CREATE TABLE `Delivery` (
   PRIMARY KEY (`Delivery_ID`)
 );
 
-CREATE TABLE `Report` (
-  `Report_ID` Int AUTO_INCREMENT,
-  `Report_Type` Varchar(25),
-  `Report_Name` Varchar(25),
-  `Time_Period` Varchar(25),
-  PRIMARY KEY (`Report_ID`)
-);
-
 -- CART  → USER
 ALTER TABLE cart
   ADD CONSTRAINT fk_cart_user
