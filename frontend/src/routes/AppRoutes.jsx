@@ -21,16 +21,13 @@ import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
-<<<<<<< HEAD
-import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
-=======
->>>>>>> harshana
 import QuarterlySalesReport from "../pages/Admin/quarterlysales";
 import TopProductsReport from "../pages/Admin/TopProductsReport";
 import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
 import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
-import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
 import Outofstocklist from "../pages/Admin/outofstocklist";
+import Animation from "../pages/animation";
+import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
 
 export default function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -72,38 +69,19 @@ export default function AppRoutes() {
           <Route path="outofstocklist" element={<Outofstocklist />} />
           {/* Reports hub */}
           {/* Customer Summary & Payments (no navbar in that page component) */}
-          <Route
-            path="report/customer-summary"
-            element={<CustomerSummaryReport />}
-          />
-<<<<<<< HEAD
+          <Route path="report/customer-summary" element={<CustomerSummaryReport />} />
           <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
           <Route path="report/delivery-time" element={<DeliveryTimeEstimates />} />
-          <Route path="outofstock" element={<Outofstocklist />} />
-         
-=======
-          <Route
-            path="report/quarterly-sales"
-            element={<QuarterlySalesReport />}
-          />
-          <Route
-            path="/admin/report/delivery-time"
-            element={<DeliveryTimeEstimates />}
-          />
-          <Route
-            path="/admin/report/category-orders"
-            element={<CategoryWiseOrders />}
-          />
+          <Route path="report/category-orders" element={<CategoryWiseOrders />} />
           <Route path="report/top-products" element={<TopProductsReport />} />
           <Route
-            path="/admin/report/top-selling"
+            path="report/top-selling"
             element={
               <ProtectedRoute role="admin">
                 <TopSellingProductsReport />
               </ProtectedRoute>
             }
           />
->>>>>>> harshana
         </Route>
 
         {/* Protected customer routes */}
@@ -115,13 +93,8 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-<<<<<<< HEAD
-
-        {/* Animation route */}
-        <Route path="/animation" element={<Animation />} />
-
-=======
->>>>>>> harshana
+  {/* Animation route */}
+  <Route path="/animation" element={<Animation />} />
         <Route
           path="/orders"
           element={

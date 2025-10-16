@@ -28,13 +28,7 @@ export default function ProductCard({ product }) {
 
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
   const resolveSrc = (u) => {
-<<<<<<< HEAD
-    if (!u) return "/images/default.jpg";
-=======
-    if (!u || u.trim() === "") {
-      return "/default-image.png"; // Ensure the default image is served from the public folder
-    }
->>>>>>> harshana
+    if (!u || String(u).trim() === "") return "/images/default.jpg";
     const clean = String(u).trim().replace(/\\/g, "/");
     if (/^https?:\/\//i.test(clean)) return clean;
     const path = clean.startsWith("/") ? clean : `/${clean}`;
@@ -51,15 +45,9 @@ export default function ProductCard({ product }) {
         className="group relative bg-gray-100 rounded-lg w-full h-52 flex items-center justify-center overflow-hidden"
       >
         <img
-<<<<<<< HEAD
           src={resolveSrc(imageUrl)}
-          alt={product.Product_Name}
-          className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
-=======
-          src={resolveSrc(product.Image_URL)}
           alt={product.Product_Name || "Product Image"}
           className="group-hover:scale-110 transition-all duration-300 object-cover w-4/5 h-4/5 md:w-full md:h-full"
->>>>>>> harshana
           loading="lazy"
           onError={(e) => {
             e.target.src = "/images/default.jpg";

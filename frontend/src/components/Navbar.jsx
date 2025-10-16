@@ -246,57 +246,48 @@ const Navbar = () => {
                 onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
                 className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
               >
-<<<<<<< HEAD
-                <img src={user.image_URL ? `http://localhost:9000${user.image_URL}` : "/images/default.jpg"} alt="user avatar" className="w-5 h-5 rounded-full" />
-=======
                 <img
-                  src={user.avatar}
+                  src={
+                    user.image_URL
+                      ? `http://localhost:9000${user.image_URL}`
+                      : "/images/default.jpg"
+                  }
                   alt="user avatar"
                   className="w-5 h-5 rounded-full"
                 />
->>>>>>> harshana
                 <span>{user.name}</span>
               </button>
 
               {mobileDropdownOpen && isCustomer && (
-<<<<<<< HEAD
-                <div className="flex flex-col mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-50">
-                  <button onClick={() => handleNavigation("/products/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
-                  <button onClick={() => handleNavigation("/orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
-                  <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
-                  <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
-                </div>
-=======
                 <div className="flex flex-col mt-2 text-gray-400 transition-all duration-300 border border-orange-600 rounded-2xl border-b-4 border-t-4 z-50">
-                <button
-                  onClick={() => handleNavigation("/products/cart")}
-                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
-                >
-                  Cart
-                </button>
-                <button
-                  onClick={() => handleNavigation("/orders")}
-                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
-                >
-                  My Orders
-                </button>
-                <button
-                  onClick={() => handleNavigation("/profile")}
-                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
-                >
-                  Profile
-                </button>
-                <button
-                  onClick={() => {
-                    logout();
-                    navigate("/");
-                  }}
-                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
-                >
-                  Logout
-                </button>
-              </div>
->>>>>>> harshana
+                  <button
+                    onClick={() => handleNavigation("/products/cart")}
+                    className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                  >
+                    Cart
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/orders")}
+                    className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                  >
+                    My Orders
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/profile")}
+                    className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                    }}
+                    className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                  >
+                    Logout
+                  </button>
+                </div>
               )}
             </div>
           </>

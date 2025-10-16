@@ -107,11 +107,7 @@ const Orders = () => {
             onClick={() => setTab("pending")}
             className={`px-4 py-2 rounded transition-colors ${
               tab === "pending"
-<<<<<<< HEAD
-                ? "bg-orange-400 text-white"
-=======
                 ? "bg-orange-500 text-white rounded-full"
->>>>>>> harshana
                 : "bg-white shadow border"
             }`}
           >
@@ -121,11 +117,7 @@ const Orders = () => {
             onClick={() => setTab("completed")}
             className={`px-4 py-2 rounded transition-colors ${
               tab === "completed"
-<<<<<<< HEAD
-                ? "bg-orange-400 text-white"
-=======
                 ? "bg-green-500 text-white rounded-full"
->>>>>>> harshana
                 : "bg-white shadow border"
             }`}
           >
@@ -157,11 +149,7 @@ const Orders = () => {
                   {/* Accent bar */}
                   <div
                     className={`h-1 w-full ${
-<<<<<<< HEAD
-                      o.status === "completed" ? "bg-green-500" : "bg-amber-500"
-=======
                       o.status === "completed" ? "bg-green-500" : "bg-orange-400"
->>>>>>> harshana
                     } opacity-80`}
                   ></div>
                   <div className="p-5 flex flex-col gap-4">

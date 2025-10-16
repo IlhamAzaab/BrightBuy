@@ -77,33 +77,6 @@ export default function Checkout() {
   }, [user]);
 
   const placeOrder = async () => {
-<<<<<<< HEAD
-  if (!address || !deliveryMethod || !paymentMethod || !estimatedDate || !cartData.items.length) {
-    return alert("Please fill all required details before placing the order.");
-  }
-
-  try {
-    const res = await axios.post(`${API_BASE}/api/checkout`, {
-      deliveryAddress: address,
-      deliveryMethod,
-      paymentMethod,
-      estimatedDate,
-      cartItems: cartData.items,
-    }, { withCredentials: true });
-
-    if (res.status === 201) {
-      setSuccess(true); // show success message
-      // redirect after 2 seconds
-      setTimeout(() => {
-        navigate("/orders");
-      }, 3000);
-    }
-  } catch (err) {
-    console.error("Failed to place order", err);
-    alert("Failed to place order: " + err.response?.data?.error || err.message);
-  }
-};
-=======
     if (
       !address ||
       !deliveryMethod ||
@@ -111,11 +84,8 @@ export default function Checkout() {
       !estimatedDate ||
       !cartData.items.length
     ) {
-      return alert(
-        "Please fill all required details before placing the order."
-      );
+      return alert("Please fill all required details before placing the order.");
     }
->>>>>>> harshana
 
     console.log({ address, deliveryMethod, paymentMethod, estimatedDate });
 
@@ -137,14 +107,12 @@ export default function Checkout() {
         setTimeout(() => {
           setSuccess(false);
           setCartData({ items: [], summary: { subTotal: 0 } });
-          navigate("/orders"); // redirect to orders page
-        }, 2000); // Show success badge for 2 seconds
+          navigate("/orders");
+        }, 2000);
       }
     } catch (err) {
       console.error("Failed to place order", err);
-      alert(
-        "Failed to place order: " + err.response?.data?.error || err.message
-      );
+      alert("Failed to place order: " + (err.response?.data?.error || err.message));
     }
   };
 
