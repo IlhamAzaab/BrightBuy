@@ -10,7 +10,6 @@ const Navbar = () => {
 
   const { user, logout } = useContext(AuthContext);
 
-
   const isLoggedIn = !!user;
 
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
@@ -43,8 +42,9 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-600 relative">
+    <nav className="flex items-center justify-between px-2 md:px-16 lg:px-32 py-3 border-b border-orange-400 shadow-lg shadow-orange-100 bg-gray-50 text-gray-600 relative">
       {/* Logo */}
+
       <img
         src={logo}
         alt="logo"
@@ -54,48 +54,142 @@ const Navbar = () => {
 
       {/* Desktop menu */}
       <div className="flex items-center gap-4 lg:gap-10 max-md:hidden">
-        <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
-        <button onClick={() => navigate("/products")} className="hover:text-black">Shop</button>
-        <button onClick={() => navigate("/orders")} className="hover:text-black">My orders</button>
-        <button onClick={() => navigate("/about")} className="hover:text-black">About Us</button>
-        <button onClick={() => navigate("/contact")} className="hover:text-black">Contact</button>
-
+        {!isAdmin && !isLoggedIn && (
+          <>
+            <button onClick={() => navigate("/")} className="hover:text-black hover:text-xl transition-all duration-300">
+              Home
+            </button>
+            <button
+              onClick={() => navigate("/products")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
+              Shop
+            </button>
+            <button
+              onClick={() => navigate("/about")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
+              About Us
+            </button>
+            <button
+              onClick={() => navigate("/contact")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
+              Contact
+            </button>
+          </>
+        )}
+        {!isAdmin && isLoggedIn && (
+          <>
+            <button onClick={() => navigate("/")} className="hover:text-black hover:text-xl transition-all duration-300">
+              Home
+            </button>
+            <button
+              onClick={() => navigate("/products")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
+              Shop
+            </button>
+            <button
+              onClick={() => navigate("/products/cart")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
+              Cart
+            </button>
+            <button
+              onClick={() => navigate("/about")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
+              About Us
+            </button>
+            <button
+              onClick={() => navigate("/contact")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
+              Contact
+            </button>
+          </>
+        )}
         {isAdmin && (
           <>
-          <button
-            type="button"
-            onClick={() => navigate("/admin")}
-            className="text-xs border px-4 py-1.5 rounded-full"
-          >
-            Admin Dashboard
-          </button>
-          <button onClick={() => {logout(); navigate("/")}} className="hover:text-black">Logout</button>
+            <button onClick={() => navigate("/")} className="hover:text-black">
+              Home
+            </button>
+            <button
+              onClick={() => navigate("/products")}
+              className="hover:text-black"
+            >
+              Shop
+            </button>
+            <button
+              onClick={() => navigate("/orders")}
+              className="hover:text-black"
+            >
+              My Orders
+            </button>
+            <button
+              onClick={() => navigate("/admin")}
+              className="hover:text-black hover:text-xl transition-all duration-300 border border-orange-600 px-4 py-1.5 rounded-full border-b-4 border-t-4"
+            >
+              Admin Dashboard
+            </button>
           </>
-
         )}
       </div>
 
       {/* Right-side / Account */}
+
       <div className="hidden md:flex items-center gap-4 relative">
         <img className="w-4 h-4" src={searchIcon} alt="search icon" />
 
         {isLoggedIn ? (
-          <div className="relative" ref={desktopRef}>
+          <div className="relative px-8" ref={desktopRef}>
             <button
               type="button"
               onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
-              className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
+              className="flex items-center gap-2 hover:text-black transition-transform duration-300 hover:scale-110"
             >
-              <img src={user.image_URL ? `http://localhost:9000${user.image_URL}` : "/images/default.jpg" } alt="user avatar" className="w-5 h-5 rounded-full" />
+              <img
+                src={
+                  user.image_URL
+                    ? `http://localhost:9000${user.image_URL}`
+                    : "/images/default.jpg"
+                }
+                alt="user avatar"
+                className="w-5 h-5 rounded-full"
+              />
               <span>{user.name}</span>
             </button>
 
-            {desktopDropdownOpen && isCustomer && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-300 rounded-md shadow-lg flex flex-col z-50">
-                <button onClick={() => handleNavigation("/products/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
-                <button onClick={() => handleNavigation("/orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
-                <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
-                <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
+            {desktopDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-40 text-gray-400 transition-all duration-300 border border-orange-600 rounded-2xl border-b-4 border-t-4 flex flex-col z-50">
+                <button
+                  onClick={() => handleNavigation("/products/cart")}
+                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                >
+                  Cart
+                </button>
+                <button
+                  onClick={() => handleNavigation("/orders")}
+                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                >
+                  My Orders
+                </button>
+                <button
+                  onClick={() => handleNavigation("/profile")}
+                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                >
+                  Logout
+                </button>
               </div>
             )}
           </div>
@@ -113,24 +207,38 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       <div className="flex items-center md:hidden gap-3">
-        
         {isAdmin && (
           <>
-          <button
-            type="button"
-            onClick={() => navigate("/admin")}
-            className="text-xs border px-4 py-1.5 rounded-full"
-          >
-            Admin Dashboard
-          </button>
-          <button onClick={() => {logout(); navigate("/")}} className="hover:text-black">Logout</button>
+            <button
+              type="button"
+              onClick={() => navigate("/admin")}
+              className="text-xs border border-orange-600 px-4 py-1.5 rounded-full"
+            >
+              Admin Dashboard
+            </button>
+            <button
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+              className="hover:text-black"
+            >
+              Logout
+            </button>
           </>
         )}
 
         {isLoggedIn ? (
           <>
-            <button onClick={() => navigate("/")} className="hover:text-black">Home</button>
-            <button onClick={() => navigate("/products")} className="hover:text-black">Products</button>
+            <button onClick={() => navigate("/")} className="hover:text-black hover:text-xl transition-all duration-300">
+              Home
+            </button>
+            <button
+              onClick={() => navigate("/products")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
+              Shop
+            </button>
 
             <div className="relative" ref={mobileRef}>
               <button
@@ -138,17 +246,57 @@ const Navbar = () => {
                 onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
                 className="flex items-center gap-2 hover:text-black transition-transform duration-100 hover:scale-110"
               >
+<<<<<<< HEAD
                 <img src={user.image_URL ? `http://localhost:9000${user.image_URL}` : "/images/default.jpg"} alt="user avatar" className="w-5 h-5 rounded-full" />
+=======
+                <img
+                  src={user.avatar}
+                  alt="user avatar"
+                  className="w-5 h-5 rounded-full"
+                />
+>>>>>>> harshana
                 <span>{user.name}</span>
               </button>
 
               {mobileDropdownOpen && isCustomer && (
+<<<<<<< HEAD
                 <div className="flex flex-col mt-2 bg-white border border-gray-300 rounded-md shadow-lg z-50">
                   <button onClick={() => handleNavigation("/products/cart")} className="px-4 py-2 text-left hover:bg-gray-100">Cart</button>
                   <button onClick={() => handleNavigation("/orders")} className="px-4 py-2 text-left hover:bg-gray-100">My Orders</button>
                   <button onClick={() => handleNavigation("/profile")} className="px-4 py-2 text-left hover:bg-gray-100">Profile</button>
                   <button onClick={() => {logout(); navigate("/")}} className="px-4 py-2 text-left hover:bg-gray-100">Logout</button>
                 </div>
+=======
+                <div className="flex flex-col mt-2 text-gray-400 transition-all duration-300 border border-orange-600 rounded-2xl border-b-4 border-t-4 z-50">
+                <button
+                  onClick={() => handleNavigation("/products/cart")}
+                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                >
+                  Cart
+                </button>
+                <button
+                  onClick={() => handleNavigation("/orders")}
+                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                >
+                  My Orders
+                </button>
+                <button
+                  onClick={() => handleNavigation("/profile")}
+                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                >
+                  Logout
+                </button>
+              </div>
+>>>>>>> harshana
               )}
             </div>
           </>

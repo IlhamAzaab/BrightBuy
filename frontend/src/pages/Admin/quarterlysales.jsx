@@ -40,6 +40,10 @@ const QuarterlyReport = () => {
 
   return (
     <div className="w-full p-4 md:p-6 bg-gray-50 text-gray-900 rounded-lg border border-gray-200 shadow-sm">
+      <div className="flex flex-col pt-1 py-5">
+        <p className="text-2xl font-semibold mb-2">Quarterly Sales Report</p>
+        <div className="w-24 h-0.5 bg-orange-600 rounded-full"></div>
+      </div>
       {/* Year selector */}
       <div className="flex flex-col md:flex-row md:items-center md:gap-4 mb-4">
         <label htmlFor="year" className="font-semibold text-sm md:text-base">
@@ -50,7 +54,7 @@ const QuarterlyReport = () => {
           id="year"
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 w-32 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-gray-300 rounded px-3 py-2 w-32 text-center focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
       </div>
 

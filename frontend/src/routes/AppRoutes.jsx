@@ -5,10 +5,11 @@ import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
 import Profile from "../pages/profile";
-import Animation from "../pages/animation";
 
 // Existing pages
 import Home from "../pages/Home";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
 import CustomerProductList from "../pages/Customerproductlistpage/CustomerProductsList";
 import ProductDetails from "../pages/Customerproductlistpage/ProductDetails";
 import Cart from "../pages/Cart";
@@ -20,8 +21,15 @@ import AddProduct from "../pages/Admin/AddProduct";
 import AddAdmin from "../pages/Admin/AddAdmin";
 import ProductList from "../pages/Admin/ProductList";
 import CustomerSummaryReport from "../pages/Admin/CustomerSummaryReport";
+<<<<<<< HEAD
 import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
+=======
+>>>>>>> harshana
 import QuarterlySalesReport from "../pages/Admin/quarterlysales";
+import TopProductsReport from "../pages/Admin/TopProductsReport";
+import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
+import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
+import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
 import Outofstocklist from "../pages/Admin/outofstocklist";
 
 export default function AppRoutes() {
@@ -41,7 +49,8 @@ export default function AppRoutes() {
         <Route path="/products" element={<CustomerProductList />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/products/cart/checkout" element={<Checkout />} />
-
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -61,17 +70,40 @@ export default function AppRoutes() {
           <Route path="addadmin" element={<AddAdmin />} />
           <Route path="productlist" element={<ProductList />} />
           <Route path="outofstocklist" element={<Outofstocklist />} />
-
-          
+          {/* Reports hub */}
           {/* Customer Summary & Payments (no navbar in that page component) */}
           <Route
             path="report/customer-summary"
             element={<CustomerSummaryReport />}
           />
+<<<<<<< HEAD
           <Route path="report/quarterly-sales" element={<QuarterlySalesReport />} />
           <Route path="report/delivery-time" element={<DeliveryTimeEstimates />} />
           <Route path="outofstock" element={<Outofstocklist />} />
          
+=======
+          <Route
+            path="report/quarterly-sales"
+            element={<QuarterlySalesReport />}
+          />
+          <Route
+            path="/admin/report/delivery-time"
+            element={<DeliveryTimeEstimates />}
+          />
+          <Route
+            path="/admin/report/category-orders"
+            element={<CategoryWiseOrders />}
+          />
+          <Route path="report/top-products" element={<TopProductsReport />} />
+          <Route
+            path="/admin/report/top-selling"
+            element={
+              <ProtectedRoute role="admin">
+                <TopSellingProductsReport />
+              </ProtectedRoute>
+            }
+          />
+>>>>>>> harshana
         </Route>
 
         {/* Protected customer routes */}
@@ -83,10 +115,13 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+<<<<<<< HEAD
 
         {/* Animation route */}
         <Route path="/animation" element={<Animation />} />
 
+=======
+>>>>>>> harshana
         <Route
           path="/orders"
           element={

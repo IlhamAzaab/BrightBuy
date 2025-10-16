@@ -72,7 +72,7 @@ const AddAdmin = () => {
                     className={`px-3 py-1 rounded ${
                       u.Role === "admin"
                         ? "bg-red-600 hover:bg-red-700"
-                        : "bg-green-600 hover:bg-green-700"
+                        : "bg-green-500 hover:bg-green-600"
                     } text-white`}
                   >
                     {u.Role === "admin" ? "Remove as Admin" : "Add as Admin"}

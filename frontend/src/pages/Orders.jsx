@@ -2,11 +2,12 @@ import React, { useEffect, useState, useContext, useCallback } from "react";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-
+import { useNavigate } from "react-router-dom";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [tab, setTab] = useState("pending");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const { user: authUser } = useContext(AuthContext);
   const user = authUser;
@@ -88,15 +89,29 @@ const Orders = () => {
     <>
       <Navbar />
       <div className="px-6 md:px-16 lg:px-32 py-8 min-h-[70vh] bg-gray-50">
-        <h1 className="heading-2 mb-4">My Orders</h1>
-
+        <div className="flex flex-col items-center px-8 md:px-16">
+        <div className="flex flex-col items-end pt-8 py-4">
+          <p className="text-4xl font-medium">Your Orders</p>
+          <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
+          <button
+            onClick={() => navigate("/")}
+            className="group flex items-center mt-6 gap-2 text-orange-600 hover:text-black"
+          >
+            &larr; Continue Shopping
+          </button>
+        </div>
+      </div>
         {/* Tabs */}
         <div className="flex gap-4 mb-6">
           <button
             onClick={() => setTab("pending")}
             className={`px-4 py-2 rounded transition-colors ${
               tab === "pending"
+<<<<<<< HEAD
                 ? "bg-orange-400 text-white"
+=======
+                ? "bg-orange-500 text-white rounded-full"
+>>>>>>> harshana
                 : "bg-white shadow border"
             }`}
           >
@@ -106,7 +121,11 @@ const Orders = () => {
             onClick={() => setTab("completed")}
             className={`px-4 py-2 rounded transition-colors ${
               tab === "completed"
+<<<<<<< HEAD
                 ? "bg-orange-400 text-white"
+=======
+                ? "bg-green-500 text-white rounded-full"
+>>>>>>> harshana
                 : "bg-white shadow border"
             }`}
           >
@@ -138,7 +157,11 @@ const Orders = () => {
                   {/* Accent bar */}
                   <div
                     className={`h-1 w-full ${
+<<<<<<< HEAD
                       o.status === "completed" ? "bg-green-500" : "bg-amber-500"
+=======
+                      o.status === "completed" ? "bg-green-500" : "bg-orange-400"
+>>>>>>> harshana
                     } opacity-80`}
                   ></div>
                   <div className="p-5 flex flex-col gap-4">

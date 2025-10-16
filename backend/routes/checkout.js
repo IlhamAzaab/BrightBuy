@@ -74,11 +74,10 @@ router.post("/", auth, async (req, res) => {
     }
     // 6️⃣ Mark the old cart as "CheckedOut"
     await connection.query(
-      "UPDATE cart SET Status = 'CheckedOut' WHERE Cart_ID = ?",
-      [cartId]
+    "UPDATE cart SET Status = 'Checked_Out' WHERE Cart_ID = ?",
+    [cartId]
     );
 
-    // ✅ Commit once after all DB operations
     await connection.commit();
 
     return res.status(201).json({
