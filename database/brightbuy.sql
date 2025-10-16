@@ -479,13 +479,14 @@ DELIMITER $$
 CREATE PROCEDURE GetQuarterlySales(IN selectedYear INT)
 BEGIN
   SELECT
-    YEAR(Order_Date) AS Year,
-    QUARTER(Order_Date) AS Quarter,
-    SUM(Total_Amount) AS Total_Sales,
-    COUNT(Order_ID) AS Total_Orders,
-    AVG(Total_Amount) AS Avg_Order_Value
-  FROM brightbuy.`Order`
-  WHERE YEAR(Order_Date) = selectedYear
+    YEAR(o.Order_Date) AS Year,
+    QUARTER(o.Order_Date) AS Quarter,
+    -- use the actual column name in the orders table (has a space), alias as Total_Sales
+    SUM(o.`Total_Amount`) AS Total_Sales,
+    COUNT(o.Order_ID) AS Total_Orders,
+    AVG(o.`Total_Amount`) AS Avg_Order_Value
+  FROM brightbuy.`Order` o
+  WHERE YEAR(o.Order_Date) = selectedYear
   GROUP BY Year, Quarter
   ORDER BY Quarter;
 END $$
