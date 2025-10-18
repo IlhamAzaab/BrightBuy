@@ -47,9 +47,9 @@ export default function OutOfStockList() {
           <h2 className="text-lg font-semibold">Out of Stock Products</h2>
           <button
             onClick={() => navigate(-1)}
-            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+            className="bg-orange-600 text-white px-3 py-1 hover:bg-orange-700 transition rounded-full"
           >
-            Back
+            ← Back
           </button>
         </div>
 

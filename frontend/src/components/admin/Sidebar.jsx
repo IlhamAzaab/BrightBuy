@@ -13,7 +13,7 @@ const Sidebar = () => {
     { name: 'Add Product', path: '/admin/addproduct', icon: assets.add_icon },
     { name: 'Product List', path: '/admin/productlist', icon: assets.product_list_icon },
     { name: 'Add Admin', path: '/admin/addadmin', icon: assets.order_icon },
-    { name: 'Reports', icon: assets.order_icon, isParent: true },
+    { name: 'Reports', icon: assets.menu_icon, isParent: true },
   ];
 
   // Nested report items

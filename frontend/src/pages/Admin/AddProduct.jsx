@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const AddProduct = () => {
   const [categories, setCategories] = useState([]);
@@ -16,6 +17,9 @@ const AddProduct = () => {
     { price: "", stockQuantity: "", size: "", colour: "", image: null },
   ]);
 
+  // Success badge state
+  const [showBadge, setShowBadge] = useState(false);
+
   // Fetch categories
   useEffect(() => {
     fetch("http://localhost:9000/api/addproduct/categories")
@@ -23,7 +27,8 @@ const AddProduct = () => {
       .then((data) => {
         setCategories(data);
         setCategoryId("");
-      });
+      })
+      .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
   // Handle variant input change
@@ -40,7 +45,13 @@ const AddProduct = () => {
 
     const updated = [...variants];
     while (updated.length < count) {
-      updated.push({ price: "", stockQuantity: "", size: "", colour: "", image: null });
+      updated.push({
+        price: "",
+        stockQuantity: "",
+        size: "",
+        colour: "",
+        image: null,
+      });
     }
     while (updated.length > count) {
       updated.pop();
@@ -52,9 +63,16 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate variants before submitting
     for (let i = 0; i < variantCount; i++) {
-      if (!variants[i].image) {
-        alert(`Please upload an image for variant ${i + 1}`);
+      const variant = variants[i];
+      if (
+        !variant.price ||
+        !variant.stockQuantity ||
+        !variant.colour ||
+        !variant.image
+      ) {
+        alert(`Please fill all required fields for variant ${i + 1}`);
         return;
       }
     }
@@ -67,10 +85,10 @@ const AddProduct = () => {
     formData.append("description", description);
     formData.append("variantCount", variantCount);
 
-    variants.forEach((v, i) => {
+    variants.forEach((v) => {
       formData.append("price", v.price);
       formData.append("stockQuantity", v.stockQuantity);
-      formData.append("size", v.size);
+      formData.append("size", v.size || "");
       formData.append("colour", v.colour);
       formData.append("variantImages", v.image);
     });
@@ -81,31 +99,61 @@ const AddProduct = () => {
         body: formData,
       });
       const data = await res.json();
+
       if (res.ok) {
-        alert("Product and variants added successfully");
+        // ✅ Show success badge
+        setShowBadge(true);
+        setTimeout(() => setShowBadge(false), 3000);
+
+        // ✅ Reset form fields
         setCategoryId("");
         setProductName("");
         setBrand("");
         setSku("");
         setDescription("");
         setVariantCount(1);
-        setVariants([{ price: "", stockQuantity: "", size: "", colour: "", image: null }]);
+        setVariants([
+          { price: "", stockQuantity: "", size: "", colour: "", image: null },
+        ]);
       } else {
         alert(data.error || "Something went wrong!");
+        setShowBadge(false);
       }
     } catch (err) {
       console.error(err);
       alert("Server error!");
+      setShowBadge(false);
     }
   };
 
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-center items-center bg-gray-50 p-6">
+      {/* ✅ Success Badge Animation */}
+      <AnimatePresence>
+              {showBadge && (
+                <motion.div
+                  initial={{ y: -50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -50, opacity: 0 }}
+                  transition={{ duration: 0.5, type: "spring" }}
+                  className="fixed top-16 left-0 w-full flex justify-center z-50"
+                >
+                  <div className="text-m tracking-wide text-green-700 bg-green-100 border-2 border-green-300 px-12 py-2 rounded-full shadow-xl">
+                    Product Added Successfully!
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
       <div className="w-full max-w-3xl bg-white shadow-md rounded-lg p-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Product</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          Add New Product
+        </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block font-medium text-gray-700 mb-2">Category</label>
+            <label className="block font-medium text-gray-700 mb-2">
+              Category
+            </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
@@ -122,7 +170,9 @@ const AddProduct = () => {
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700 mb-2">Product Name</label>
+            <label className="block font-medium text-gray-700 mb-2">
+              Product Name
+            </label>
             <input
               type="text"
               value={productName}
@@ -133,7 +183,9 @@ const AddProduct = () => {
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700 mb-2">Brand</label>
+            <label className="block font-medium text-gray-700 mb-2">
+              Brand
+            </label>
             <input
               type="text"
               value={brand}
@@ -155,7 +207,9 @@ const AddProduct = () => {
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700 mb-2">Description</label>
+            <label className="block font-medium text-gray-700 mb-2">
+              Description
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -164,7 +218,9 @@ const AddProduct = () => {
           </div>
 
           <div>
-            <label className="block font-medium text-gray-700 mb-2">Variant Count</label>
+            <label className="block font-medium text-gray-700 mb-2">
+              Variant Count
+            </label>
             <input
               type="number"
               min={1}
@@ -175,48 +231,66 @@ const AddProduct = () => {
           </div>
 
           {variants.map((v, idx) => (
-            <div key={idx} className="border border-gray-300 p-4 rounded-md mb-4">
-              <h3 className="font-medium text-gray-800 mb-4">Variant {idx + 1}</h3>
+            <div
+              key={idx}
+              className="border border-gray-300 p-4 rounded-md mb-4"
+            >
+              <h3 className="font-medium text-gray-800 mb-4">
+                Variant {idx + 1}
+              </h3>
               <input
                 type="number"
                 placeholder="Price"
                 value={v.price}
-                onChange={(e) => handleVariantChange(idx, "price", e.target.value)}
+                onChange={(e) =>
+                  handleVariantChange(idx, "price", e.target.value)
+                }
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
               />
               <input
                 type="number"
                 placeholder="Stock Quantity"
                 value={v.stockQuantity}
-                onChange={(e) => handleVariantChange(idx, "stockQuantity", e.target.value)}
+                onChange={(e) =>
+                  handleVariantChange(idx, "stockQuantity", e.target.value)
+                }
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
               />
               <input
                 type="number"
                 placeholder="Size"
                 value={v.size}
-                onChange={(e) => handleVariantChange(idx, "size", e.target.value)}
+                onChange={(e) =>
+                  handleVariantChange(idx, "size", e.target.value)
+                }
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
               />
               <input
                 type="text"
                 placeholder="Colour"
                 value={v.colour}
-                onChange={(e) => handleVariantChange(idx, "colour", e.target.value)}
+                onChange={(e) =>
+                  handleVariantChange(idx, "colour", e.target.value)
+                }
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
               />
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleVariantChange(idx, "image", e.target.files[0])}
+                onChange={(e) =>
+                  handleVariantChange(idx, "image", e.target.files[0])
+                }
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           ))}
 
-          <button type="submit" className="w-full p-3 bg-orange-600 text-white rounded-full">
-          Add Product
-        </button>
+          <button
+            type="submit"
+            className="w-full p-3 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition"
+          >
+            Add Product
+          </button>
         </form>
       </div>
     </div>

@@ -42,7 +42,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="flex items-center justify-between px-2 md:px-16 lg:px-32 py-3 border-b border-orange-400 shadow-lg shadow-orange-100 bg-gray-50 text-gray-600 relative">
+    <nav className="flex items-center justify-between px-2 md:px-16 lg:px-32 py-3 border-b border-orange-400 shadow-lg shadow-orange-100 bg-gray-50 text-gray-600">
       {/* Logo */}
 
       <img
@@ -56,7 +56,10 @@ const Navbar = () => {
       <div className="flex items-center gap-4 lg:gap-10 max-md:hidden">
         {!isAdmin && !isLoggedIn && (
           <>
-            <button onClick={() => navigate("/")} className="hover:text-black hover:text-xl transition-all duration-300">
+            <button
+              onClick={() => navigate("/")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
               Home
             </button>
             <button
@@ -81,7 +84,10 @@ const Navbar = () => {
         )}
         {!isAdmin && isLoggedIn && (
           <>
-            <button onClick={() => navigate("/")} className="hover:text-black hover:text-xl transition-all duration-300">
+            <button
+              onClick={() => navigate("/")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
               Home
             </button>
             <button
@@ -162,7 +168,7 @@ const Navbar = () => {
             </button>
 
             {desktopDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 text-gray-400 transition-all duration-300 border border-orange-600 rounded-2xl border-b-4 border-t-4 flex flex-col z-50">
+              <div className="absolute right-0 mt-2 w-40 bg-gray-100 text-gray-800 transition-all duration-300 border border-orange-600 rounded-2xl border-b-4 border-t-4 flex flex-col z-50">
                 <button
                   onClick={() => handleNavigation("/products/cart")}
                   className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
@@ -230,7 +236,10 @@ const Navbar = () => {
 
         {isLoggedIn ? (
           <>
-            <button onClick={() => navigate("/")} className="hover:text-black hover:text-xl transition-all duration-300">
+            <button
+              onClick={() => navigate("/")}
+              className="hover:text-black hover:text-xl transition-all duration-300"
+            >
               Home
             </button>
             <button
@@ -256,34 +265,34 @@ const Navbar = () => {
 
               {mobileDropdownOpen && isCustomer && (
                 <div className="flex flex-col mt-2 text-gray-400 transition-all duration-300 border border-orange-600 rounded-2xl border-b-4 border-t-4 z-50">
-                <button
-                  onClick={() => handleNavigation("/products/cart")}
-                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
-                >
-                  Cart
-                </button>
-                <button
-                  onClick={() => handleNavigation("/orders")}
-                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
-                >
-                  My Orders
-                </button>
-                <button
-                  onClick={() => handleNavigation("/profile")}
-                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
-                >
-                  Profile
-                </button>
-                <button
-                  onClick={() => {
-                    logout();
-                    navigate("/");
-                  }}
-                  className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
-                >
-                  Logout
-                </button>
-              </div>
+                  <button
+                    onClick={() => handleNavigation("/products/cart")}
+                    className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                  >
+                    Cart
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/orders")}
+                    className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                  >
+                    My Orders
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/profile")}
+                    className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                  >
+                    Profile
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                    }}
+                    className="px-4 py-2 text-left hover:bg-gray-50 hover:text-black transition-all duration-100 rounded-2xl"
+                  >
+                    Logout
+                  </button>
+                </div>
               )}
             </div>
           </>

@@ -49,7 +49,7 @@ const HeaderSlider = () => {
   }
 
   return (
-    <div className="overflow-hidden relative w-screen">
+    <div className="overflow-hidden relative w-full">
       {/* Slides */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
@@ -58,7 +58,7 @@ const HeaderSlider = () => {
         {sliderData.map((slide, index) => (
           <div
             key={`${slide.id}-${index}`} // ✅ unique key
-            className="flex flex-col-reverse md:flex-row items-center justify-between bg-[#E6E9F2] py-5 md:px-10 px-4 mt-4 rounded-xl min-w-full"
+            className="flex flex-col-reverse md:flex-row items-center justify-between bg-gray-100 py-5 md:px-10 px-4 mt-4 rounded-xl min-w-full"
           >
             {/* Text Section */}
             <div className="md:pl-6 mt-6 md:mt-0 flex-1">
@@ -67,7 +67,8 @@ const HeaderSlider = () => {
                 {slide.title}
               </h1>
               <div className="flex items-center mt-3 md:mt-4 gap-2">
-                <button onClick={() => navigate(`/products/${slide.productId}`)}
+                <button
+                  onClick={() => navigate(`/products/${slide.productId}`)}
                   className="md:px-8 px-6 md:py-2 py-1.5 bg-orange-600 rounded-full text-white text-sm md:text-base font-medium"
                 >
                   {slide.buttonText1}
@@ -105,7 +106,9 @@ const HeaderSlider = () => {
             key={`dot-${index}`}
             onClick={() => handleSlideChange(index)}
             className={`h-2 w-2 rounded-full cursor-pointer transition-all ${
-              currentSlide === index ? "bg-orange-600 scale-110" : "bg-gray-500/30"
+              currentSlide === index
+                ? "bg-orange-600 scale-110"
+                : "bg-gray-500/30"
             }`}
           ></div>
         ))}

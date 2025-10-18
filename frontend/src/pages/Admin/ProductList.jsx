@@ -159,7 +159,7 @@ export default function AdminProductList() {
             <h2 className="text-lg font-semibold">All Products</h2>
             <button
               onClick={() => navigate("/admin/outofstocklist")}
-              className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700"
+              className="bg-orange-600 text-white px-3 py-1 rounded-full hover:bg-orange-700"
             >
               Out of stock Products
             </button>
