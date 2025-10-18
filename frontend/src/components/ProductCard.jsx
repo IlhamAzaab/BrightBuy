@@ -28,14 +28,15 @@ export default function ProductCard({ product }) {
 
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
   const resolveSrc = (u) => {
-    if (!u || u.trim() === "") {
-      return "/default-image.png"; // Ensure the default image is served from the public folder
-    }
+    if (!u || String(u).trim() === "") return "/images/default.jpg";
     const clean = String(u).trim().replace(/\\/g, "/");
     if (/^https?:\/\//i.test(clean)) return clean;
     const path = clean.startsWith("/") ? clean : `/${clean}`;
     return `${API_BASE}${path}`;
   };
+
+  // Get the image URL from the first variant or fallback
+  const imageUrl = product.Image_URL || product.Variants?.[0]?.Image_URL || "/images/default.jpg";
 
   return (
     <div className="flex flex-col items-start gap-1 max-w-[220px] w-full">
@@ -44,10 +45,13 @@ export default function ProductCard({ product }) {
         className="group relative bg-gray-100 rounded-lg w-full h-52 flex items-center justify-center overflow-hidden"
       >
         <img
-          src={resolveSrc(product.Image_URL)}
+          src={resolveSrc(imageUrl)}
           alt={product.Product_Name || "Product Image"}
           className="group-hover:scale-110 transition-all duration-300 object-cover w-4/5 h-4/5 md:w-full md:h-full"
           loading="lazy"
+          onError={(e) => {
+            e.target.src = "/images/default.jpg";
+          }}
         />
       </Link>
 

@@ -1,5 +1,5 @@
 // src/pages/Checkout.jsx
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import axios from "axios";
@@ -29,7 +29,7 @@ export default function Checkout() {
     }).format(amount);
 
   // 🧩 Load cart data
-  const loadCart = async () => {
+  const loadCart = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/cart`);
       setCartData(res.data);
@@ -38,10 +38,10 @@ export default function Checkout() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_BASE]);
 
   // 🧩 Load user address
-  const loadAddress = async () => {
+  const loadAddress = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/user/address`, {
         withCredentials: true,
@@ -54,9 +54,9 @@ export default function Checkout() {
     } catch (err) {
       console.error("Failed to load address", err);
     }
-  };
+  }, [API_BASE]);
 
-  const loadEstimate = async () => {
+  const loadEstimate = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/estimate`, {
         withCredentials: true,
@@ -67,14 +67,14 @@ export default function Checkout() {
     } catch (err) {
       console.error("Failed to load estimate", err);
     }
-  };
+  }, [API_BASE]);
 
   // Call this after cart and address load
   useEffect(() => {
     loadCart();
     loadAddress();
     loadEstimate();
-  }, [user]);
+  }, [user, loadCart, loadAddress, loadEstimate]);
 
   const placeOrder = async () => {
     if (
@@ -84,9 +84,7 @@ export default function Checkout() {
       !estimatedDate ||
       !cartData.items.length
     ) {
-      return alert(
-        "Please fill all required details before placing the order."
-      );
+      return alert("Please fill all required details before placing the order.");
     }
 
     console.log({ address, deliveryMethod, paymentMethod, estimatedDate });
@@ -109,14 +107,12 @@ export default function Checkout() {
         setTimeout(() => {
           setSuccess(false);
           setCartData({ items: [], summary: { subTotal: 0 } });
-          navigate("/orders"); // redirect to orders page
-        }, 2000); // Show success badge for 2 seconds
+          navigate("/orders");
+        }, 2000);
       }
     } catch (err) {
       console.error("Failed to place order", err);
-      alert(
-        "Failed to place order: " + err.response?.data?.error || err.message
-      );
+      alert("Failed to place order: " + (err.response?.data?.error || err.message));
     }
   };
 
