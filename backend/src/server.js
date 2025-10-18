@@ -45,6 +45,9 @@ app.use("/addadmin", addAdminRoutes);
 import addProductRouter from "../routes/addproduct.js";
 app.use('/api/addproduct', addProductRouter);
 
+import productSearchRouter from "../routes/productSearch.js";
+app.use("/api/products", productSearchRouter);
+
 import userRoutes from "../routes/user.js";
 app.use("/api/user", userRoutes);
 
