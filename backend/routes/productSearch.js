@@ -19,10 +19,10 @@ router.get("/search", async (req, res) => {
         p.Product_Name,
         p.Brand,
         vimg.Image_URL AS Image_URL
-      FROM Product p
+      FROM product p
       LEFT JOIN (
         SELECT Product_ID, MIN(Image_URL) AS Image_URL
-        FROM Variant
+        FROM variant
         WHERE Image_URL IS NOT NULL AND Image_URL <> ''
         GROUP BY Product_ID
       ) vimg ON vimg.Product_ID = p.Product_ID
@@ -32,7 +32,7 @@ router.get("/search", async (req, res) => {
         OR p.Description LIKE CONCAT('%', ?, '%')
         OR EXISTS (
           SELECT 1
-          FROM Variant v2
+          FROM variant v2
           WHERE v2.Product_ID = p.Product_ID
             AND (
               v2.Colour LIKE CONCAT('%', ?, '%')

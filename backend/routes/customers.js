@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
                     COUNT(DISTINCT o.Order_ID) AS orderCount,
                     MAX(o.Order_Date) AS lastOrderDate
              FROM user u
-             LEFT JOIN \`Order\` o ON o.User_ID = u.User_ID
+             LEFT JOIN \`order\` o ON o.User_ID = u.User_ID
              WHERE u.Role = 'customer'`;
   const params = [];
 

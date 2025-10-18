@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
 
   try {
     const [results] = await pool.query(
-      "SELECT * FROM MonthlyTopSellingProducts WHERE month = ?",
+      "SELECT * FROM monthlytopsellingproducts WHERE month = ?",
       [month]
     );
     res.json(results);

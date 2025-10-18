@@ -8,6 +8,7 @@ const Orders = () => {
   const [tab, setTab] = useState("pending");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   const { user: authUser } = useContext(AuthContext);
   const user = authUser;
@@ -17,7 +18,7 @@ const Orders = () => {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:9000/api/orders?userId=${
+          `${API}/api/orders?userId=${
             user.id
           }&status=${status}&_t=${Date.now()}`
         );
@@ -57,7 +58,7 @@ const Orders = () => {
   const markCompleted = async (orderId) => {
     try {
       const res = await fetch(
-        `http://localhost:9000/api/orders/${orderId}/status`,
+        `${API}/api/orders/${orderId}/status`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

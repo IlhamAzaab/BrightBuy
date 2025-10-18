@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
   const [token, setToken] = useState(() => localStorage.getItem("token") || null);
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (email, password) => {
-    const res = await axios.post("http://localhost:9000/auth/login", { email, password });
+    const res = await axios.post(`${API}/auth/login`, { email, password });
     const { accessToken, refreshToken, user } = res.data;
 
     localStorage.setItem("token", accessToken);
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (name, email, password) => {
-    const res = await axios.post("http://localhost:9000/auth/signup", { name, email, password });
+    const res = await axios.post(`${API}/auth/signup`, { name, email, password });
     const { accessToken, refreshToken, user } = res.data;
 
     localStorage.setItem("token", accessToken);

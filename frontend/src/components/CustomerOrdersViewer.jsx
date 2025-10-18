@@ -15,7 +15,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 */
 
 // Backend base URL (configure via environment variable for flexibility)
-const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:9000';
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:9000';
 
 // Utility formatters
 function formatDate(iso) {

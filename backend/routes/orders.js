@@ -10,18 +10,18 @@ router.get("/", async (req, res) => {
 
   try {
     // Determine total column variant
-    const [cols] = await pool.query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'Order'`);
+    const [cols] = await pool.query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'order'`);
     const names = cols.map(c => c.COLUMN_NAME);
     const totalExpr = names.includes('Total_Amount') ? 'o.Total_Amount' : names.includes('Total Amount') ? 'o.`Total Amount`' : '0';
 
   let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, d.Delivery_Status, d.Estimated_delivery_Date, d.Delivery_Method,
        ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price
-     FROM \`Order\` o
-     LEFT JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
-     JOIN Cart c ON o.Cart_ID = c.Cart_ID
-     JOIN Cart_Item ci ON c.Cart_ID = ci.Cart_ID
-     JOIN Product p ON ci.Product_ID = p.Product_ID
-     JOIN Variant v ON ci.Variant_ID = v.Variant_ID
+     FROM \`order\` o
+     LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID
+     JOIN cart c ON o.Cart_ID = c.Cart_ID
+     JOIN cart_item ci ON c.Cart_ID = ci.Cart_ID
+     JOIN product p ON ci.Product_ID = p.Product_ID
+     JOIN variant v ON ci.Variant_ID = v.Variant_ID
      WHERE o.User_ID = ?`;
     const params = [userId];
 
@@ -118,7 +118,7 @@ router.put("/:id/status", async (req, res) => {
   try {
     // Fetch order with possible delivery linkage (LEFT JOIN to handle missing Delivery rows)
     const [rows] = await pool.query(
-      'SELECT o.Order_ID, o.Delivery_ID, d.Delivery_ID AS Linked_Delivery_ID, d.Delivery_Status FROM `Order` o LEFT JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
+      'SELECT o.Order_ID, o.Delivery_ID, d.Delivery_ID AS Linked_Delivery_ID, d.Delivery_Status FROM `order` o LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
       [id]
     );
     if (rows.length === 0) {
@@ -147,8 +147,8 @@ router.put("/:id/status", async (req, res) => {
     if (orderRow.Linked_Delivery_ID) {
       // Update existing Delivery row
       const [updateResult] = await pool.query(
-        `UPDATE Delivery d
-           JOIN \`Order\` o ON o.Delivery_ID = d.Delivery_ID
+        `UPDATE delivery d
+           JOIN \`order\` o ON o.Delivery_ID = d.Delivery_ID
            SET d.Delivery_Status = ?
          WHERE o.Order_ID = ?`,
         [targetDeliveryStatus, id]
@@ -157,12 +157,12 @@ router.put("/:id/status", async (req, res) => {
     } else {
       // No Delivery row linked: create one and attach to order
       const [insertResult] = await pool.query(
-        `INSERT INTO Delivery (Delivery_Status) VALUES (?)`,
+        `INSERT INTO delivery (Delivery_Status) VALUES (?)`,
         [targetDeliveryStatus]
       );
       const newDeliveryId = insertResult.insertId;
       await pool.query(
-        `UPDATE \`Order\` SET Delivery_ID = ? WHERE Order_ID = ?`,
+        `UPDATE \`order\` SET Delivery_ID = ? WHERE Order_ID = ?`,
         [newDeliveryId, id]
       );
       affectedRows = 1;
@@ -170,7 +170,7 @@ router.put("/:id/status", async (req, res) => {
 
     // Fetch final status
     const [after] = await pool.query(
-      'SELECT d.Delivery_Status FROM `Order` o LEFT JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
+      'SELECT d.Delivery_Status FROM `order` o LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
       [id]
     );
     afterStatus = after[0]?.Delivery_Status || null;
@@ -197,8 +197,8 @@ router.get('/:id/debug', async (req, res) => {
   try {
     const [rows] = await pool.query(`
       SELECT o.Order_ID, o.User_ID, o.Delivery_ID, d.Delivery_Status, o.Order_Date
-      FROM \`Order\` o
-      LEFT JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
+      FROM \`order\` o
+      LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID
       WHERE o.Order_ID = ?
     `, [id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Order not found' });

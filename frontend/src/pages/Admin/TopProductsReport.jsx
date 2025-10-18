@@ -4,6 +4,7 @@ const TopSellingProductsReport = () => {
   const [report, setReport] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -15,7 +16,7 @@ const TopSellingProductsReport = () => {
         )}`;
 
         const response = await fetch(
-          `http://localhost:9000/api/topselling?month=${formattedDate}`
+          `${API}/api/topselling?month=${formattedDate}`
         );
         const data = await response.json();
 

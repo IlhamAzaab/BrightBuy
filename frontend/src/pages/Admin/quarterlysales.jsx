@@ -6,13 +6,14 @@ const QuarterlyReport = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const API_BASE = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   useEffect(() => {
     const fetchReport = async () => {
       try {
         setLoading(true);
         const { data } = await axios.get(
-          `http://localhost:9000/api/quartreport/quarterly?year=${year}`
+          `${API_BASE}/api/quartreport/quarterly?year=${year}`
         );
         setReportData(data);
         setError("");

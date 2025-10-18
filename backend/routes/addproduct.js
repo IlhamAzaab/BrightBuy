@@ -11,7 +11,7 @@ const router = express.Router();
 router.get("/categories", async (req, res) => {
   try {
     const [categories] = await db.query(
-      "SELECT Category_ID, Category_Name FROM Category"
+      "SELECT Category_ID, Category_Name FROM category"
     );
     res.json(categories);
   } catch (err) {
@@ -24,7 +24,7 @@ router.get("/categories", async (req, res) => {
 router.get("/categories/top3", async (req, res) => {
   try {
     const [categories] = await db.query(
-      "SELECT Category_ID, Category_Name, Description FROM Category LIMIT 2"
+      "SELECT Category_ID, Category_Name, Description FROM category LIMIT 2"
     );
     res.json(categories);
   } catch (err) {
@@ -68,7 +68,7 @@ router.post(
 
       // Insert Product
       const [productResult] = await db.query(
-        "INSERT INTO Product (Category_ID, Product_Name, Brand, SKU, Description) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO product (Category_ID, Product_Name, Brand, SKU, Description) VALUES (?, ?, ?, ?, ?)",
         [categoryId, productName, brand, sku, description]
       );
       const productId = productResult.insertId;
@@ -103,7 +103,7 @@ router.post(
         });
 
         await db.query(
-          "INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES (?, ?, ?, ?, ?, ?)",
+          "INSERT INTO variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES (?, ?, ?, ?, ?, ?)",
           [
             productId,
             priceArr[i],

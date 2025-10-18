@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 const AddProduct = () => {
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   // Product fields
   const [productName, setProductName] = useState("");
@@ -18,7 +19,7 @@ const AddProduct = () => {
 
   // Fetch categories
   useEffect(() => {
-    fetch("http://localhost:9000/api/addproduct/categories")
+    fetch(`${API}/api/addproduct/categories`)
       .then((res) => res.json())
       .then((data) => {
         setCategories(data);
@@ -76,7 +77,7 @@ const AddProduct = () => {
     });
 
     try {
-      const res = await fetch("http://localhost:9000/api/addproduct", {
+      const res = await fetch(`${API}/api/addproduct`, {
         method: "POST",
         body: formData,
       });
