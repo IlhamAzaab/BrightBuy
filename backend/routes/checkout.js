@@ -36,7 +36,7 @@ router.post("/", auth, async (req, res) => {
 
     // 2️⃣ Insert delivery details
     const [deliveryResult] = await connection.query(
-      `INSERT INTO delivery (Delivery_Address, Delivery_Method, Delivery_Status, Estimated_Delivery_Date)
+      `INSERT INTO delivery (Delivery_Address, Delivery_Method, Delivery_Status, Estimated_delivery_Date)
        VALUES (?, ?, 'Pending', ?)`,
       [deliveryAddress, deliveryMethod, estimatedDate]
     );
@@ -51,7 +51,7 @@ router.post("/", auth, async (req, res) => {
     // 4️⃣ Insert order record - fix column name with backticks and add Order_Number
     const orderNumber = Date.now(); // Simple order number generation
     const [orderResult] = await connection.query(
-      `INSERT INTO \`Order\` (User_ID, Cart_ID, \`Total Amount\`, Delivery_ID, Payment_Method, Order_Date, Order_Number)
+      `INSERT INTO \`Order\` (User_ID, Cart_ID, \`Total_Amount\`, Delivery_ID, Payment_Method, Order_Date, Order_Number)
        VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
       [userId, cartId, totalAmount, deliveryId, paymentMethod, orderNumber]
     );
@@ -73,10 +73,10 @@ router.post("/", auth, async (req, res) => {
       );
     }
     // 6️⃣ Mark the old cart as "CheckedOut"
-    await connection.query(
-    "UPDATE cart SET Status = 'Checked_Out' WHERE Cart_ID = ?",
-    [cartId]
-    );
+  await connection.query(
+  "UPDATE cart SET Status = 'CheckedOut' WHERE Cart_ID = ?",
+  [cartId]
+  );
 
     await connection.commit();
 

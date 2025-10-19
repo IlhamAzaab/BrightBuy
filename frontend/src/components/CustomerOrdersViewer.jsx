@@ -62,7 +62,21 @@ export default function CustomerOrdersViewer() {
         const res = await fetch(`${API_BASE}/api/customers?${params.toString()}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if (alive) setCustomers(data);
+        if (!Array.isArray(data)) {
+          console.warn('Unexpected /api/customers payload, expected array:', data);
+          if (alive) setCustomers([]);
+        } else {
+          if (alive) {
+            // ensure each customer has the expected fields
+            setCustomers(data.map(c => ({
+              id: c.id ?? c.User_ID ?? c.UserId,
+              name: c.name ?? c.Name ?? c.name,
+              email: c.email ?? c.Email ?? '',
+              orderCount: Number(c.orderCount ?? c.orderCount ?? 0) || 0,
+              lastOrderDate: c.lastOrderDate ?? c.lastOrderDate ?? null
+            })));
+          }
+        }
       } catch (e) {
         if (alive) setCustomersError(e.message || 'Failed to load customers');
       } finally {
@@ -84,23 +98,28 @@ export default function CustomerOrdersViewer() {
         const res = await fetch(`${API_BASE}/api/orders?userId=${encodeURIComponent(selectedId)}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        if (!Array.isArray(data)) {
+          console.warn('Unexpected /api/orders payload, expected array:', data);
+          if (alive) setOrders([]);
+          return;
+        }
         // Map backend shape to expected fields (normalize)
         const mapped = data.map(o => ({
-          id: o.id || o.Order_ID || o.OrderId,
-          placedAt: o.date || o.Order_Date || o.placedAt,
+          id: o.id ?? o.Order_ID ?? o.OrderId,
+          placedAt: o.date ?? o.Order_Date ?? o.placedAt ?? null,
           // Normalize to DB enum: only 'Delivered' and 'Pending' are supported
           status: (o.deliveryStatus === 'Delivered' || o.status === 'completed')
             ? 'Delivered'
             : 'Pending',
-          items: (o.items || []).map((it, i) => ({
-            sku: it.sku || `${o.id}-item-${i}`,
-            productName: it.product || it.productName || 'Product',
-            qty: it.qty || it.Quantity || 0,
-            price: it.price || it.Price || it.unitPrice || 0
+          items: (o.items && Array.isArray(o.items) ? o.items : []).map((it, i) => ({
+            sku: it.sku ?? `${o.id}-item-${i}`,
+            productName: it.product ?? it.productName ?? 'Product',
+            qty: Number(it.qty ?? it.Quantity ?? 0) || 0,
+            price: Number(it.price ?? it.Price ?? it.unitPrice ?? 0) || 0
           }))
         }));
-        // Sort newest first
-        mapped.sort((a,b) => new Date(b.placedAt) - new Date(a.placedAt));
+        // Sort newest first (guard missing dates)
+        mapped.sort((a,b) => new Date(b.placedAt || 0) - new Date(a.placedAt || 0));
         if (alive) setOrders(mapped);
       } catch (e) {
         if (alive) setOrdersError(e.message || 'Failed to load orders');

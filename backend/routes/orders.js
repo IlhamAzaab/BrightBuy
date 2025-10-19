@@ -9,8 +9,8 @@ router.get("/", async (req, res) => {
   if (!userId) return res.status(400).json({ error: "Missing userId" });
 
   try {
-    // Use the correct column name with backticks for spaces
-    const totalExpr = 'o.`Total Amount`';
+      // DB column is now `Total_Amount`
+      const totalExpr = 'o.`Total_Amount`';
 
     let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date,
                       ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price

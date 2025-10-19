@@ -16,10 +16,16 @@ const Orders = () => {
     async (status) => {
       setLoading(true);
       try {
+        const userId = user?.id;
+        if (!userId) {
+          // no user yet: ensure empty list and bail out
+          setOrders([]);
+          return;
+        }
         const res = await fetch(
-          `http://localhost:9000/api/orders?userId=${
-            user.id
-          }&status=${status}&_t=${Date.now()}`
+          `http://localhost:9000/api/orders?userId=${encodeURIComponent(
+            userId
+          )}&status=${status}&_t=${Date.now()}`
         );
         const data = await res.json();
         // Defensive: ensure we always store an array
@@ -42,7 +48,7 @@ const Orders = () => {
         setLoading(false);
       }
     },
-    [user.id]
+    [user?.id]
   );
 
 
