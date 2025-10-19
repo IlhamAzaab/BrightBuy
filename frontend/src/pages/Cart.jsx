@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -7,7 +7,7 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { user, token } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [cartData, setCartData] = useState({ items: [], summary: { subTotal: 0 } });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,11 +28,10 @@ export default function Cart() {
     );
   };
 
-  // Normalize path for backend
-  const normalize = (s) => (s || "").replace(/\\/g, "/");
+
 
   // Load cart data
-  const loadCart = async () => {
+  const loadCart = useCallback(async () => {
     if (!user) {
       setLoading(false);
       return;
@@ -52,11 +51,11 @@ export default function Cart() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, API_BASE]);
 
   useEffect(() => {
     loadCart();
-  }, [user]);
+  }, [user, loadCart]);
 
   // Update item quantity
   const updateQuantity = async (cartItemId, newQuantity) => {
@@ -182,7 +181,6 @@ export default function Cart() {
               </thead>
               <tbody>
                 {cartData.items.map((item) => {
-                  const imageUrl = getProductImageUrl(item);
                   return (
                     <tr key={item.Cart_Item_ID}>
                       <td className="flex items-center gap-4 py-4 md:px-4 px-1">

@@ -47,7 +47,7 @@ router.get("/", auth, async (req, res) => {
 
     // 4️⃣ Calculate estimated days
     let baseDays = mainCity ? 5 : 7;
-    const anyOutOfStock = items.some((item) => item.Stock < item.Quantity);
+    const anyOutOfStock = items.some((item) => item.Stock_quantity < item.Quantity);
     if (anyOutOfStock) baseDays += 3;
 
     const estimatedDate = new Date();
