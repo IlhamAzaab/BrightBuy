@@ -81,7 +81,7 @@ CREATE TABLE `Order` (
   `Order_ID` Int AUTO_INCREMENT,
   `User_ID` Int,
   `Cart_ID` Int,
-  `Total Amount` Numeric(9,2),
+  `Total_Amount` Numeric(9,2),
   `Payment_method` Varchar(25),
   `Delivery_ID` Int,
   `Order_Date` DATE,
@@ -98,14 +98,6 @@ CREATE TABLE `Delivery` (
   `Delivery_Status` ENUM('Delivered', 'Pending') default NULL,
   `Estimated_delivery_Date` DATE,
   PRIMARY KEY (`Delivery_ID`)
-);
-
-CREATE TABLE `Report` (
-  `Report_ID` Int AUTO_INCREMENT,
-  `Report_Type` Varchar(25),
-  `Report_Name` Varchar(25),
-  `Time_Period` Varchar(25),
-  PRIMARY KEY (`Report_ID`)
 );
 
 -- CART  → USER
@@ -148,208 +140,88 @@ BEGIN
 END//
 DELIMITER ;
 
-INSERT INTO category (Category_ID, Category_Name) VALUES
-(1,'Mobilephones'),
-(2,'Tablets'),
-(3,'Accessories');
+INSERT INTO Category (Category_ID, Category_Name)
+VALUES
+  (1, 'Mobile Phones'),
+  (2, 'Laptops'),
+  (3, 'Chargers'),
+  (4, 'Headsets'),
+  (5, 'Camera'),
+  (6, 'Watch'),
+  (7, 'Electronic Device'),
+  (8, 'Tablets'),
+  (9, 'Shoes'),
+  (10, 'Bags'),
+  (11, 'Storage Devices');
 
-INSERT INTO product (Product_ID, Category_ID, Product_Name, Brand, SKU, Description) VALUES
--- 1–5: your originals (with descriptions)
-(1, 1, 'iPhone 15',        'Apple',    'Apple iPhone 15',
- 'iPhone with bright OLED display, 48MP main camera, USB-C, and long battery life—great everyday iOS performance.'),
-(2, 1, 'Pixel 8',          'Google',   'Google Pixel 8',
- 'Clean Android with Google’s AI features and a class-leading camera—compact, smooth, and reliable.'),
-(3, 1, 'Galaxy S23',       'Samsung',  'Samsung Galaxy S23',
- 'Compact Galaxy with vibrant AMOLED screen, fast performance, and a versatile triple-camera setup.'),
-(4, 2, 'iPad Air (M2)',    'Apple',    'Apple iPad Air (M2)',
- 'Slim and powerful tablet with the M2 chip, great for study, note-taking, and creative apps with Apple Pencil support.'),
-(5, 3, 'USB-C Charger',    'Anker',    'Anker USB-C Charger',
- 'Compact USB-C wall charger for phones, tablets, and accessories—fast, travel-friendly, and dependable.'),
+INSERT INTO Product (Product_ID, Category_ID, Product_Name, Brand, SKU, Description) VALUES
+-- Category 1: Mobile Phones
+(1, 1, 'Galaxy S25 Ultra', 'Samsung', 'SAMSUNG_GALAXY_S25_ULTRA', 'Flagship model from Samsung'),
+(2, 1, 'iPhone 16 Pro Max', 'Apple', 'APPLE_IPHONE_16_PRO_MAX', 'Latest Pro Max version of iPhone'),
+(3, 1, 'Google Pixel 10', 'Google', 'GOOGLE_PIXEL_10', 'Pixel flagship with advanced AI camera'),
+(4, 1, 'OnePlus 13', 'OnePlus', 'ONEPLUS_ONEPLUS_13', 'High performance Android phone'),
 
--- 6–20: Smartphones
-(6,  1, 'iPhone 15 Pro',         'Apple',     'Apple iPhone 15 Pro',
- 'Apple’s pro-grade phone with A17 chip, great cameras, and a premium titanium build. Ideal for performance and photography.'),
-(7,  1, 'iPhone 14',             'Apple',     'Apple iPhone 14',
- 'Reliable iPhone with excellent battery life and a bright OLED display. Perfect everyday iOS experience.'),
-(8,  1, 'iPhone SE (3rd Gen)',   'Apple',     'Apple iPhone SE (3rd Gen)',
- 'Compact iPhone with Touch ID and fast A15 performance. Great value for iOS lovers.'),
-(9,  1, 'Galaxy S23 Ultra',      'Samsung',   'Samsung Galaxy S23 Ultra',
- 'Flagship with S Pen support and a superb quad-camera system. Built for power users.'),
-(10, 1, 'Galaxy A55',            'Samsung',   'Samsung Galaxy A55',
- 'Mid-range Galaxy with AMOLED screen and long battery life. Solid everyday Android choice.'),
-(11, 1, 'Pixel 8 Pro',           'Google',    'Google Pixel 8 Pro',
- 'Google’s top Pixel with Tensor G3 and best-in-class AI camera features. Clean Android.'),
-(12, 1, 'Pixel 7a',              'Google',    'Google Pixel 7a',
- 'Affordable Pixel with excellent photos and smooth software—great value.'),
-(13, 1, 'OnePlus 12',            'OnePlus',   'OnePlus OnePlus 12',
- 'Fast and fluid flagship with rapid charging and a bright LTPO display.'),
-(14, 1, 'OnePlus Nord CE 4',     'OnePlus',   'OnePlus OnePlus Nord CE 4',
- 'Slim mid-ranger with clean OxygenOS and dependable performance.'),
-(15, 1, 'Xiaomi 13T Pro',        'Xiaomi',    'Xiaomi Xiaomi 13T Pro',
- 'Leica-tuned cameras and fast charging make this a strong flagship value.'),
-(16, 1, 'Redmi Note 13 Pro',     'Xiaomi',    'Xiaomi Redmi Note 13 Pro',
- 'Great AMOLED display and big battery—budget friendly with premium touches.'),
-(17, 1, 'Motorola Edge 40',      'Motorola',  'Motorola Motorola Edge 40',
- 'Curved display, light design, and clean Android experience.'),
-(18, 1, 'Nothing Phone (2a)',    'Nothing',   'Nothing Nothing Phone (2a)',
- 'Unique Glyph interface with smooth performance and minimalist design.'),
-(19, 1, 'Nokia G42',             'Nokia',     'Nokia Nokia G42',
- 'Repair-friendly design with long battery life and clean software.'),
-(20, 1, 'Sony Xperia 10 V',      'Sony',      'Sony Sony Xperia 10 V',
- 'Tall 21:9 OLED display and stereo speakers—great for media on the go.'),
+-- Category 2: Laptops
+(5, 2, 'MacBook Air M4', 'Apple', 'APPLE_MACBOOK_AIR_M4', 'Lightweight laptop with Apple Silicon M4'),
+(6, 2, 'Dell XPS 15 2025', 'Dell', 'DELL_XPS_15_2025', 'Dell flagship 15-inch XPS'),
+(7, 2, 'ThinkPad X1 Carbon', 'Lenovo', 'LENOVO_THINKPAD_X1_CARBON', 'Durable business ultrabook'),
+(8, 2, 'ROG Strix G17', 'ASUS', 'ASUS_ROG_STRIX_G17', 'Gaming laptop with RTX GPU'),
 
--- 21–27: Tablets
-(21, 2, 'iPad Pro 11" (M4)',     'Apple',     'Apple iPad Pro 11" (M4)',
- 'Ultra-thin tablet with M4 performance and ProMotion display—made for creators.'),
-(22, 2, 'iPad (10th Gen)',       'Apple',     'Apple iPad (10th Gen)',
- 'All-round iPad for study and entertainment with USB-C and a vivid screen.'),
-(23, 2, 'Galaxy Tab S9',         'Samsung',   'Samsung Galaxy Tab S9',
- 'Premium AMOLED tablet with S Pen in the box and desktop-like DeX mode.'),
-(24, 2, 'Galaxy Tab A9',         'Samsung',   'Samsung Galaxy Tab A9',
- 'Lightweight family tablet for streaming, notes, and casual gaming.'),
-(25, 2, 'Xiaomi Pad 6',          'Xiaomi',    'Xiaomi Xiaomi Pad 6',
- 'Sharp 144Hz display and snappy performance—great value work-and-play slate.'),
-(26, 2, 'Lenovo Tab P12',        'Lenovo',    'Lenovo Lenovo Tab P12',
- 'Large screen tablet with quad speakers—ideal for movies and multitasking.'),
-(27, 2, 'Fire HD 10',            'Amazon',    'Amazon Fire HD 10',
- 'Affordable tablet for reading, streaming, and Alexa—excellent battery life.'),
+-- Category 3: Chargers
+(9, 3, 'USB-C 65W GaN Charger', 'Anker', 'ANKER_USB_C_65W_GAN_CHARGER', 'Compact gallium nitride charger 65W'),
+(10, 3, 'MagSafe Fast Charger', 'Apple', 'APPLE_MAGSAFE_FAST_CHARGER', 'MagSafe wireless fast charger'),
+(11, 3, 'PowerPort III 108W', 'Anker', 'ANKER_POWERPORT_III_108W', 'GaN charger with 2 USB-C ports'),
+(12, 3, 'HyperJuice 100W Charging Station', 'Hyper', 'HYPER_HYPERJUICE_100W_CHARGING_STATION', 'Multi-port USB-C charging station'),
 
--- 28–40: Accessories
-(28, 3, 'AirPods Pro (2nd Gen)',        'Apple',     'Apple AirPods Pro (2nd Gen)',
- 'Active noise cancellation with Spatial Audio—seamless with Apple devices.'),
-(29, 3, 'Galaxy Buds2 Pro',             'Samsung',   'Samsung Galaxy Buds2 Pro',
- 'Comfortable earbuds with rich sound and 24-bit hi-fi on supported devices.'),
-(30, 3, 'Pixel Buds Pro',               'Google',    'Google Pixel Buds Pro',
- 'ANC earbuds with deep integration to Pixel phones and clear call quality.'),
-(31, 3, 'PowerCore 20K',                'Anker',     'Anker PowerCore 20K',
- 'High-capacity power bank with fast charging for phones and tablets.'),
-(32, 3, '3-in-1 MagSafe Stand',         'Belkin',    'Belkin 3-in-1 MagSafe Stand',
- 'Charge iPhone, AirPods, and Apple Watch together—clean desk setup.'),
-(33, 3, 'Tune 510BT',                   'JBL',       'JBL Tune 510BT',
- 'Lightweight Bluetooth headphones with punchy bass and long battery life.'),
-(34, 3, 'WH-CH520',                     'Sony',      'Sony WH-CH520',
- 'Everyday wireless headphones—clear sound and multi-point connection.'),
-(35, 3, 'MX Master 3S',                 'Logitech',  'Logitech MX Master 3S',
- 'Ergonomic mouse with precise scrolling—great for productivity and creators.'),
-(36, 3, 'Ultra microSD 128GB',          'SanDisk',   'SanDisk Ultra microSD 128GB',
- 'Expand storage for phones, cameras, and handheld consoles—A1 app performance.'),
-(37, 3, 'DataTraveler 64GB',            'Kingston',  'Kingston DataTraveler 64GB',
- 'Compact USB flash drive—reliable file transfer and backup on the go.'),
-(38, 3, 'USB-C to HDMI Adapter',        'UGREEN',    'UGREEN USB-C to HDMI Adapter',
- 'Connect laptops/phones to 4K displays—plug-and-play adapter.'),
-(39, 3, 'Mag Armor Case (iPhone 15)',   'Spigen',    'Spigen Mag Armor Case (iPhone 15)',
- 'Protective MagSafe-compatible case with slim design and strong grip.'),
-(40, 3, 'Kishi V2',                      'Razer',     'Razer Kishi V2',
- 'Mobile game controller with low-latency USB-C—console feel on your phone.');
+-- Category 4: Headsets
+(13, 4, 'AirPods Pro 3', 'Apple', 'APPLE_AIRPODS_PRO_3', 'Latest Apple noise cancelling earbuds'),
+(14, 4, 'WH-1000XM6', 'Sony', 'SONY_WH_1000XM6', 'Flagship Sony noise cancelling over-ear'),
+(15, 4, 'QuietComfort Ultra', 'Bose', 'BOSE_QUIETCOMFORT_ULTRA', 'Ultra noise cancelling headset'),
+(16, 4, 'Elite 10', 'Jabra', 'JABRA_ELITE_10', 'True wireless earbuds with ANC'),
 
-INSERT INTO variant (Variant_ID, Product_ID, Price, Stock_quantity, Colour, Size) VALUES
-(1, 1, 799.00, 20, 'Black',     128),
-(2, 1, 899.00, 15, 'Blue',      256),
-(3, 2, 699.00, 25, 'Porcelain', 128),
-(4, 2, 799.00, 18, 'Obsidian',  256),
-(5, 3, 749.00, 30, 'Green',     128),
-(6, 3, 849.00, 14, 'Lavender',  256),
-(7, 4, 599.00, 12, 'Starlight',  64),
-(8, 4, 749.00, 10, 'Blue',256),
-(9, 5,  39.99, 50, 'White',65);
+-- Category 5: Cameras
+(17, 5, 'EOS R8', 'Canon', 'CANON_EOS_R8', 'Mirrorless full-frame camera'),
+(18, 5, 'A7 IV', 'Sony', 'SONY_A7_IV', 'Sony’s full-frame mirrorless camera'),
+(19, 5, 'Z5 II', 'Nikon', 'NIKON_Z5_II', 'Entry-level full-frame mirrorless camera'),
+(20, 5, 'X-T5', 'Fujifilm', 'FUJIFILM_X_T5', 'APS-C mirrorless camera'),
+
+-- Category 6: Watches
+(21, 6, 'Apple Watch Series 11', 'Apple', 'APPLE_APPLE_WATCH_SERIES_11', 'Latest Apple smartwatch'),
+(22, 6, 'Galaxy Watch 7', 'Samsung', 'SAMSUNG_GALAXY_WATCH_7', 'Samsung flagship smartwatch'),
+(23, 6, 'Fenix 8', 'Garmin', 'GARMIN_FENIX_8', 'High end multisport GPS watch'),
+(24, 6, 'Charge 7 Pro', 'Fitbit', 'FITBIT_CHARGE_7_PRO', 'Fitness tracker and smartwatch hybrid'),
+
+-- Category 7: Electronic Devices
+(25, 7, 'Echo Show 15', 'Amazon', 'AMAZON_ECHO_SHOW_15', 'Smart display with Alexa'),
+(26, 7, 'Nest Hub Max', 'Google', 'GOOGLE_NEST_HUB_MAX', 'Google smart home hub display'),
+(27, 7, 'Streaming Stick Plus', 'Roku', 'ROKU_STREAMING_STICK_PLUS', '4K streaming stick device'),
+(28, 7, 'Fire TV Cube 3rd Gen', 'Amazon', 'AMAZON_FIRE_TV_CUBE_3RD_GEN', 'Streaming device plus Alexa hub'),
+
+-- Category 8: Tablets
+(29, 8, 'iPad Pro 13', 'Apple', 'APPLE_IPAD_PRO_13', 'Latest iPad Pro large model'),
+(30, 8, 'Galaxy Tab S10', 'Samsung', 'SAMSUNG_GALAXY_TAB_S10', 'Flagship Android tablet'),
+(31, 8, 'Surface Pro 11', 'Microsoft', 'MICROSOFT_SURFACE_PRO_11', 'Hybrid 2-in-1 tablet PC'),
+(32, 8, 'Tab P12', 'Lenovo', 'LENOVO_TAB_P12', 'High performance Android tablet'),
+
+-- Category 9: Shoes
+(33, 9, 'Air Jordan 1 High', 'Nike', 'NIKE_AIR_JORDAN_1_HIGH', 'Classic high-top basketball shoe'),
+(34, 9, 'UltraBoost 24', 'Adidas', 'ADIDAS_ULTRABOOST_24', 'Running shoe with Boost midsole'),
+(35, 9, 'RS-X3', 'Puma', 'PUMA_RS_X3', 'Lifestyle chunky sneaker'),
+(36, 9, '550', 'New Balance', 'NEW_BALANCE_550', 'Retro basketball style shoe'),
+
+-- Category 10: Bags
+(37, 10, 'Neverfull MM', 'Louis Vuitton', 'LOUIS_VUITTON_NEVERFULL_MM', 'Luxury tote bag'),
+(38, 10, 'Little America Backpack', 'Herschel', 'HERSCHEL_LITTLE_AMERICA_BACKPACK', 'Classic backpack style'),
+(39, 10, 'Alpha Bravo Sling', 'Tumi', 'TUMI_ALPHA_BRAVO_SLING', 'Crossbody sling bag'),
+(40, 10, 'Winfield 3', 'Samsonite', 'SAMSONITE_WINFIELD_3', 'Hard shell carry-on suitcase'),
+
+-- Category 11: Storage Devices
+(41, 11, 'T7 Shield 1TB', 'Samsung', 'SAMSUNG_T7_SHIELD_1TB', 'Portable SSD with rugged design'),
+(42, 11, 'Extreme Pro 1TB', 'SanDisk', 'SANDISK_EXTREME_PRO_1TB', 'High speed portable SSD'),
+(43, 11, 'MyBook 10TB', 'Western Digital', 'WESTERN_DIGITAL_MYBOOK_10TB', 'Desktop external HDD'),
+(44, 11, 'Barracuda 4TB', 'Seagate', 'SEAGATE_BARRACUDA_4TB', 'Internal HDD 3.5 inch model');
 
 
-INSERT INTO variant (Variant_ID, Product_ID, Colour, Size, Price, Stock_quantity) VALUES
-(10, 6,  'Black',   128, 1099.00, 50),
-(11, 6,  'Silver',  256, 1299.00, 40),
-(12, 7,  'Blue',    128, 799.00, 60),
-(13, 7,  'Purple',  256, 899.00, 40),
-(14, 8,  'Red',     64,  429.00, 70),
-(15, 8,  'White',   128, 479.00, 50),
-(16, 9,  'Black',   256, 1199.00, 45),
-(17, 9,  'Green',   512, 1399.00, 30),
-(18, 10, 'Blue',    128, 499.00, 80),
-(19, 11, 'Obsidian',128, 999.00, 50),
-(20, 11, 'Porcelain',256,1099.00, 30),
-(21, 12, 'Charcoal',128, 499.00, 60),
-(22, 13, 'Black',   256, 899.00, 40),
-(23, 13, 'Green',   512, 999.00, 25),
-(24, 14, 'Gray',    128, 399.00, 70),
-(25, 15, 'Blue',    256, 649.00, 50),
-(26, 16, 'Black',   128, 299.00, 90),
-(27, 17, 'Black',   256, 599.00, 40),
-(28, 18, 'White',   128, 449.00, 60),
-(29, 19, 'Gray',    128, 299.00, 70),
-(30, 20, 'Black',   128, 399.00, 50),
-(31, 21, 'Silver',  256, 1099.00, 30),
-(32, 22, 'Blue',    64,  449.00, 60),
-(33, 23, 'Graphite',256, 899.00, 40),
-(34, 24, 'Gray',    64,  229.00, 80),
-(35, 25, 'Blue',    128, 399.00, 50),
-(36, 26, 'Gray',    128, 429.00, 45),
-(37, 27, 'Black',   64,  199.00, 70),
-(38, 28, 'White',   NULL, 249.00, 100),
-(39, 29, 'Black',   NULL, 229.00, 90),
-(40, 30, 'Charcoal',NULL, 199.00, 80),
-(41, 31, 'Black',   NULL, 59.00,  120),
-(42, 32, 'White',   NULL, 129.00, 40),
-(43, 33, 'Black',   NULL, 49.00,  100),
-(44, 34, 'Blue',    NULL, 59.00,  90),
-(45, 35, 'Black',   NULL, 99.00,  50),
-(46, 36, 'Black',   128, 19.00,  200),
-(47, 37, 'Black',   64,  15.00,  150),
-(48, 38, 'Gray',    NULL, 25.00,  80),
-(49, 39, 'Black',   NULL, 29.00,  70),
-(50, 40, 'Black',   NULL, 99.00,  40);
-
--- Add image URLs to variants
-
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106569/dfqpkjvh8/oltkqyv4b2fyndyvi6tc.webp' WHERE (Variant_ID = '50');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106582/dfqpkjvh8/o9c55qshxpm5kmgeixhi.jpg' WHERE (Variant_ID = '49');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106583/dfqpkjvh8/uvmsedjynyw99hykk4k2.jpg' WHERE (Variant_ID = '48');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106551/dfqpkjvh8/rneahqssp8qdkxp4dmcj.webp' WHERE (Variant_ID = '47');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106578/dfqpkjvh8/rjqnou7lc4yldsivcrux.webp' WHERE (Variant_ID = '46');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106554/dfqpkjvh8/xsfn8yicrw3lthu2lryy.jpg' WHERE (Variant_ID = '45');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106580/dfqpkjvh8/ljuxtochd2wozogbendv.jpg' WHERE (Variant_ID = '44');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106549/dfqpkjvh8/mhjrvav9lftv28vnf00r.png' WHERE (Variant_ID = '43');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106526/dfqpkjvh8/sev8nlq8mfsyhdoaep0o.jpg' WHERE (Variant_ID = '42');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106523/dfqpkjvh8/coms2xptzjfkmbwfm5uq.webp' WHERE (Variant_ID = '41');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106565/dfqpkjvh8/sb3algkpn82zygwhzkcx.webp' WHERE (Variant_ID = '40');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106536/dfqpkjvh8/oqpbta0mu0ylixfcl5o0.jpg' WHERE (Variant_ID = '2');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106539/dfqpkjvh8/zj1rak94ub2jtxlu39zt.jpg' WHERE (Variant_ID = '1');
-
-UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760247910/dfqpkjvh8/wm0i2mgnpltqy1t0yk4j.jpg' WHERE (Variant_ID = '39');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106520/dfqpkjvh8/iv3sasd35vmybf1ombrh.webp' WHERE (Variant_ID = '38');
-UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106522/dfqpkjvh8/rq2ofeijp6whnixbuaew.webp' WHERE (Variant_ID = '37');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106552/dfqpkjvh8/jrjb9ktrzff2hceybbwu.jpg' WHERE (Variant_ID = '36');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106587/dfqpkjvh8/rbxts3an7nopde4aewf3.jpg' WHERE (Variant_ID = '35');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106575/dfqpkjvh8/quwuir8fpnu1mebzzl1y.webp' WHERE (Variant_ID = '34');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106577/dfqpkjvh8/nhnpi6ly4qsspqgwv2na.jpg' WHERE (Variant_ID = '33');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106529/dfqpkjvh8/xytqzmdvgw4jwiz8o0gx.png' WHERE (Variant_ID = '32');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106533/dfqpkjvh8/rrsbucas3wooqiwwrm3y.jpg' WHERE (Variant_ID = '31');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106588/dfqpkjvh8/th07jk1tlntjuqtolnht.png' WHERE (Variant_ID = '30');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106556/dfqpkjvh8/nzjqqoru1s7ibr6a1elw.webp' WHERE (Variant_ID = '29');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106557/dfqpkjvh8/ezuf0itfvm5czbnf06pu.webp' WHERE (Variant_ID = '28');
-UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106555/dfqpkjvh8/bjdzn41uyhjkhyzpdeqg.png' WHERE (Variant_ID = '27');
-UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106571/dfqpkjvh8/qrkwplwrebdlfyy4qhkm.png' WHERE (Variant_ID = '26');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106571/dfqpkjvh8/qrkwplwrebdlfyy4qhkm.png' WHERE (Variant_ID = '25');
-UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106560/dfqpkjvh8/whue1zhtlen59innvc6t.jpg' WHERE (Variant_ID = '24');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106559/dfqpkjvh8/bjajvdkwc2q07xzeq1be.png' WHERE (Variant_ID = '23');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106558/dfqpkjvh8/nslwyc5nm1xkcbcrvxtu.webp' WHERE (Variant_ID = '22');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106562/dfqpkjvh8/p7ekjm2pxjgxjv38gwn5.png' WHERE (Variant_ID = '21');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106564/dfqpkjvh8/romtr0mck7lggahk2mjj.avif' WHERE (Variant_ID = '19');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106519/dfqpkjvh8/lz6xd5ntzunpbji3p8fv.jpg' WHERE (Variant_ID = '20');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106572/dfqpkjvh8/wb0x0jwzifxizeqliqbd.webp' WHERE (Variant_ID = '18');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106576/dfqpkjvh8/soc7fa9y4b7wnzc2cul1.webp' WHERE (Variant_ID = '16');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106516/dfqpkjvh8/czcrnkhjk7xmv3rruzyy.jpg' WHERE (Variant_ID = '17');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106543/dfqpkjvh8/zbdru69e2tafcax2xrtb.webp' WHERE (Variant_ID = '15');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106546/dfqpkjvh8/h8hkgnhnym1kdgby4weh.avif' WHERE (Variant_ID = '14');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106540/dfqpkjvh8/uw4lhvy5chjmncj3m8zs.webp' WHERE (Variant_ID = '12');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106525/dfqpkjvh8/wowfcblcgxjvczikicn0.png' WHERE (Variant_ID = '13');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106534/dfqpkjvh8/w5zvgtq4suhvlhx4ybs2.png' WHERE (Variant_ID = '10');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106538/dfqpkjvh8/qpgun6ioljn4ptqfkrbv.jpg' WHERE (Variant_ID = '11');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106524/dfqpkjvh8/yvakdeuqp3xecqpbqbqo.jpg' WHERE (Variant_ID = '9');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106531/dfqpkjvh8/kfpv2oxhknfu3b6uhlpf.jpg' WHERE (Variant_ID = '8');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106528/dfqpkjvh8/f9kd3lk8atkxjjz2sge0.avif' WHERE (Variant_ID = '7');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106514/dfqpkjvh8/x1ynh57etupksqfscecr.jpg' WHERE (Variant_ID = '6');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106518/dfqpkjvh8/p5h3hr6g7cvpinuwjyr1.jpg' WHERE (Variant_ID = '5');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106513/dfqpkjvh8/bnl0jvuw3myjy3ooqvk9.jpg' WHERE (Variant_ID = '4');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106563/dfqpkjvh8/yjl79thhm1wsen8wakvl.jpg' WHERE (Variant_ID = '3');
 
 -- Insert User data (6 users: 4 customers, 2 admins)
 INSERT INTO `user` 
@@ -487,40 +359,18 @@ DELIMITER $$
 CREATE PROCEDURE GetQuarterlySales(IN selectedYear INT)
 BEGIN
   SELECT
-    YEAR(Order_Date) AS Year,
-    QUARTER(Order_Date) AS Quarter,
-    SUM(Total_Amount) AS Total_Sales,
-    COUNT(Order_ID) AS Total_Orders,
-    AVG(Total_Amount) AS Avg_Order_Value
-  FROM brightbuy.`Order`
-  WHERE YEAR(Order_Date) = selectedYear
+    YEAR(o.Order_Date) AS Year,
+    QUARTER(o.Order_Date) AS Quarter,
+    -- use the actual column name in the orders table (has a space), alias as Total_Sales
+    SUM(o.`Total_Amount`) AS Total_Sales,
+    COUNT(o.Order_ID) AS Total_Orders,
+    AVG(o.`Total_Amount`) AS Avg_Order_Value
+  FROM brightbuy.`Order` o
+  WHERE YEAR(o.Order_Date) = selectedYear
   GROUP BY Year, Quarter
   ORDER BY Quarter;
 END $$
 DELIMITER ;
-
--- Create view for monthly top-selling products
-CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
-SELECT
-    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month, -- Format date as YYYY-MM
-    p.Product_ID,
-    p.Product_Name,
-    p.Brand,
-    SUM(ci.Quantity) AS total_quantity_sold,
-    SUM(ci.Total_price) AS total_revenue
-FROM
-    Order o
-JOIN
-    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
-JOIN
-    Product p ON ci.Product_ID = p.Product_ID
-GROUP BY
-    month, p.Product_ID
-ORDER BY
-    month DESC, total_quantity_sold DESC;
-
-    
-ALTER TABLE cart ADD COLUMN Status ENUM('Active', 'CheckedOut') DEFAULT 'Active';
 
 
 -- Create a view to summarize total orders per category
@@ -535,23 +385,26 @@ LEFT JOIN Cart_Item ci ON v.Variant_ID = ci.Variant_ID
 LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
 WHERE o.Order_ID IS NOT NULL
 GROUP BY c.Category_ID, c.Category_Name
-ORDER BY TotalOrders DESC;
+ORDER BY TotalOrders DESC;
 
-
-
---------------for searchbar----------------------
-
--- Product lookups / sorts
-CREATE INDEX idx_product_name ON Product (Product_Name);
-CREATE INDEX idx_product_brand ON Product (Brand);
-CREATE INDEX idx_product_desc ON Product (Description(255)); 
-CREATE INDEX idx_product_id ON Product (Product_ID);
-
--- Variant filters used by the subquery/EXISTS
-CREATE INDEX idx_variant_pid ON Variant (Product_ID);               
-CREATE INDEX idx_variant_colour ON Variant (Colour);
-CREATE INDEX idx_variant_size ON Variant (Size);
-CREATE INDEX idx_variant_pid_image ON Variant (Product_ID, Image_URL);
-
-
--------------------------------------------------
+-- Create view for monthly top-selling products
+CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
+SELECT
+    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month,
+    p.Product_ID,
+    p.Product_Name,
+    p.Brand,
+    SUM(ci.Quantity) AS total_quantity_sold,
+    SUM(ci.Total_price) AS total_revenue
+FROM
+    `Order` o
+JOIN
+    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
+JOIN
+    Variant v ON ci.Variant_ID = v.Variant_ID
+JOIN
+    Product p ON v.Product_ID = p.Product_ID
+GROUP BY
+    month, p.Product_ID
+ORDER BY
+    month, total_quantity_sold DESC;
