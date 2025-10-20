@@ -12,8 +12,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-/* -------------------- ROUTES -------------------- */
-
 // Get user profile
 router.get("/:id", async (req, res) => {
   try {

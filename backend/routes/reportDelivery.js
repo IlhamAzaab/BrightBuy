@@ -8,9 +8,6 @@ const router = Router();
 /**
  * GET /api/admin/reports/delivery-time
  * Returns only PENDING deliveries with ETA + Days Left.
- *
- * Adjust the 'Delivery_Status' filter if you also use
- * 'Processing' or 'Shipped' as pending states.
  */
 router.get("/delivery-time", auth, async (_req, res) => {
   const sql = `

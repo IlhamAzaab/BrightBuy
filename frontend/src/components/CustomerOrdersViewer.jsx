@@ -1,17 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
 
 /*
-  CustomerOrdersViewer
-  --------------------
-  Stand‑alone component that fetches customers from the backend and, when a customer
-  is selected, loads that customer's order history with line items.
-
   Usage:
     import CustomerOrdersViewer from './components/CustomerOrdersViewer';
     <CustomerOrdersViewer />
-
-  Props: (currently none) – could be extended later to accept customers / orders arrays
-         or data-loading callbacks.
 */
 
 // Backend base URL (configure via environment variable for flexibility)

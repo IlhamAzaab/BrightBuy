@@ -9,7 +9,6 @@ router.get("/", async (req, res) => {
   if (!userId) return res.status(400).json({ error: "Missing userId" });
 
   try {
-      // DB column is now `Total_Amount`
       const totalExpr = 'o.`Total_Amount`';
 
   let sql = `SELECT o.Order_Number AS Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date, d.Delivery_Method, o.Payment_method,
@@ -23,7 +22,7 @@ router.get("/", async (req, res) => {
                WHERE o.User_ID = ?`;
     const params = [userId];
 
-    // Filter by derived status using delivery status (only 'Delivered' and 'Pending' are supported)
+    // Filter by status using delivery status (only 'Delivered' and 'Pending' are supported)
     if (status === 'completed') {
       sql += ` AND d.Delivery_Status = 'Delivered'`;
     } else if (status === 'pending') {
@@ -70,8 +69,7 @@ router.get("/", async (req, res) => {
 
 // Update order status based on requested logical status
 // Request body can send: { status: 'completed' } -> sets Delivery_Status = 'Delivered'
-// or { status: 'pending' } -> sets Delivery_Status to a non-delivered value (default 'Processing')
-// You may also send a direct Delivery_Status value (e.g. 'In Transit', 'Shipped').
+// or { status: 'pending' }
 router.put("/:id/status", async (req, res) => {
   const { id } = req.params; // Order_ID
   const requested = (req.body?.status || '').trim();

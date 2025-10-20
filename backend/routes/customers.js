@@ -1,18 +1,16 @@
 import express from 'express';
 import db from '../db.js';
 
-// Customers route: provides customer list enriched with order counts & last order date.
+
 // GET /api/customers
-// Optional query params:
 //   search: filters by partial match against name, email, id
-//   order   : 'recent' (default) | 'name'
 // Returns: [{ id, name, email, orderCount, lastOrderDate }]
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   const { search = '', order = 'recent' } = req.query;
 
-  // Base SQL with LEFT JOIN to count orders and get last order date
+  //SQL with LEFT JOIN to count orders and get last order date
   let sql = `SELECT u.User_ID AS id, u.Name AS name, u.Email AS email,
           COUNT(DISTINCT o.Order_Number) AS orderCount,
           MAX(o.Order_Date) AS lastOrderDate

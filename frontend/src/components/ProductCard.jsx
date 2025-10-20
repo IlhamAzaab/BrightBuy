@@ -7,7 +7,6 @@ export default function ProductCard({ product }) {
     style: "currency",
     currency: "USD",
   });
-  //const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:9000";
 
   // Prices from variants (DECIMAL(10,2) → Number)
   const prices = (product.Variants ?? [])

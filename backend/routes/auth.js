@@ -1,4 +1,3 @@
-// backend/routes/auth.js (ESM)
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -8,7 +7,7 @@ dotenv.config();
 
 const router = express.Router();
 
-// ---- Secrets (single source of truth) ----
+//Secrets
 const ACCESS_SECRET =
   process.env.JWT_ACCESS_SECRET ||
   process.env.JWT_SECRET ||
@@ -19,7 +18,7 @@ const REFRESH_SECRET =
   process.env.JWT_SECRET ||
   "dev_refresh_secret";
 
-// ---- Token helpers ----
+//Token helpers
 const generateAccessToken = (user) =>
   jwt.sign(
     { id: user.User_ID, role: user.Role },
@@ -34,7 +33,7 @@ const generateRefreshToken = (user) =>
     { expiresIn: process.env.REFRESH_TOKEN_TTL || "7d" }
   );
 
-// -------------------- Signup --------------------
+//Signup
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
@@ -79,7 +78,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// -------------------- Login --------------------
+//Login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -111,7 +110,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// -------------------- Refresh token --------------------
+//Refresh token
 router.post("/refresh", async (req, res) => {
   const { refreshToken } = req.body || {};
   if (!refreshToken) return res.status(401).json({ error: "No refresh token provided" });
@@ -126,7 +125,7 @@ router.post("/refresh", async (req, res) => {
   }
 });
 
-// -------------------- Profile (protected) --------------------
+//Profile
 router.get("/profile", async (req, res) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader) return res.status(401).json({ error: "No token provided" });

@@ -1,4 +1,3 @@
-// src/pages/Checkout.jsx
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -28,7 +27,7 @@ export default function Checkout() {
       currency: "USD",
     }).format(amount);
 
-  // 🧩 Load cart data
+  //Load cart data
   const loadCart = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/cart`);
@@ -40,7 +39,7 @@ export default function Checkout() {
     }
   }, [API_BASE]);
 
-  // 🧩 Load user address
+  //Load user address
   const loadAddress = useCallback(async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/user/address`, {
@@ -188,7 +187,7 @@ export default function Checkout() {
       <div className="px-6 md:px-16 lg:px-32 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* LEFT SECTION - Details */}
         <div className="lg:col-span-2 space-y-6">
-          {/* --- 🏠 Address Section --- */}
+          {/* ---Address Section --- */}
           <div className="border p-4 rounded-lg shadow-sm">
             <h2 className="text-lg font-semibold text-gray-800 mb-3">
               Delivery Address
@@ -231,7 +230,7 @@ export default function Checkout() {
             )}
           </div>
 
-          {/* --- 🚚 Delivery Method --- */}
+          {/* --- Delivery Method --- */}
           <div className="border p-4 rounded-lg shadow-sm mb-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-3">
               Delivery Method
@@ -260,7 +259,7 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* 💳 Payment Method */}
+          {/* Payment Method */}
           <div className="border p-4 rounded-lg shadow-sm mb-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-3">
               Payment Method
@@ -289,7 +288,7 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* --- 🛒 Cart Items --- */}
+          {/* --- Cart Items --- */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {cartData.items.map((item) => (
               <div

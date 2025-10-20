@@ -1,6 +1,6 @@
 import express from "express";
-import db from "../db.js"; // your MySQL connection (mysql2/promise)
-import auth from "../middleware/auth.js"; // if you're using token-based auth
+import db from "../db.js";
+import auth from "../middleware/auth.js"; 
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.get("/", auth, async (req, res) => {
   const userId = req.user.id;
 
   try {
-    // 1️⃣ Get the user's cart
+    //Get the user's cart
     const [cartRows] = await db.query(
       "SELECT Cart_ID FROM cart WHERE User_ID = ?",
       [userId]
@@ -19,7 +19,7 @@ router.get("/", auth, async (req, res) => {
 
     const cartId = cartRows[0].Cart_ID;
 
-    // 2️⃣ Get cart items and their stock
+    //Get cart items and their stock
     const [items] = await db.query(
       `SELECT v.Stock_quantity, ci.Quantity
        FROM cart_item ci
@@ -31,7 +31,7 @@ router.get("/", auth, async (req, res) => {
     if (!items.length)
       return res.status(400).json({ error: "No items in cart" });
 
-    // 3️⃣ Get user's city and check if it's a main city
+    //Get user's city and check if it's a main city
     const [userCityRows] = await db.query(
       `SELECT c.Main_City
        FROM user u
@@ -45,7 +45,7 @@ router.get("/", auth, async (req, res) => {
 
     const mainCity = userCityRows[0].Main_City;
 
-    // 4️⃣ Calculate estimated days
+    //Calculate estimated days
     let baseDays = mainCity ? 5 : 7;
     const anyOutOfStock = items.some((item) => item.Stock_quantity < item.Quantity);
     if (anyOutOfStock) baseDays += 3;

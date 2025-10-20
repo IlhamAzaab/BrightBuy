@@ -1,4 +1,3 @@
-// backend/routes/headerSlider.js
 import express from "express";
 import db from "../db.js";
 import auth from "../middleware/auth.js";

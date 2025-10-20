@@ -13,11 +13,9 @@ router.get("/quarterly", async (req, res) => {
   }
 
   try {
-    // Call stored procedure. Using array destructuring because mysql2 returns [rows, fields]
+    // Call stored procedure
     const [rows] = await db.query("CALL GetQuarterlySales(?)", [selectedYear]);
 
-    // rows returned by CALL is an array of result sets. If the procedure selects rows directly,
-    // mysql2 usually returns an array with the first element being an array of rows.
     const result = Array.isArray(rows) && rows.length > 0 ? rows[0] : rows;
 
     // If no rows found, return empty array (client can handle)
@@ -27,7 +25,6 @@ router.get("/quarterly", async (req, res) => {
 
     res.json(result);
   } catch (error) {
-    // Provide detailed logging to help debug 500
     console.error("Error in /api/quartreport/quarterly", {
       message: error?.message,
       code: error?.code,
@@ -38,7 +35,6 @@ router.get("/quarterly", async (req, res) => {
       input: { selectedYear }
     });
 
-    // In development, include SQL message to aid debugging; in production keep generic
     const isDev = process.env.NODE_ENV !== "production";
     const body = { message: "Error generating quarterly report" };
     if (isDev) body.detail = error?.sqlMessage || error?.message;

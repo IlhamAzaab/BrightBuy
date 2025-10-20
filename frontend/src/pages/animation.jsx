@@ -16,7 +16,7 @@ const Animation = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      {/* ✅ Success Badge Animation */}
+      {/*Success Badge Animation */}
       <AnimatePresence>
         {showBadge && (
           <motion.div

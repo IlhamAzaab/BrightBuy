@@ -9,7 +9,6 @@ const router = Router();
  */
 router.get("/products", async (_req, res) => {
   try {
-    // product no longer has Image_URL
     const [products] = await db.query(
       `SELECT p.Product_ID, p.Product_Name, p.Category_ID
        FROM product p
@@ -37,7 +36,6 @@ router.get("/products", async (_req, res) => {
       });
     }
 
-    // For the collapsed row, show the first variant's image (if any)
     const payload = products.map((p) => {
       const vlist = byProduct[p.Product_ID] || [];
       const firstVar = vlist[0] || null;
@@ -45,8 +43,8 @@ router.get("/products", async (_req, res) => {
         Product_ID: p.Product_ID,
         Product_Name: p.Product_Name,
         Category_ID: p.Category_ID,
-        Image_URL: firstVar?.Image_URL || null, // thumbnail in collapsed row
-        variants: vlist,                        // each has its own Image_URL
+        Image_URL: firstVar?.Image_URL || null, 
+        variants: vlist,                        
       };
     });
 

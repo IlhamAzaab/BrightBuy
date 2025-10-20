@@ -4,7 +4,7 @@ import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-// 🧩 GET user address
+// GET user address
 router.get("/address", auth, async (req, res) => {
   const userId = req.user.id;
   try {
@@ -24,7 +24,7 @@ router.get("/address", auth, async (req, res) => {
   }
 });
 
-// 🧩 PUT update address (user has only one address)
+// PUT update address (user has only one address)
 router.put("/address", auth, async (req, res) => {
   const userId = req.user.id;
   const { address, city } = req.body;
@@ -33,7 +33,7 @@ router.put("/address", auth, async (req, res) => {
   try {
     await conn.beginTransaction();
 
-    // 🔍 Check if city already exists
+    // Check if city already exists
     const [existingCity] = await conn.query(
       "SELECT City_ID FROM city WHERE City_Name = ?",
       [city]
@@ -43,7 +43,7 @@ router.put("/address", auth, async (req, res) => {
     if (existingCity.length > 0) {
       cityId = existingCity[0].City_ID;
     } else {
-      // 🆕 City not found — insert as non-main
+      // City not found — insert as non-main
       const [insertResult] = await conn.query(
         "INSERT INTO city (City_Name, Main_City) VALUES (?, 0)",
         [city]
@@ -51,7 +51,7 @@ router.put("/address", auth, async (req, res) => {
       cityId = insertResult.insertId;
     }
 
-    // 🧩 Update user's existing address (user only has one)
+    // Update user's existing address (user only has one)
     await conn.query(
       "UPDATE user SET Address = ?, City_ID = ? WHERE User_ID = ?",
       [address, cityId, userId]

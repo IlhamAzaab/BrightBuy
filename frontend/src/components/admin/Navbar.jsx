@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { assets } from "../../assets/assets"; // Keep your assets import
+import { assets } from "../../assets/assets";
 import { AuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {

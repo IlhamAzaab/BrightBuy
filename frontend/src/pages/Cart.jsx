@@ -87,8 +87,6 @@ export default function Cart() {
   // Total price
   const subTotal = cartData.items.reduce((sum, item) => sum + Number(item.Price) * item.Quantity, 0);
 
-  // --- RENDER ---
-
   if (!user) {
     return (
       <>

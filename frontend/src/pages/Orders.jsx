@@ -19,7 +19,7 @@ const Orders = () => {
       try {
         const userId = user?.id;
         if (!userId) {
-          // no user yet: ensure empty list and bail out
+          // no user yet: ensure empty list
           setOrders([]);
           return;
         }
@@ -29,7 +29,7 @@ const Orders = () => {
           )}&status=${status}&_t=${Date.now()}`
         );
         const data = await res.json();
-        // Defensive: ensure we always store an array
+        //ensure we always store an array
         if (Array.isArray(data)) {
           setOrders(data);
         } else if (data && typeof data === "object" && data.error) {
@@ -75,7 +75,7 @@ const Orders = () => {
         return;
       }
 
-      // Optimistic update: remove from pending list immediately
+      //remove from pending list immediately
       if (tab === "pending") {
         setOrders((prev) => prev.filter((o) => o.id !== orderId));
       }
@@ -86,7 +86,6 @@ const Orders = () => {
       // Always reconcile with server to avoid drift
       fetchOrders(tab);
       // If user currently on pending and wants to view in completed automatically (optional)
-      // fetchOrders(tab); // still refresh to stay in sync (uncomment if needed)
     } catch (err) {
       console.error(err);
     }

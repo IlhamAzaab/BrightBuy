@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
       clearTimeout(window.inactivityTimer);
       window.inactivityTimer = setTimeout(() => {
         logout();
-      }, 60*60*1000); // 15 minutes inactivity
+      }, 60*60*1000);
     };
 
     const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];

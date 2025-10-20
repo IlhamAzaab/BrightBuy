@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000") + "";
 
-// normalize and prefix with API if needed
 const resolveImageUrl = (u) => {
   if (!u) return null;
   const clean = String(u).trim().replace(/\\/g, "/");

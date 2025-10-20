@@ -1,4 +1,3 @@
-// backend/middleware/auth.js (ESM)
 import jwt from "jsonwebtoken";
 
 const ACCESS_SECRET =
