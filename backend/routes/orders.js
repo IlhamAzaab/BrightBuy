@@ -34,7 +34,6 @@ router.get("/", async (req, res) => {
 
   sql += ' ORDER BY o.Order_Date DESC';
 
-    console.log('[orders] sql:', sql, 'params:', params);
     const [rows] = await db.query(sql, params);
 
     const grouped = {};
@@ -69,7 +68,6 @@ router.get("/", async (req, res) => {
     console.error('Orders fetch error (main query):', { message: e.message, code: e.code, sqlMessage: e.sqlMessage, stack: e.stack });
     // Fallback: return simple order list (no items) so frontend doesn't hard-fail
     try {
-      console.log('[orders] running fallback simple orders query');
       const [simple] = await db.query('SELECT Order_ID, User_ID, Order_Date, Total_Amount, Payment_method, Delivery_ID FROM `order` WHERE User_ID = ?', [userId]);
       const mapped = (simple || []).map(r => ({
         id: r.Order_ID,
