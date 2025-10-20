@@ -207,7 +207,7 @@ const Navbar = () => {
               <img
                 src={
                   user.image_URL
-                    ? `http://localhost:9000${user.image_URL}`
+                    ? `${API_BASE}${user.image_URL}`
                     : "/images/default.jpg"
                 }
                 alt="user avatar"

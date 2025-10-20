@@ -14,6 +14,7 @@ export const assets = {
 const UserProfile = () => {
   const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   const [photo, setPhoto] = useState(null);
   const [profile, setProfile] = useState({});
@@ -32,7 +33,7 @@ const UserProfile = () => {
     if (!userId) return;
     setLoading(true);
     axios
-      .get(`http://localhost:9000/api/profile/${userId}`)
+      .get(`${API}/api/profile/${userId}`)
       .then((res) => {
         const data = res.data;
         setProfile(data);
@@ -61,7 +62,7 @@ const UserProfile = () => {
 
     try {
       // Update profile info
-      await axios.put(`http://localhost:9000/api/profile/${userId}`, {
+      await axios.put(`${API}/api/profile/${userId}`, {
         Name,
         Email,
         Address,
@@ -69,7 +70,7 @@ const UserProfile = () => {
 
       // Update password if filled
       if (oldPassword && newPassword) {
-        await axios.put(`http://localhost:9000/api/profile/${userId}/password`, {
+        await axios.put(`${API}/api/profile/${userId}/password`, {
           oldPassword,
           newPassword,
         });
@@ -83,7 +84,7 @@ const UserProfile = () => {
         const formData = new FormData();
         formData.append("photo", photo);
         const res = await axios.post(
-          `http://localhost:9000/api/profile/${userId}/photo`,
+          `${API}/api/profile/${userId}/photo`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -119,7 +120,7 @@ const UserProfile = () => {
             />
             <img
               className="w-24 h-24 object-cover rounded-full border border-gray-300 cursor-pointer"
-              src={photo ? URL.createObjectURL(photo) : profile.image_URL ? `http://localhost:9000${profile.image_URL}` : assets.default_profile}
+              src={photo ? URL.createObjectURL(photo) : profile.image_URL ? `${API}${profile.image_URL}` : assets.default_profile}
               alt="Profile"
             />
           </label>
@@ -131,7 +132,7 @@ const UserProfile = () => {
             className="mt-2 px-4 py-2 bg-orange-600 text-white font-small rounded hover:bg-orange-700"
             onClick={async () => {
              try {
-              await axios.delete(`http://localhost:9000/api/profile/${userId}/photo`);
+              await axios.delete(`${API}/api/profile/${userId}/photo`);
               setProfile({ ...profile, image_URL: null });
               alert("Profile photo removed");
              } catch (err) {
