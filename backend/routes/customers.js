@@ -32,13 +32,12 @@ router.get('/', async (req, res) => {
   if (order === 'name') {
     sql += ` ORDER BY u.Name ASC`;
   } else {
-    // Recent first (newest date first). Push NULLs (no orders) to the bottom.
-    // Correct syntax: cannot put DESC before IS NULL. Expression (lastOrderDate IS NULL) gives 0 for non-null, 1 for null.
+
     sql += ` ORDER BY (lastOrderDate IS NULL) ASC, lastOrderDate DESC`;
   }
 
   try {
-    console.debug('[customers] sql:', sql, 'params:', params);
+
     const [rows] = await db.query(sql, params);
     res.json(rows.map(r => ({
       ...r,

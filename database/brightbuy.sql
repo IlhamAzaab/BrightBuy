@@ -4,99 +4,99 @@ drop database brightbuy;
 create database brightbuy;
 use brightbuy;
 
-CREATE TABLE `product` (
-  `Product_ID` Int not null AUTO_INCREMENT,
-  `Category_ID` Int,
-  `Product_Name` Varchar(225),
-  `Brand` Varchar(225),
-  `SKU` Varchar(255),
-  `Description` TEXT,
-  PRIMARY KEY (`Product_ID`)
+CREATE TABLE product (
+  Product_ID Int not null AUTO_INCREMENT,
+  Category_ID Int,
+  Product_Name Varchar(225),
+  Brand Varchar(225),
+  SKU Varchar(255),
+  Description TEXT,
+  PRIMARY KEY (Product_ID)
 );
 
-CREATE TABLE `cart` (
-  `Cart_ID` Int AUTO_INCREMENT,
-  `User_ID` Int,
+CREATE TABLE cart (
+  Cart_ID Int AUTO_INCREMENT,
+  User_ID Int,
   Status ENUM('Active', 'CheckedOut') DEFAULT 'Active',
-  PRIMARY KEY (`Cart_ID`)
+  PRIMARY KEY (Cart_ID)
 );
 
-CREATE TABLE `variant` (
-  `Variant_ID` Int not null AUTO_INCREMENT,
-  `Product_ID` Int,
-  `Price` decimal(10,2),
-  `Stock_quantity` int,
-  `Colour` varchar(25),
-  `Size` Int,
-  `Image_URL` Varchar(2500),
-  PRIMARY KEY (`Variant_ID`),
-  FOREIGN KEY (`Product_ID`)
-      REFERENCES `Product`(`Product_ID`)
+CREATE TABLE variant (
+  Variant_ID Int not null AUTO_INCREMENT,
+  Product_ID Int,
+  Price decimal(10,2),
+  Stock_quantity int,
+  Colour varchar(25),
+  Size Int,
+  Image_URL Varchar(2500),
+  PRIMARY KEY (Variant_ID),
+  FOREIGN KEY (Product_ID)
+      REFERENCES Product(Product_ID)
 );
 
-CREATE TABLE `cart_item` (
-  `Cart_Item_ID` Int AUTO_INCREMENT,
-  `Cart_ID` Int,
-  `Product_ID` Int,
-  `Variant_ID` Int,
-  `Quantity` Int,
-  `Total_price` Numeric(9,2),
-  PRIMARY KEY (`Cart_Item_ID`),
-  FOREIGN KEY (`Product_ID`)
-      REFERENCES `Product`(`Product_ID`),
-  FOREIGN KEY (`Cart_ID`)
-      REFERENCES `Cart`(`Cart_ID`),
-  FOREIGN KEY (`Variant_ID`)
-      REFERENCES `Variant`(`Variant_ID`)
+CREATE TABLE cart_item (
+  Cart_Item_ID Int AUTO_INCREMENT,
+  Cart_ID Int,
+  Product_ID Int,
+  Variant_ID Int,
+  Quantity Int,
+  Total_price Numeric(9,2),
+  PRIMARY KEY (Cart_Item_ID),
+  FOREIGN KEY (Product_ID)
+      REFERENCES Product(Product_ID),
+  FOREIGN KEY (Cart_ID)
+      REFERENCES Cart(Cart_ID),
+  FOREIGN KEY (Variant_ID)
+      REFERENCES Variant(Variant_ID)
 );
 
-CREATE TABLE `city` (
-  `City_ID` Int AUTO_INCREMENT,
-  `City_Name` Varchar(25),
-  `Main_City` BOOL default 0,
-  PRIMARY KEY (`City_ID`)
+CREATE TABLE city (
+  City_ID Int AUTO_INCREMENT,
+  City_Name Varchar(25),
+  Main_City BOOL default 0,
+  PRIMARY KEY (City_ID)
 );
 
-CREATE TABLE `user` (
-  `User_ID` Int AUTO_INCREMENT,
-  `Name` Varchar(25),
-  `Password` Varchar(100),
-  `Address` Varchar(50),
-  `City_ID` Int,
-  `Email` Varchar(25),
-  `Role` Varchar(10),
-  `image_URL` varchar(300),
-  PRIMARY KEY (`User_ID`),
-  FOREIGN KEY (`City_ID`)
-      REFERENCES `City`(`City_ID`)
+CREATE TABLE user (
+  User_ID Int AUTO_INCREMENT,
+  Name Varchar(25),
+  Password Varchar(100),
+  Address Varchar(50),
+  City_ID Int,
+  Email Varchar(25),
+  Role Varchar(10),
+  image_URL varchar(300),
+  PRIMARY KEY (User_ID),
+  FOREIGN KEY (City_ID)
+      REFERENCES City(City_ID)
 );
 
-CREATE TABLE `category` (
-  `Category_ID` Int ,
-  `Category_Name` Varchar(25),
-  PRIMARY KEY (`Category_ID`)
+CREATE TABLE category (
+  Category_ID Int ,
+  Category_Name Varchar(25),
+  PRIMARY KEY (Category_ID)
 );
 
 CREATE TABLE `order` (
-  `User_ID` Int,
-  `Cart_ID` Int,
-  `Total_Amount` Numeric(9,2),
-  `Payment_method` Varchar(25),
-  `Delivery_ID` Int,
-  `Order_Date` DATE,
-  `Order_Number` BIGINT,
-  PRIMARY KEY (`Order_Number`),
-  FOREIGN KEY (`User_ID`)
-      REFERENCES `User`(`User_ID`)
+  User_ID Int,
+  Cart_ID Int,
+  Total_Amount Numeric(9,2),
+  Payment_method Varchar(25),
+  Delivery_ID Int,
+  Order_Date DATE,
+  Order_Number BIGINT,
+  PRIMARY KEY (Order_Number),
+  FOREIGN KEY (User_ID)
+      REFERENCES User(User_ID)
 );
 
-CREATE TABLE `delivery` (
-  `Delivery_ID` Int AUTO_INCREMENT,
-  `Delivery_Method` Varchar(25),
-  `Delivery_Address` Varchar(50),
-  `Delivery_Status` ENUM('Delivered', 'Pending') default NULL,
-  `Estimated_delivery_Date` DATE,
-  PRIMARY KEY (`Delivery_ID`)
+CREATE TABLE delivery (
+  Delivery_ID Int AUTO_INCREMENT,
+  Delivery_Method Varchar(25),
+  Delivery_Address Varchar(50),
+  Delivery_Status ENUM('Delivered', 'Pending') default NULL,
+  Estimated_delivery_Date DATE,
+  PRIMARY KEY (Delivery_ID)
 );
 
 -- add sample data for category table
@@ -971,10 +971,10 @@ BEGIN
   SELECT
     YEAR(o.Order_Date) AS Year,
     QUARTER(o.Order_Date) AS Quarter,
-    SUM(o.`Total_Amount`) AS Total_Sales,
+    SUM(o.Total_Amount) AS Total_Sales,
       COUNT(o.Order_Number) AS Total_Orders,
-    AVG(o.`Total_Amount`) AS Avg_Order_Value
-  FROM brightbuy.`order` o
+    AVG(o.Total_Amount) AS Avg_Order_Value
+  FROM brightbuy.order o
   WHERE YEAR(o.Order_Date) = selectedYear
   GROUP BY Year, Quarter
   ORDER BY Quarter;
@@ -986,11 +986,11 @@ CREATE VIEW CategoryOrderSummary AS
 SELECT 
     c.Category_Name, 
   COUNT(DISTINCT o.Order_Number) AS TotalOrders
-FROM Category c
+FROM category c
 LEFT JOIN product p ON c.Category_ID = p.Category_ID
 LEFT JOIN variant v ON p.Product_ID = v.Product_ID
 LEFT JOIN cart_item ci ON v.Variant_ID = ci.Variant_ID
-LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
+LEFT JOIN brightbuy.order o ON ci.Cart_ID = o.Cart_ID 
 WHERE o.Order_Number IS NOT NULL
 GROUP BY c.Category_ID, c.Category_Name
 ORDER BY TotalOrders DESC;
@@ -1005,7 +1005,7 @@ SELECT
     SUM(ci.Quantity) AS total_quantity_sold,
     SUM(ci.Total_price) AS total_revenue
 FROM
-    `Order` o
+    `order` o
 JOIN
     cart_item ci ON o.Cart_ID = ci.Cart_ID
 JOIN
@@ -1018,13 +1018,13 @@ ORDER BY
     month, total_quantity_sold DESC;
     
 -- Product lookups / sorts
-CREATE INDEX idx_product_name ON Product (Product_Name);
-CREATE INDEX idx_product_brand ON Product (Brand);
-CREATE INDEX idx_product_desc ON Product (Description(255)); 
-CREATE INDEX idx_product_id ON Product (Product_ID);
+CREATE INDEX idx_product_name ON product (Product_Name);
+CREATE INDEX idx_product_brand ON product (Brand);
+CREATE INDEX idx_product_desc ON product (Description(255)); 
+CREATE INDEX idx_product_id ON product (Product_ID);
 
 -- Variant filters used by the subquery/EXISTS
-CREATE INDEX idx_variant_pid ON Variant (Product_ID);             
-CREATE INDEX idx_variant_colour ON Variant (Colour);
-CREATE INDEX idx_variant_size ON Variant (Size);
-CREATE INDEX idx_variant_pid_image ON Variant (Product_ID, Image_URL);
+CREATE INDEX idx_variant_pid ON variant (Product_ID);             
+CREATE INDEX idx_variant_colour ON variant (Colour);
+CREATE INDEX idx_variant_size ON variant (Size);
+CREATE INDEX idx_variant_pid_image ON variant (Product_ID, Image_URL(255));
