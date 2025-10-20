@@ -6,12 +6,13 @@ const HeaderSlider = () => {
   const [sliderData, setSliderData] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   // Fetch slider data from backend
   useEffect(() => {
     const fetchSliderData = async () => {
       try {
-        const res = await fetch("http://localhost:9000/api/headerslider");
+        const res = await fetch(`${API}/api/headerslider`);
         const data = await res.json();
 
         const formatted = data.map((item, index) => ({

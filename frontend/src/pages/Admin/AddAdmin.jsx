@@ -5,11 +5,12 @@ import { AuthContext } from "../../context/AuthContext";
 const AddAdmin = () => {
   const { user, token } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:9000/addadmin/users", {
+        const res = await axios.get(`${API}/addadmin/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(res.data);
@@ -24,7 +25,7 @@ const AddAdmin = () => {
     const newRole = currentRole === "admin" ? "customer" : "admin";
     try {
       await axios.put(
-        `http://localhost:9000/addadmin/users/${id}/role`,
+        `${API}/addadmin/users/${id}/role`,
         { role: newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       );

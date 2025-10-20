@@ -35,7 +35,7 @@ router.put("/address", auth, async (req, res) => {
 
     // 🔍 Check if city already exists
     const [existingCity] = await conn.query(
-      "SELECT City_ID FROM City WHERE City_Name = ?",
+      "SELECT City_ID FROM city WHERE City_Name = ?",
       [city]
     );
 
@@ -45,7 +45,7 @@ router.put("/address", auth, async (req, res) => {
     } else {
       // 🆕 City not found — insert as non-main
       const [insertResult] = await conn.query(
-        "INSERT INTO City (City_Name, Main_City) VALUES (?, 0)",
+        "INSERT INTO city (City_Name, Main_City) VALUES (?, 0)",
         [city]
       );
       cityId = insertResult.insertId;

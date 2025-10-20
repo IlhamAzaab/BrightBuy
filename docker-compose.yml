@@ -1,0 +1,49 @@
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: brightbuy-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - brightbuy-network
+
+  backend:
+    build: ./backend
+    container_name: brightbuy-backend
+    ports:
+      - "9000:9000"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}
+    depends_on:
+      - db
+    networks:
+      - brightbuy-network
+
+  db:
+    image: mysql:8.0
+    container_name: brightbuy-db
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3307:${DB_PORT}" 
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - brightbuy-network
+
+volumes:
+  db_data:
+
+networks:
+  brightbuy-network:

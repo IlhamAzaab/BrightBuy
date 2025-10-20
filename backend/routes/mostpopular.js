@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
     'Variant_ID', v.Variant_ID,
     'Price', v.Price
   )) AS Variants
-FROM MonthlyTopSellingProducts m
+FROM monthlytopsellingproducts m
 JOIN product p ON m.Product_ID = p.Product_ID
 JOIN variant v ON p.Product_ID = v.Product_ID
 WHERE m.Month >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 MONTH), '%Y-%m')
