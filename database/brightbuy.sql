@@ -1016,4 +1016,15 @@ GROUP BY
     month, p.Product_ID
 ORDER BY
     month, total_quantity_sold DESC;
+    
+-- Product lookups / sorts
+CREATE INDEX idx_product_name ON Product (Product_Name);
+CREATE INDEX idx_product_brand ON Product (Brand);
+CREATE INDEX idx_product_desc ON Product (Description(255)); 
+CREATE INDEX idx_product_id ON Product (Product_ID);
 
+-- Variant filters used by the subquery/EXISTS
+CREATE INDEX idx_variant_pid ON Variant (Product_ID);             
+CREATE INDEX idx_variant_colour ON Variant (Colour);
+CREATE INDEX idx_variant_size ON Variant (Size);
+CREATE INDEX idx_variant_pid_image ON Variant (Product_ID, Image_URL);
