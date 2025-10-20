@@ -1,11 +1,11 @@
 import { Router } from "express";
-import pool from "../db.js";
+import db from "../db.js";
 const router = Router();
 
 // Route to fetch top-selling products for the last 6 months
 router.get("/", async (req, res) => {
   try {
-    const [results] = await pool.query(
+  const [results] = await db.query(
       `SELECT 
   p.Product_ID,
   p.Product_Name,
@@ -31,7 +31,7 @@ ORDER BY SUM(m.total_quantity_sold) DESC`
     console.error("Error executing query:", err);
     if (err && err.code === "ER_NO_SUCH_TABLE") {
       try {
-        const [fallback] = await pool.query(`
+  const [fallback] = await db.query(`
           SELECT
             p.Product_ID,
             p.Product_Name,

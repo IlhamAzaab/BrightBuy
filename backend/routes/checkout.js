@@ -1,6 +1,6 @@
 // backend/routes/checkout.js
 import express from "express";
-import pool from "../db.js";
+import db from "../db.js";
 import auth from "../middleware/auth.js";
 
 const router = express.Router();
@@ -19,7 +19,7 @@ router.post("/", auth, async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const connection = await pool.getConnection();
+  const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
 

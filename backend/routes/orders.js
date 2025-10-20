@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "../db.js";
+import db from "../db.js";
 
 const router = express.Router();
 
@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
 
     sql += ' ORDER BY o.Order_Date DESC';
 
-    const [rows] = await pool.query(sql, params);
+  const [rows] = await db.query(sql, params);
 
     const grouped = {};
     rows.forEach(r => {
@@ -96,7 +96,7 @@ router.put("/:id/status", async (req, res) => {
   }
 
   try {
-    const [rows] = await pool.query(
+  const [rows] = await db.query(
       'SELECT o.Order_Number AS Order_ID, d.Delivery_ID, d.Delivery_Status FROM `Order` o JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_Number = ?',
       [id]
     );
@@ -116,7 +116,7 @@ router.put("/:id/status", async (req, res) => {
       });
     }
 
-    const [updateResult] = await pool.query(
+  const [updateResult] = await db.query(
       `UPDATE Delivery d
          JOIN \`Order\` o ON o.Delivery_ID = d.Delivery_ID
          SET d.Delivery_Status = ?
@@ -124,7 +124,7 @@ router.put("/:id/status", async (req, res) => {
       [targetDeliveryStatus, id]
     );
 
-    const [after] = await pool.query(
+  const [after] = await db.query(
       'SELECT d.Delivery_Status FROM `Order` o JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_Number = ?',
       [id]
     );
@@ -149,7 +149,7 @@ router.put("/:id/status", async (req, res) => {
 router.get('/:id/debug', async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await pool.query(`
+  const [rows] = await db.query(`
       SELECT o.Order_Number AS Order_ID, o.User_ID, o.Delivery_ID, d.Delivery_Status, o.Order_Date
       FROM \`Order\` o
       LEFT JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
