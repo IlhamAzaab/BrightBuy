@@ -44,33 +44,14 @@ router.post("/add", auth, async (req, res) => {
 
     const cartId = await ensureActiveCart(conn, req.user.id);
 
-    // Check if variant already in cart
+    // Do we already have this variant in the cart?
     const [existing] = await conn.query(
       "SELECT Cart_Item_ID, Quantity FROM cart_item WHERE Cart_ID = ? AND Variant_ID = ?",
       [cartId, variantId]
     );
 
-    // Load variant stock and price
-    const [vrows] = await conn.query(
-      "SELECT Product_ID, Price, Stock_quantity FROM variant WHERE Variant_ID = ?",
-      [variantId]
-    );
-    if (!vrows.length) throw new Error("Variant not found");
-    const { Product_ID: productId, Price, Stock_quantity } = vrows[0];
-
-    const currentQty = existing.length ? Number(existing[0].Quantity) : 0;
-    const desiredQty = currentQty + Number(qty);
-
-    // Enforce stock for first-time add and increments via add
-    if (desiredQty > Number(Stock_quantity)) {
-      await conn.rollback();
-      return res.status(409).json({
-        error: "Quantity exceeds available stock",
-        available: Math.max(0, Number(Stock_quantity) - currentQty),
-      });
-    }
-
     if (existing.length) {
+      // Bump quantity and recompute total using current variant price
       await conn.query(
         `UPDATE cart_item ci
            JOIN variant v ON v.Variant_ID = ci.Variant_ID
@@ -80,9 +61,17 @@ router.post("/add", auth, async (req, res) => {
         [qty, qty, existing[0].Cart_Item_ID]
       );
     } else {
+      // Need product id & price for this variant
+      const [vrows] = await conn.query(
+        "SELECT Product_ID, Price FROM variant WHERE Variant_ID = ?",
+        [variantId]
+      );
+      if (!vrows.length) throw new Error("Variant not found");
+      const { Product_ID: productId, Price } = vrows[0];
+
       await conn.query(
         "INSERT INTO cart_item (Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES (?,?,?,?,?)",
-        [cartId, productId, variantId, qty, Number(qty) * Number(Price)]
+        [cartId, productId, variantId, qty, qty * Number(Price)]
       );
     }
 
@@ -96,6 +85,7 @@ router.post("/add", auth, async (req, res) => {
     conn.release();
   }
 });
+
 /**
  * GET /api/cart
  * Returns the user's ACTIVE cart items with a subtotal.
@@ -171,30 +161,7 @@ router.patch("/item/:id", auth, async (req, res) => {
   try {
     await conn.beginTransaction();
 
-    // Get the item's variant and stock
-    const [rows] = await conn.query(
-      `SELECT ci.Cart_ID, ci.Variant_ID, v.Stock_quantity
-       FROM cart_item ci
-       JOIN variant v ON v.Variant_ID = ci.Variant_ID
-       WHERE ci.Cart_Item_ID = ?`,
-      [cartItemId]
-    );
-    if (!rows.length) {
-      await conn.rollback();
-      return res.status(404).json({ error: "Cart item not found" });
-    }
-
-    const { Stock_quantity } = rows[0];
-
-    // Enforce stock for requested qty
-    if (Number(qty) > Number(Stock_quantity)) {
-      await conn.rollback();
-      return res.status(409).json({
-        error: "Quantity exceeds available stock",
-        available: Number(Stock_quantity),
-      });
-    }
-
+    // Update qty and total atomically (recalc with variant price)
     await conn.query(
       `UPDATE cart_item ci
          JOIN variant v ON v.Variant_ID = ci.Variant_ID
@@ -214,6 +181,7 @@ router.patch("/item/:id", auth, async (req, res) => {
     conn.release();
   }
 });
+
 /**
  * DELETE /api/cart/item/:id
  */
