@@ -10,9 +10,9 @@ router.get("/", async (req, res) => {
 
   try {
     // Use the correct column name with backticks for spaces
-    const totalExpr = 'o.`Total Amount`';
+    const totalExpr = 'o.`Total_Amount`';
 
-    let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date,
+    let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, d.Delivery_Status, d.Estimated_delivery_Date,
                       ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price
                FROM \`Order\` o
                JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
