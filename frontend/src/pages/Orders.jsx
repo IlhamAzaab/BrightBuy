@@ -3,6 +3,8 @@ import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
+const API = "http://localhost:9000";
+
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [tab, setTab] = useState("pending");
@@ -23,7 +25,7 @@ const Orders = () => {
           return;
         }
         const res = await fetch(
-          `localhost:9000/api/orders?userId=${encodeURIComponent(
+          `http://localhost:9000/api/orders?userId=${encodeURIComponent(
             userId
           )}&status=${status}&_t=${Date.now()}`
         );
@@ -50,7 +52,6 @@ const Orders = () => {
     },
     [user?.id]
   );
-
 
   useEffect(() => {
     if (user?.id) {
@@ -96,17 +97,17 @@ const Orders = () => {
       <Navbar />
       <div className="px-6 md:px-16 lg:px-32 py-8 min-h-[70vh] bg-gray-50">
         <div className="flex flex-col items-center px-8 md:px-16">
-        <div className="flex flex-col items-end pt-8 py-4">
-          <p className="text-4xl font-medium">Your Orders</p>
-          <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
-          <button
-            onClick={() => navigate("/")}
-            className="group flex items-center mt-6 gap-2 text-orange-600 hover:text-black"
-          >
-            &larr; Continue Shopping
-          </button>
+          <div className="flex flex-col items-end pt-8 py-4">
+            <p className="text-4xl font-medium">Your Orders</p>
+            <div className="w-16 h-0.5 bg-orange-600 rounded-full"></div>
+            <button
+              onClick={() => navigate("/")}
+              className="group flex items-center mt-6 gap-2 text-orange-600 hover:text-black"
+            >
+              &larr; Continue Shopping
+            </button>
+          </div>
         </div>
-      </div>
         {/* Tabs */}
         <div className="flex gap-4 mb-6">
           <button
@@ -155,7 +156,9 @@ const Orders = () => {
                   {/* Accent bar */}
                   <div
                     className={`h-1 w-full ${
-                      o.status === "completed" ? "bg-green-500" : "bg-orange-400"
+                      o.status === "completed"
+                        ? "bg-green-500"
+                        : "bg-orange-400"
                     } opacity-80`}
                   ></div>
                   <div className="p-5 flex flex-col gap-4">
@@ -163,7 +166,9 @@ const Orders = () => {
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                       <div className="space-y-1">
                         <h2 className="font-semibold text-lg tracking-tight flex items-center gap-2">
-                          <span className="text-gray-800">Order #{o.Number}</span>
+                          <span className="text-gray-800">
+                            Order #{o.Number}
+                          </span>
                           {o.status === "completed" && (
                             <span className="text-[10px] uppercase tracking-wide font-medium text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
                               Done
