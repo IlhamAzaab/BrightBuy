@@ -23,8 +23,7 @@ router.get("/", async (req, res) => {
           FROM Product p2
           JOIN Variant v2 ON p2.Product_ID = v2.Product_ID
           GROUP BY p2.Category_ID
-       ) AS cheapest ON cheapest.Category_ID = c.Category_ID AND v.Price = cheapest.MinPrice
-       LIMIT 4`
+       ) AS cheapest ON cheapest.Category_ID = c.Category_ID AND v.Price = cheapest.MinPrice`
     );
 
     res.json(categories);

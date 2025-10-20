@@ -43,7 +43,7 @@ ORDER BY SUM(m.total_quantity_sold) DESC`
               'Variant_ID', v.Variant_ID,
               'Price', v.Price
             )) AS Variants
-          FROM ` + "`Order`" + ` o
+          FROM ` + "`order`" + ` o
           JOIN cart c ON o.Cart_ID = c.Cart_ID
           JOIN cart_item ci ON c.Cart_ID = ci.Cart_ID
           JOIN product p ON ci.Product_ID = p.Product_ID

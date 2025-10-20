@@ -27,7 +27,6 @@ import TopProductsReport from "../pages/Admin/TopProductsReport";
 import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
 import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
 import Outofstocklist from "../pages/Admin/outofstocklist";
-import Animation from "../pages/animation";
 import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
 
 export default function AppRoutes() {

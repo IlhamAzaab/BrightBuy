@@ -1,10 +1,9 @@
 import fs from "fs";
-import fs from "fs";
 import path from "path";
 import cloudinary from "../config/cloudinary.js";
 
 export const uploadFolder = async (options = {}) => {
-  const folderPath = path.join(process.cwd(), "backend", "assets", "images");
+  const folderPath = path.join(process.cwd(), "backend", "assets", "images","Watches");
 
   const files = fs.readdirSync(folderPath);
 

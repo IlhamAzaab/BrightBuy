@@ -51,7 +51,7 @@ router.post("/", auth, async (req, res) => {
     // 4️⃣ Insert order record - fix column name with backticks and add Order_Number
     const orderNumber = Date.now(); // Simple order number generation
     const [orderResult] = await connection.query(
-      `INSERT INTO \`Order\` (User_ID, Cart_ID, \`Total Amount\`, Delivery_ID, Payment_Method, Order_Date, Order_Number)
+      `INSERT INTO \`Order\` (User_ID, Cart_ID, \`Total_Amount\`, Delivery_ID, Payment_Method, Order_Date, Order_Number)
        VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
       [userId, cartId, totalAmount, deliveryId, paymentMethod, orderNumber]
     );

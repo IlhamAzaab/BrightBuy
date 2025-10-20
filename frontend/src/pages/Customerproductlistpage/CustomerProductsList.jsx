@@ -113,7 +113,7 @@ export default function CustomerProductList() {
               key={num}
               onClick={() => goToPage(num)}
               className={`px-3 py-1.5 rounded border text-sm ${
-                page === num ? "bg-orange-600 text-white border-orange-600" : "hover:bg-slate-50"
+                page === num ? "bg-orange-600 text-white border-green-600" : "hover:bg-slate-50"
               }`}
             >
               {num}
