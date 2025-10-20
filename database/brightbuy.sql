@@ -16,7 +16,7 @@ CREATE TABLE `Product` (
 
 CREATE TABLE `Cart` (
   `Cart_ID` Int AUTO_INCREMENT,
-  `User_ID` Int,
+  `customer_ID` Int,
   Status ENUM('Active', 'CheckedOut') DEFAULT 'Active',
   PRIMARY KEY (`Cart_ID`)
 );
@@ -57,8 +57,8 @@ CREATE TABLE `City` (
   PRIMARY KEY (`City_ID`)
 );
 
-CREATE TABLE `User` (
-  `User_ID` Int AUTO_INCREMENT,
+CREATE TABLE `customer` (
+  `customer_ID` Int AUTO_INCREMENT,
   `Name` Varchar(25),
   `Password` Varchar(100),
   `Address` Varchar(50),
@@ -66,7 +66,7 @@ CREATE TABLE `User` (
   `Email` Varchar(25),
   `Role` Varchar(10),
   `image_URL` varchar(300),
-  PRIMARY KEY (`User_ID`),
+  PRIMARY KEY (`customer_ID`),
   FOREIGN KEY (`City_ID`)
       REFERENCES `City`(`City_ID`)
 );
@@ -78,7 +78,7 @@ CREATE TABLE `Category` (
 );
 
 CREATE TABLE `Order` (
-  `User_ID` Int,
+  `customer_ID` Int,
   `Cart_ID` Int,
   `Total_Amount` Numeric(9,2),
   `Payment_method` Varchar(25),
@@ -86,8 +86,8 @@ CREATE TABLE `Order` (
   `Order_Date` DATE,
   `Order_Number` BIGINT,
   PRIMARY KEY (`Order_Number`),
-  FOREIGN KEY (`User_ID`)
-      REFERENCES `User`(`User_ID`)
+  FOREIGN KEY (`customer_ID`)
+      REFERENCES `customer`(`customer_ID`)
 );
 
 CREATE TABLE `Delivery` (
@@ -99,10 +99,10 @@ CREATE TABLE `Delivery` (
   PRIMARY KEY (`Delivery_ID`)
 );
 
--- CART  → USER
+-- CART  → customer
 ALTER TABLE cart
-  ADD CONSTRAINT fk_cart_user
-  FOREIGN KEY (User_ID) REFERENCES user(User_ID);
+  ADD CONSTRAINT fk_cart_customer
+  FOREIGN KEY (customer_ID) REFERENCES customer(customer_ID);
 
 -- CART_ITEM → CART / VARIANT / PRODUCT
 ALTER TABLE cart_item
@@ -210,6 +210,11 @@ GROUP BY
     month, p.Product_ID
 ORDER BY
     month, total_quantity_sold DESC;
+
+DELETE FROM Cart_Item WHERE Cart_ID>0;
+DELETE FROM cart WHERE User_ID>0;
+DELETE FROM User WHERE User_ID>0;
+DELETE FROM city WHERE City_ID>0;
     
 -- add sample data for category table
 INSERT INTO Category (Category_ID, Category_Name)
@@ -294,7 +299,7 @@ INSERT INTO Product (Product_ID, Category_ID, Product_Name, Brand, SKU, Descript
 (44, 11, 'Barracuda 4TB', 'Seagate', 'SEAGATE_BARRACUDA_4TB', 'Internal HDD 3.5 inch model');
 
 INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES
--- Category 1: Mobile Phones (Product_ID 1–4)
+-- Category 1: Mobile Phones
 (1, 1299.00, 50, 'Black', 256, NULL),
 (1, 1399.00, 40, 'Silver', 512, NULL),
 (2, 1599.00, 35, 'Gold', 256, NULL),
@@ -304,7 +309,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (4, 899.00, 60, 'Green', 128, NULL),
 (4, 999.00, 50, 'Black', 256, NULL),
 
--- Category 2: Laptops (Product_ID 5–8)
+-- Category 2: Laptops 
 (5, 1399.00, 30, 'Silver', 512, NULL),
 (5, 1599.00, 25, 'Space Gray', 1024, NULL),
 (6, 1699.00, 20, 'Platinum', 1024, NULL),
@@ -314,7 +319,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (8, 1799.00, 20, 'Black', 1024, NULL),
 (8, 1999.00, 15, 'Red', 2048, NULL),
 
--- Category 3: Chargers (Product_ID 9–12)
+-- Category 3: Chargers 
 (9, 59.00, 100, 'White', NULL, NULL),
 (9, 64.00, 80, 'Black', NULL, NULL),
 (10, 79.00, 60, 'White', NULL, NULL),
@@ -324,7 +329,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (12, 99.00, 40, 'Gray', NULL, NULL),
 (12, 109.00, 35, 'White', NULL, NULL),
 
--- Category 4: Headsets (Product_ID 13–16)
+-- Category 4: Headsets 
 (13, 249.00, 70, 'White', NULL, NULL),
 (13, 259.00, 60, 'Black', NULL, NULL),
 (14, 399.00, 50, 'Black', NULL, NULL),
@@ -344,7 +349,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (20, 1799.00, 8, 'Silver', NULL, NULL),
 
 
--- Category 6: Watches (Product_ID 21–24)
+-- Category 6: Watches 
 (21, 499.00, 60, 'Midnight', NULL, NULL),
 (21, 549.00, 55, 'Starlight', NULL, NULL),
 (22, 449.00, 70, 'Graphite', NULL, NULL),
@@ -354,7 +359,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (24, 299.00, 80, 'Black', NULL, NULL),
 (24, 319.00, 70, 'White', NULL, NULL),
 
--- Category 7: Electronic Devices (Product_ID 25–28)
+-- Category 7: Electronic Devices 
 (25, 249.00, 60, 'White', NULL, NULL),
 (25, 269.00, 50, 'Black', NULL, NULL),
 (26, 229.00, 55, 'White', NULL, NULL),
@@ -364,7 +369,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (28, 139.00, 50, 'Black', NULL, NULL),
 (28, 149.00, 40, 'Gray', NULL, NULL),
 
--- Category 8: Tablets (Product_ID 29–32)
+-- Category 8: Tablets 
 (29, 1299.00, 40, 'Silver', 512, NULL),
 (29, 1399.00, 35, 'Space Gray', 1024, NULL),
 (30, 1099.00, 50, 'Graphite', 256, NULL),
@@ -374,7 +379,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (32, 999.00, 50, 'Gray', 128, NULL),
 (32, 1099.00, 45, 'Blue', 256, NULL),
 
--- Category 9: Shoes (Product_ID 33–36)
+-- Category 9: Shoes 
 (33, 179.00, 60, 'Black', NULL, NULL),
 (33, 189.00, 50, 'White', NULL, NULL),
 (34, 159.00, 70, 'Gray', NULL, NULL),
@@ -384,7 +389,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (36, 139.00, 80, 'Green', NULL, NULL),
 (36, 149.00, 70, 'White', NULL, NULL),
 
--- Category 10: Bags (Product_ID 37–40)
+-- Category 10: Bags 
 (37, 1599.00, 20, 'Brown', NULL, NULL),
 (37, 1699.00, 15, 'Monogram', NULL, NULL),
 (38, 129.00, 50, 'Navy', NULL, NULL),
@@ -394,7 +399,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (40, 199.00, 50, 'Silver', NULL, NULL),
 (40, 219.00, 45, 'Blue', NULL, NULL),
 
--- Category 11: Storage Devices (Product_ID 41–44)
+-- Category 11: Storage Devices 
 (41, 129.00, 80, 'Blue', 1000, NULL),
 (41, 149.00, 70, 'Black', 2000, NULL),
 (42, 139.00, 75, 'Gray', 1000, NULL),
@@ -574,46 +579,49 @@ WHERE Product_ID = 44 AND Colour = 'Green';
 UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875853/dfqpkjvh8/tdvsrhzoq2xhyxk1hxal.webp' 
 WHERE Product_ID = 44 AND Colour ='Black';
 
--- Insert Sample Cities (with New York as main city)
+UPDATE variant SET Image_URL='https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875008/dfqpkjvh8/qpu86w4gvt9u3m3mjdvw.jpg' 
+WHERE Product_ID=40;
+
+-- Insert Sample Cities 
 INSERT INTO City (City_ID, City_Name, Main_City) VALUES
 (1, 'New York', 1),
-(2, 'Los Angeles', 0),
-(3, 'Chicago', 0),
-(4, 'Houston', 0),
-(5, 'Phoenix', 0),
-(6, 'Philadelphia', 0),
+(2, 'Los Angeles', 1),
+(3, 'Chicago', 1),
+(4, 'Houston', 1),
+(5, 'Phoenix', 1),
+(6, 'Philadelphia', 1),
 (7, 'San Antonio', 0),
 (8, 'San Diego', 0),
 (9, 'Dallas', 0),
-(10, 'San Jose', 0);
+(10, 'San Jose', 0);
 
--- Insert Sample Users (20 users)
-INSERT INTO User (User_ID, Name, Password, Address, City_ID, Email, Role, image_URL) VALUES
-(1, 'John Smith', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '123 Main St', 1, 'john@email.com', 'user', NULL),
-(2, 'Sarah Johnson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '456 Oak Ave', 2, 'sarah@email.com', 'user', NULL),
-(3, 'Michael Brown', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '789 Pine Rd', 3, 'michael@email.com', 'user', NULL),
-(4, 'Emily Davis', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '321 Elm St', 4, 'emily@email.com', 'user', NULL),
-(5, 'David Wilson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '654 Maple Dr', 5, 'david@email.com', 'user', NULL),
-(6, 'Jessica Miller', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '987 Cedar Ln', 6, 'jessica@email.com', 'user', NULL),
-(7, 'Chris Taylor', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '111 Birch St', 7, 'chris@email.com', 'user', NULL),
-(8, 'Amanda Anderson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '222 Spruce Ave', 8, 'amanda@email.com', 'user', NULL),
-(9, 'Robert Thomas', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '333 Ash Rd', 9, 'robert@email.com', 'user', NULL),
-(10, 'Lisa Jackson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '444 Willow Dr', 10, 'lisa@email.com', 'user', NULL),
-(11, 'James White', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '555 Poplar Ln', 1, 'james@email.com', 'user', NULL),
-(12, 'Michelle Harris', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '666 Laurel St', 2, 'michelle@email.com', 'user', NULL),
-(13, 'Daniel Martin', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '777 Oak St', 3, 'daniel@email.com', 'user', NULL),
-(14, 'Karen Lee', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '888 Pine Ave', 4, 'karen@email.com', 'user', NULL),
-(15, 'Matthew Perez', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '999 Elm Rd', 5, 'matthew@email.com', 'user', NULL),
-(16, 'Jennifer Garcia', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1010 Maple St', 6, 'jennifer@email.com', 'user', NULL),
-(17, 'Mark Rodriguez', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1111 Cedar Ave', 7, 'mark@email.com', 'user', NULL),
-(18, 'Patricia Lewis', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1212 Birch Rd', 8, 'patricia@email.com', 'user', NULL),
-(19, 'Steven Walker', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1313 Spruce St', 9, 'steven@email.com', 'user', NULL),
-(20, 'Nancy Hall', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1414 Ash Ave', 10, 'nancy@email.com', 'user', NULL),
+-- Insert Sample customers 
+INSERT INTO customer (customer_ID, Name, Password, Address, City_ID, Email, Role, image_URL) VALUES
+(1, 'John Smith', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '123 Main St', 1, 'john@email.com', 'customer', NULL),
+(2, 'Sarah Johnson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '456 Oak Ave', 2, 'sarah@email.com', 'customer', NULL),
+(3, 'Michael Brown', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '789 Pine Rd', 3, 'michael@email.com', 'customer', NULL),
+(4, 'Emily Davis', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '321 Elm St', 4, 'emily@email.com', 'customer', NULL),
+(5, 'David Wilson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '654 Maple Dr', 5, 'david@email.com', 'customer', NULL),
+(6, 'Jessica Miller', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '987 Cedar Ln', 6, 'jessica@email.com', 'customer', NULL),
+(7, 'Chris Taylor', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '111 Birch St', 7, 'chris@email.com', 'customer', NULL),
+(8, 'Amanda Anderson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '222 Spruce Ave', 8, 'amanda@email.com', 'customer', NULL),
+(9, 'Robert Thomas', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '333 Ash Rd', 9, 'robert@email.com', 'customer', NULL),
+(10, 'Lisa Jackson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '444 Willow Dr', 10, 'lisa@email.com', 'customer', NULL),
+(11, 'James White', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '555 Poplar Ln', 1, 'james@email.com', 'customer', NULL),
+(12, 'Michelle Harris', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '666 Laurel St', 2, 'michelle@email.com', 'customer', NULL),
+(13, 'Daniel Martin', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '777 Oak St', 3, 'daniel@email.com', 'customer', NULL),
+(14, 'Karen Lee', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '888 Pine Ave', 4, 'karen@email.com', 'customer', NULL),
+(15, 'Matthew Perez', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '999 Elm Rd', 5, 'matthew@email.com', 'customer', NULL),
+(16, 'Jennifer Garcia', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1010 Maple St', 6, 'jennifer@email.com', 'customer', NULL),
+(17, 'Mark Rodriguez', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1111 Cedar Ave', 7, 'mark@email.com', 'customer', NULL),
+(18, 'Patricia Lewis', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1212 Birch Rd', 8, 'patricia@email.com', 'customer', NULL),
+(19, 'Steven Walker', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1313 Spruce St', 9, 'steven@email.com', 'customer', NULL),
+(20, 'Nancy Hall', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1414 Ash Ave', 10, 'nancy@email.com', 'customer', NULL),
 (21, 'Admin', '$2b$10$FMtxpGM3MQqDvpG014l5bOPEjIk4JI1ZHu7ilN6K95iehw9YKq98y', NULL,NULL, 'Admin1@example.com', 'admin', NULL);
 
--- Insert Sample Delivery Records (120 delivery records for 120 orders)
+-- Insert Sample Delivery Records
 INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
--- 2023 Deliveries (40 records)
+-- 2023 Deliveries 
 (1, 'Standard Delivery', '123 Main St, New York', 'Delivered', '2023-01-15'),
 (2, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Delivered', '2023-01-20'),
 (3, 'Standard Delivery', '789 Pine Rd, Chicago', 'Delivered', '2023-02-10'),
@@ -655,7 +663,7 @@ INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_S
 (39, 'Standard Delivery', '1313 Spruce St, Dallas', 'Delivered', '2023-03-22'),
 (40, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Delivered', '2023-04-25'),
 
--- 2024 Deliveries (40 records)
+-- 2024 Deliveries
 (41, 'Standard Delivery', '123 Main St, New York', 'Delivered', '2024-01-15'),
 (42, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Delivered', '2024-01-25'),
 (43, 'Standard Delivery', '789 Pine Rd, Chicago', 'Delivered', '2024-02-12'),
@@ -697,7 +705,7 @@ INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_S
 (79, 'Standard Delivery', '1313 Spruce St, Dallas', 'Pending', '2024-04-10'),
 (80, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Delivered', '2024-05-12'),
 
--- 2025 Deliveries (40 records)
+-- 2025 Deliveries 
 (81, 'Standard Delivery', '123 Main St, New York', 'Pending', '2025-01-20'),
 (82, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Pending', '2025-01-28'),
 (83, 'Standard Delivery', '789 Pine Rd, Chicago', 'Pending', '2025-02-15'),
@@ -739,8 +747,8 @@ INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_S
 (119, 'Standard Delivery', '1313 Spruce St, Dallas', 'Pending', '2025-04-12'),
 (120, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Pending', '2025-05-15');
 
--- Insert Sample Carts (120 carts, one per order)
-INSERT INTO Cart (Cart_ID, User_ID, Status) VALUES
+-- Insert Sample Carts 
+INSERT INTO Cart (Cart_ID, customer_ID, Status) VALUES
 (1, 1, 'CheckedOut'), (2, 2, 'CheckedOut'), (3, 3, 'CheckedOut'), (4, 4, 'CheckedOut'), (5, 5, 'CheckedOut'),
 (6, 6, 'CheckedOut'), (7, 7, 'CheckedOut'), (8, 8, 'CheckedOut'), (9, 9, 'CheckedOut'), (10, 10, 'CheckedOut'),
 (11, 11, 'CheckedOut'), (12, 12, 'CheckedOut'), (13, 13, 'CheckedOut'), (14, 14, 'CheckedOut'), (15, 15, 'CheckedOut'),
@@ -766,7 +774,7 @@ INSERT INTO Cart (Cart_ID, User_ID, Status) VALUES
 (111, 11, 'CheckedOut'), (112, 12, 'CheckedOut'), (113, 13, 'Active'), (114, 14, 'CheckedOut'), (115, 15, 'CheckedOut'),
 (116, 16, 'CheckedOut'), (117, 17, 'CheckedOut'), (118, 18, 'Active'), (119, 19, 'Active'), (120, 20, 'Active');
 
--- Insert Sample Cart Items (2-3 items per cart)
+-- Insert Sample Cart Items
 INSERT INTO Cart_Item (Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES
 (1, 1, 1, 1, 1299.00), (1, 9, 9, 2, 118.00),
 (2, 5, 9, 1, 1399.00), (2, 13, 17, 1, 249.00),
@@ -889,8 +897,8 @@ INSERT INTO Cart_Item (Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) V
 (119, 30, 60, 1, 1199.00), (119, 35, 70, 1, 159.00),
 (120, 32, 64, 1, 1099.00), (120, 43, 86, 1, 279.00);
 
-INSERT INTO `Order` (User_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
--- 2023 Orders (1-40)
+INSERT INTO `Order` (customer_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
+-- 2023 Orders 
 (1, 1, 1417.00, 'Online Payment', 1, '2023-01-10', 1673299200001),
 (2, 2, 1648.00, 'Cash on Delivery', 2, '2023-01-15', 1673558400002),
 (3, 3, 2597.00, 'Online Payment', 3, '2023-02-05', 1675728000003),
@@ -932,7 +940,7 @@ INSERT INTO `Order` (User_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID
 (19, 39, 1437.00, 'Online Payment', 39, '2023-03-22', 1679510400039),
 (20, 40, 1318.00, 'Online Payment', 40, '2023-04-25', 1682380800040),
 
--- 2024 Orders (41-80)
+-- 2024 Orders 
 (1, 41, 2662.00, 'Online Payment', 41, '2024-01-10', 1704902400041),
 (2, 42, 1897.00, 'Cash on Delivery', 42, '2024-01-25', 1705939200042),
 (3, 43, 1817.00, 'Online Payment', 43, '2024-02-12', 1707686400043),
@@ -974,7 +982,7 @@ INSERT INTO `Order` (User_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID
 (19, 79, 1358.00, 'Online Payment', 79, '2024-04-10', 1712707200079),
 (20, 80, 1378.00, 'Online Payment', 80, '2024-05-12', 1715472000080),
 
--- 2025 Orders (81-120)
+-- 2025 Orders 
 (1, 81, 1598.00, 'Online Payment', 81, '2025-01-15', 1736899200081),
 (2, 82, 2698.00, 'Cash on Delivery', 82, '2025-01-28', 1737936000082),
 (3, 83, 1708.00, 'Online Payment', 83, '2025-02-12', 1738723200083),
