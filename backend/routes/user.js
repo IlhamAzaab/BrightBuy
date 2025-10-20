@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "../db.js";
+import db from "../db.js";
 import auth from "../middleware/auth.js";
 
 const router = express.Router();
@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/address", auth, async (req, res) => {
   const userId = req.user.id;
   try {
-    const [rows] = await pool.query(
+  const [rows] = await db.query(
       `SELECT u.Address AS address, c.City_Name AS city
        FROM user u
        LEFT JOIN city c ON u.City_ID = c.City_ID
@@ -29,7 +29,7 @@ router.put("/address", auth, async (req, res) => {
   const userId = req.user.id;
   const { address, city } = req.body;
 
-  const conn = await pool.getConnection();
+  const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
 

@@ -1,6 +1,6 @@
 
 import express from "express";
-import pool from "../db.js";
+import db from "../db.js";
 import auth from "../middleware/auth.js";
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.post("/", auth, async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const connection = await pool.getConnection();
+  const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
 
@@ -30,7 +30,7 @@ router.post("/", auth, async (req, res) => {
 
     // Insert delivery details
     const [deliveryResult] = await connection.query(
-      `INSERT INTO delivery (Delivery_Address, Delivery_Method, Delivery_Status, Estimated_Delivery_Date)
+      `INSERT INTO delivery (Delivery_Address, Delivery_Method, Delivery_Status, Estimated_delivery_Date)
        VALUES (?, ?, 'Pending', ?)`,
       [deliveryAddress, deliveryMethod, estimatedDate]
     );
@@ -42,11 +42,12 @@ router.post("/", auth, async (req, res) => {
       0
     );
 
-    // Insert order record
-    await connection.query(
-      `INSERT INTO \`Order\` (User_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID, Order_Date)
-       VALUES (?, ?, ?, ?, ?, CURDATE())`,
-      [userId, cartId, totalAmount, paymentMethod, deliveryId]
+    // 4️⃣ Insert order record - fix column name with backticks and add Order_Number
+    const orderNumber = Date.now(); // Simple order number generation
+    const [orderResult] = await connection.query(
+      `INSERT INTO \`Order\` (User_ID, Cart_ID, \`Total_Amount\`, Delivery_ID, Payment_Method, Order_Date, Order_Number)
+       VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
+      [userId, cartId, totalAmount, deliveryId, paymentMethod, orderNumber]
     );
 
     // Reduce stock quantities
@@ -65,12 +66,11 @@ router.post("/", auth, async (req, res) => {
         [newStock < 0 ? 0 : newStock, item.Variant_ID]
       );
     }
-
-    // Mark the cart as checked out (make sure this status matches your schema/business logic)
-    await connection.query(
-      "UPDATE cart SET Status = 'CheckedOut' WHERE Cart_ID = ?",
-      [cartId]
-    );
+    // 6️⃣ Mark the old cart as "CheckedOut"
+  await connection.query(
+  "UPDATE cart SET Status = 'CheckedOut' WHERE Cart_ID = ?",
+  [cartId]
+  );
 
     await connection.commit();
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import pool from "../db.js";
+import db from "../db.js";
 const router = Router();
 
 // Route to fetch monthly top-selling products
@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    const [results] = await pool.query(
+  const [results] = await db.query(
       "SELECT * FROM MonthlyTopSellingProducts WHERE month = ?",
       [month]
     );
@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
     if (err && err.code === "ER_NO_SUCH_TABLE") {
       // Fallback: aggregate orders for the specified month
       try {
-        const [fallback] = await pool.query(
+  const [fallback] = await db.query(
           `SELECT
             p.Product_ID,
             p.Product_Name,

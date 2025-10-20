@@ -1,93 +1,129 @@
--- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
---
--- Host: localhost    Database: brightbuy
--- ------------------------------------------------------
--- Server version	8.0.43
+-- if one exist, drop it
+drop database brightbuy;
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+create database brightbuy;
+use brightbuy;
 
---
--- Table structure for table `cart`
---
+CREATE TABLE `Product` (
+  `Product_ID` Int not null AUTO_INCREMENT,
+  `Category_ID` Int,
+  `Product_Name` Varchar(225),
+  `Brand` Varchar(225),
+  `SKU` Varchar(255),
+  `Description` TEXT,
+  PRIMARY KEY (`Product_ID`)
+);
 
-DROP TABLE IF EXISTS `cart`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cart` (
-  `Cart_ID` int NOT NULL AUTO_INCREMENT,
-  `User_ID` int DEFAULT NULL,
-  `Status` enum('Active','CheckedOut','Checked_Out') DEFAULT 'Active',
-  PRIMARY KEY (`Cart_ID`),
-  KEY `fk_cart_user` (`User_ID`),
-  CONSTRAINT `fk_cart_user` FOREIGN KEY (`User_ID`) REFERENCES `user` (`User_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+CREATE TABLE `Cart` (
+  `Cart_ID` Int AUTO_INCREMENT,
+  `User_ID` Int,
+  Status ENUM('Active', 'CheckedOut') DEFAULT 'Active',
+  PRIMARY KEY (`Cart_ID`)
+);
 
---
--- Dumping data for table `cart`
---
+CREATE TABLE `Variant` (
+  `Variant_ID` Int not null AUTO_INCREMENT,
+  `Product_ID` Int,
+  `Price` decimal(10,2),
+  `Stock_quantity` int,
+  `Colour` varchar(25),
+  `Size` Int,
+  `Image_URL` Varchar(2500),
+  PRIMARY KEY (`Variant_ID`),
+  FOREIGN KEY (`Product_ID`)
+      REFERENCES `Product`(`Product_ID`)
+);
 
-LOCK TABLES `cart` WRITE;
-/*!40000 ALTER TABLE `cart` DISABLE KEYS */;
-INSERT INTO `cart` VALUES (43,7,'Active');
-/*!40000 ALTER TABLE `cart` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `cart_item`
---
-
-DROP TABLE IF EXISTS `cart_item`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cart_item` (
-  `Cart_Item_ID` int NOT NULL AUTO_INCREMENT,
-  `Cart_ID` int DEFAULT NULL,
-  `Product_ID` int DEFAULT NULL,
-  `Variant_ID` int DEFAULT NULL,
-  `Quantity` int NOT NULL DEFAULT '1',
-  `Total_price` decimal(9,2) DEFAULT NULL,
+CREATE TABLE `Cart_Item` (
+  `Cart_Item_ID` Int AUTO_INCREMENT,
+  `Cart_ID` Int,
+  `Product_ID` Int,
+  `Variant_ID` Int,
+  `Quantity` Int,
+  `Total_price` Numeric(9,2),
   PRIMARY KEY (`Cart_Item_ID`),
-  UNIQUE KEY `uq_cart_variant` (`Cart_ID`,`Variant_ID`),
-  KEY `fk_ci_variant` (`Variant_ID`),
-  KEY `fk_ci_product` (`Product_ID`),
-  CONSTRAINT `cart_item_ibfk_1` FOREIGN KEY (`Product_ID`) REFERENCES `product` (`Product_ID`),
-  CONSTRAINT `cart_item_ibfk_2` FOREIGN KEY (`Cart_ID`) REFERENCES `cart` (`Cart_ID`),
-  CONSTRAINT `cart_item_ibfk_3` FOREIGN KEY (`Variant_ID`) REFERENCES `variant` (`Variant_ID`),
-  CONSTRAINT `fk_ci_cart` FOREIGN KEY (`Cart_ID`) REFERENCES `cart` (`Cart_ID`) ON DELETE CASCADE,
-  CONSTRAINT `fk_ci_product` FOREIGN KEY (`Product_ID`) REFERENCES `product` (`Product_ID`),
-  CONSTRAINT `fk_ci_variant` FOREIGN KEY (`Variant_ID`) REFERENCES `variant` (`Variant_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  FOREIGN KEY (`Product_ID`)
+      REFERENCES `Product`(`Product_ID`),
+  FOREIGN KEY (`Cart_ID`)
+      REFERENCES `Cart`(`Cart_ID`),
+  FOREIGN KEY (`Variant_ID`)
+      REFERENCES `Variant`(`Variant_ID`)
+);
 
---
--- Dumping data for table `cart_item`
---
+CREATE TABLE `City` (
+  `City_ID` Int AUTO_INCREMENT,
+  `City_Name` Varchar(25),
+  `Main_City` BOOL,
+  PRIMARY KEY (`City_ID`)
+);
 
-LOCK TABLES `cart_item` WRITE;
-/*!40000 ALTER TABLE `cart_item` DISABLE KEYS */;
-INSERT INTO `cart_item` VALUES (131,43,5,69,1,1399.00),(132,43,29,117,1,1299.00),(133,43,38,135,1,129.00),(134,43,32,123,1,999.00),(135,43,25,109,1,249.00);
-/*!40000 ALTER TABLE `cart_item` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `trg_ci_before_insert` BEFORE INSERT ON `cart_item` FOR EACH ROW BEGIN
+CREATE TABLE `User` (
+  `User_ID` Int AUTO_INCREMENT,
+  `Name` Varchar(25),
+  `Password` Varchar(100),
+  `Address` Varchar(50),
+  `City_ID` Int,
+  `Email` Varchar(25),
+  `Role` Varchar(10),
+  `image_URL` varchar(300),
+  PRIMARY KEY (`User_ID`),
+  FOREIGN KEY (`City_ID`)
+      REFERENCES `City`(`City_ID`)
+);
+
+CREATE TABLE `Category` (
+  `Category_ID` Int ,
+  `Category_Name` Varchar(25),
+  PRIMARY KEY (`Category_ID`)
+);
+
+CREATE TABLE `Order` (
+  `Order_ID` Int AUTO_INCREMENT,
+  `User_ID` Int,
+  `Cart_ID` Int,
+  `Total_Amount` Numeric(9,2),
+  `Payment_method` Varchar(25),
+  `Delivery_ID` Int,
+  `Order_Date` DATE,
+  `Order_Number` BIGINT,
+  PRIMARY KEY (`Order_ID`),
+  FOREIGN KEY (`User_ID`)
+      REFERENCES `User`(`User_ID`)
+);
+
+CREATE TABLE `Delivery` (
+  `Delivery_ID` Int AUTO_INCREMENT,
+  `Delivery_Method` Varchar(25),
+  `Delivery_Address` Varchar(50),
+  `Delivery_Status` ENUM('Delivered', 'Pending') default NULL,
+  `Estimated_delivery_Date` DATE,
+  PRIMARY KEY (`Delivery_ID`)
+);
+
+-- CART  → USER
+ALTER TABLE cart
+  ADD CONSTRAINT fk_cart_user
+  FOREIGN KEY (User_ID) REFERENCES user(User_ID);
+
+-- CART_ITEM → CART / VARIANT / PRODUCT
+ALTER TABLE cart_item
+  MODIFY Quantity INT NOT NULL DEFAULT 1,
+  ADD CONSTRAINT fk_ci_cart
+    FOREIGN KEY (Cart_ID) REFERENCES cart(Cart_ID) ON DELETE CASCADE,
+  ADD CONSTRAINT fk_ci_variant
+    FOREIGN KEY (Variant_ID) REFERENCES variant(Variant_ID),
+  ADD CONSTRAINT fk_ci_product
+    FOREIGN KEY (Product_ID) REFERENCES product(Product_ID);
+
+-- Prevent duplicate rows for the same variant in the same cart
+ALTER TABLE cart_item
+  ADD UNIQUE KEY uq_cart_variant (Cart_ID, Variant_ID);
+
+-- (Optional) keep Total_price in sync via triggers (or just compute in SELECTs)
+DELIMITER //
+CREATE TRIGGER trg_ci_before_insert
+BEFORE INSERT ON cart_item FOR EACH ROW
+BEGIN
   DECLARE v_price DECIMAL(10,2);
   SELECT Price INTO v_price FROM variant WHERE Variant_ID = NEW.Variant_ID;
   IF NEW.Quantity IS NULL OR NEW.Quantity < 1 THEN SET NEW.Quantity = 1; END IF;
@@ -114,315 +150,392 @@ DELIMITER ;;
   SET NEW.Total_price = v_price * NEW.Quantity;
 END */;;
 DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
---
--- Table structure for table `category`
---
+INSERT INTO category (Category_ID, Category_Name) VALUES
+(1,'Mobilephones'),
+(2,'Tablets'),
+(3,'Accessories');
 
-DROP TABLE IF EXISTS `category`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `category` (
-  `Category_ID` int NOT NULL,
-  `Category_Name` varchar(25) DEFAULT NULL,
-  PRIMARY KEY (`Category_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+INSERT INTO product (Product_ID, Category_ID, Product_Name, Brand, SKU, Description) VALUES
+-- 1–5: your originals (with descriptions)
+(1, 1, 'iPhone 15',        'Apple',    'Apple iPhone 15',
+ 'iPhone with bright OLED display, 48MP main camera, USB-C, and long battery life—great everyday iOS performance.'),
+(2, 1, 'Pixel 8',          'Google',   'Google Pixel 8',
+ 'Clean Android with Google’s AI features and a class-leading camera—compact, smooth, and reliable.'),
+(3, 1, 'Galaxy S23',       'Samsung',  'Samsung Galaxy S23',
+ 'Compact Galaxy with vibrant AMOLED screen, fast performance, and a versatile triple-camera setup.'),
+(4, 2, 'iPad Air (M2)',    'Apple',    'Apple iPad Air (M2)',
+ 'Slim and powerful tablet with the M2 chip, great for study, note-taking, and creative apps with Apple Pencil support.'),
+(5, 3, 'USB-C Charger',    'Anker',    'Anker USB-C Charger',
+ 'Compact USB-C wall charger for phones, tablets, and accessories—fast, travel-friendly, and dependable.'),
 
---
--- Dumping data for table `category`
---
+-- 6–20: Smartphones
+(6,  1, 'iPhone 15 Pro',         'Apple',     'Apple iPhone 15 Pro',
+ 'Apple’s pro-grade phone with A17 chip, great cameras, and a premium titanium build. Ideal for performance and photography.'),
+(7,  1, 'iPhone 14',             'Apple',     'Apple iPhone 14',
+ 'Reliable iPhone with excellent battery life and a bright OLED display. Perfect everyday iOS experience.'),
+(8,  1, 'iPhone SE (3rd Gen)',   'Apple',     'Apple iPhone SE (3rd Gen)',
+ 'Compact iPhone with Touch ID and fast A15 performance. Great value for iOS lovers.'),
+(9,  1, 'Galaxy S23 Ultra',      'Samsung',   'Samsung Galaxy S23 Ultra',
+ 'Flagship with S Pen support and a superb quad-camera system. Built for power users.'),
+(10, 1, 'Galaxy A55',            'Samsung',   'Samsung Galaxy A55',
+ 'Mid-range Galaxy with AMOLED screen and long battery life. Solid everyday Android choice.'),
+(11, 1, 'Pixel 8 Pro',           'Google',    'Google Pixel 8 Pro',
+ 'Google’s top Pixel with Tensor G3 and best-in-class AI camera features. Clean Android.'),
+(12, 1, 'Pixel 7a',              'Google',    'Google Pixel 7a',
+ 'Affordable Pixel with excellent photos and smooth software—great value.'),
+(13, 1, 'OnePlus 12',            'OnePlus',   'OnePlus OnePlus 12',
+ 'Fast and fluid flagship with rapid charging and a bright LTPO display.'),
+(14, 1, 'OnePlus Nord CE 4',     'OnePlus',   'OnePlus OnePlus Nord CE 4',
+ 'Slim mid-ranger with clean OxygenOS and dependable performance.'),
+(15, 1, 'Xiaomi 13T Pro',        'Xiaomi',    'Xiaomi Xiaomi 13T Pro',
+ 'Leica-tuned cameras and fast charging make this a strong flagship value.'),
+(16, 1, 'Redmi Note 13 Pro',     'Xiaomi',    'Xiaomi Redmi Note 13 Pro',
+ 'Great AMOLED display and big battery—budget friendly with premium touches.'),
+(17, 1, 'Motorola Edge 40',      'Motorola',  'Motorola Motorola Edge 40',
+ 'Curved display, light design, and clean Android experience.'),
+(18, 1, 'Nothing Phone (2a)',    'Nothing',   'Nothing Nothing Phone (2a)',
+ 'Unique Glyph interface with smooth performance and minimalist design.'),
+(19, 1, 'Nokia G42',             'Nokia',     'Nokia Nokia G42',
+ 'Repair-friendly design with long battery life and clean software.'),
+(20, 1, 'Sony Xperia 10 V',      'Sony',      'Sony Sony Xperia 10 V',
+ 'Tall 21:9 OLED display and stereo speakers—great for media on the go.'),
 
-LOCK TABLES `category` WRITE;
-/*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES (1,'Mobile Phones'),(2,'Laptops'),(3,'Chargers'),(4,'Headsets'),(5,'Camera'),(6,'Watch'),(7,'Electronic Device'),(8,'Tablets'),(9,'Shoes'),(10,'Bags'),(11,'Storage Devices');
-/*!40000 ALTER TABLE `category` ENABLE KEYS */;
-UNLOCK TABLES;
+-- 21–27: Tablets
+(21, 2, 'iPad Pro 11" (M4)',     'Apple',     'Apple iPad Pro 11" (M4)',
+ 'Ultra-thin tablet with M4 performance and ProMotion display—made for creators.'),
+(22, 2, 'iPad (10th Gen)',       'Apple',     'Apple iPad (10th Gen)',
+ 'All-round iPad for study and entertainment with USB-C and a vivid screen.'),
+(23, 2, 'Galaxy Tab S9',         'Samsung',   'Samsung Galaxy Tab S9',
+ 'Premium AMOLED tablet with S Pen in the box and desktop-like DeX mode.'),
+(24, 2, 'Galaxy Tab A9',         'Samsung',   'Samsung Galaxy Tab A9',
+ 'Lightweight family tablet for streaming, notes, and casual gaming.'),
+(25, 2, 'Xiaomi Pad 6',          'Xiaomi',    'Xiaomi Xiaomi Pad 6',
+ 'Sharp 144Hz display and snappy performance—great value work-and-play slate.'),
+(26, 2, 'Lenovo Tab P12',        'Lenovo',    'Lenovo Lenovo Tab P12',
+ 'Large screen tablet with quad speakers—ideal for movies and multitasking.'),
+(27, 2, 'Fire HD 10',            'Amazon',    'Amazon Fire HD 10',
+ 'Affordable tablet for reading, streaming, and Alexa—excellent battery life.'),
 
---
--- Temporary view structure for view `categoryordersummary`
---
+-- 28–40: Accessories
+(28, 3, 'AirPods Pro (2nd Gen)',        'Apple',     'Apple AirPods Pro (2nd Gen)',
+ 'Active noise cancellation with Spatial Audio—seamless with Apple devices.'),
+(29, 3, 'Galaxy Buds2 Pro',             'Samsung',   'Samsung Galaxy Buds2 Pro',
+ 'Comfortable earbuds with rich sound and 24-bit hi-fi on supported devices.'),
+(30, 3, 'Pixel Buds Pro',               'Google',    'Google Pixel Buds Pro',
+ 'ANC earbuds with deep integration to Pixel phones and clear call quality.'),
+(31, 3, 'PowerCore 20K',                'Anker',     'Anker PowerCore 20K',
+ 'High-capacity power bank with fast charging for phones and tablets.'),
+(32, 3, '3-in-1 MagSafe Stand',         'Belkin',    'Belkin 3-in-1 MagSafe Stand',
+ 'Charge iPhone, AirPods, and Apple Watch together—clean desk setup.'),
+(33, 3, 'Tune 510BT',                   'JBL',       'JBL Tune 510BT',
+ 'Lightweight Bluetooth headphones with punchy bass and long battery life.'),
+(34, 3, 'WH-CH520',                     'Sony',      'Sony WH-CH520',
+ 'Everyday wireless headphones—clear sound and multi-point connection.'),
+(35, 3, 'MX Master 3S',                 'Logitech',  'Logitech MX Master 3S',
+ 'Ergonomic mouse with precise scrolling—great for productivity and creators.'),
+(36, 3, 'Ultra microSD 128GB',          'SanDisk',   'SanDisk Ultra microSD 128GB',
+ 'Expand storage for phones, cameras, and handheld consoles—A1 app performance.'),
+(37, 3, 'DataTraveler 64GB',            'Kingston',  'Kingston DataTraveler 64GB',
+ 'Compact USB flash drive—reliable file transfer and backup on the go.'),
+(38, 3, 'USB-C to HDMI Adapter',        'UGREEN',    'UGREEN USB-C to HDMI Adapter',
+ 'Connect laptops/phones to 4K displays—plug-and-play adapter.'),
+(39, 3, 'Mag Armor Case (iPhone 15)',   'Spigen',    'Spigen Mag Armor Case (iPhone 15)',
+ 'Protective MagSafe-compatible case with slim design and strong grip.'),
+(40, 3, 'Kishi V2',                      'Razer',     'Razer Kishi V2',
+ 'Mobile game controller with low-latency USB-C—console feel on your phone.');
 
-DROP TABLE IF EXISTS `categoryordersummary`;
-/*!50001 DROP VIEW IF EXISTS `categoryordersummary`*/;
-SET @saved_cs_client     = @@character_set_client;
-/*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `categoryordersummary` AS SELECT 
- 1 AS `Category_Name`,
- 1 AS `TotalOrders`*/;
-SET character_set_client = @saved_cs_client;
+INSERT INTO variant (Variant_ID, Product_ID, Price, Stock_quantity, Colour, Size) VALUES
+(1, 1, 799.00, 20, 'Black',     128),
+(2, 1, 899.00, 15, 'Blue',      256),
+(3, 2, 699.00, 25, 'Porcelain', 128),
+(4, 2, 799.00, 18, 'Obsidian',  256),
+(5, 3, 749.00, 30, 'Green',     128),
+(6, 3, 849.00, 14, 'Lavender',  256),
+(7, 4, 599.00, 12, 'Starlight',  64),
+(8, 4, 749.00, 10, 'Blue',256),
+(9, 5,  39.99, 50, 'White',65);
 
---
--- Table structure for table `city`
---
 
-DROP TABLE IF EXISTS `city`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `city` (
-  `City_ID` int NOT NULL AUTO_INCREMENT,
-  `City_Name` varchar(25) DEFAULT NULL,
-  `Main_City` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`City_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+INSERT INTO variant (Variant_ID, Product_ID, Colour, Size, Price, Stock_quantity) VALUES
+(10, 6,  'Black',   128, 1099.00, 50),
+(11, 6,  'Silver',  256, 1299.00, 40),
+(12, 7,  'Blue',    128, 799.00, 60),
+(13, 7,  'Purple',  256, 899.00, 40),
+(14, 8,  'Red',     64,  429.00, 70),
+(15, 8,  'White',   128, 479.00, 50),
+(16, 9,  'Black',   256, 1199.00, 45),
+(17, 9,  'Green',   512, 1399.00, 30),
+(18, 10, 'Blue',    128, 499.00, 80),
+(19, 11, 'Obsidian',128, 999.00, 50),
+(20, 11, 'Porcelain',256,1099.00, 30),
+(21, 12, 'Charcoal',128, 499.00, 60),
+(22, 13, 'Black',   256, 899.00, 40),
+(23, 13, 'Green',   512, 999.00, 25),
+(24, 14, 'Gray',    128, 399.00, 70),
+(25, 15, 'Blue',    256, 649.00, 50),
+(26, 16, 'Black',   128, 299.00, 90),
+(27, 17, 'Black',   256, 599.00, 40),
+(28, 18, 'White',   128, 449.00, 60),
+(29, 19, 'Gray',    128, 299.00, 70),
+(30, 20, 'Black',   128, 399.00, 50),
+(31, 21, 'Silver',  256, 1099.00, 30),
+(32, 22, 'Blue',    64,  449.00, 60),
+(33, 23, 'Graphite',256, 899.00, 40),
+(34, 24, 'Gray',    64,  229.00, 80),
+(35, 25, 'Blue',    128, 399.00, 50),
+(36, 26, 'Gray',    128, 429.00, 45),
+(37, 27, 'Black',   64,  199.00, 70),
+(38, 28, 'White',   NULL, 249.00, 100),
+(39, 29, 'Black',   NULL, 229.00, 90),
+(40, 30, 'Charcoal',NULL, 199.00, 80),
+(41, 31, 'Black',   NULL, 59.00,  120),
+(42, 32, 'White',   NULL, 129.00, 40),
+(43, 33, 'Black',   NULL, 49.00,  100),
+(44, 34, 'Blue',    NULL, 59.00,  90),
+(45, 35, 'Black',   NULL, 99.00,  50),
+(46, 36, 'Black',   128, 19.00,  200),
+(47, 37, 'Black',   64,  15.00,  150),
+(48, 38, 'Gray',    NULL, 25.00,  80),
+(49, 39, 'Black',   NULL, 29.00,  70),
+(50, 40, 'Black',   NULL, 99.00,  40);
 
---
--- Dumping data for table `city`
---
+-- Add image URLs to variants
 
-LOCK TABLES `city` WRITE;
-/*!40000 ALTER TABLE `city` DISABLE KEYS */;
-INSERT INTO `city` VALUES (1,'Houston',1),(2,'Dallas',1),(3,'Austin',1),(4,'San Antonio',1),(5,'Fort Worth',1),(6,'El Paso',1),(7,'Arlington',1),(8,'Corpus Christi',1),(9,'Plano',1),(10,'Lubbock',0),(11,'Garland',0),(12,'Irving',0),(13,'Laredo',0),(14,'Frisco',0),(15,'McKinney',0),(16,'kandy',0),(17,'kandy town',0),(18,'Knady',0),(19,'texas',0),(20,'kinniya',0),(21,'kadubedda',0);
-/*!40000 ALTER TABLE `city` ENABLE KEYS */;
-UNLOCK TABLES;
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106569/dfqpkjvh8/oltkqyv4b2fyndyvi6tc.webp' WHERE (Variant_ID = '50');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106582/dfqpkjvh8/o9c55qshxpm5kmgeixhi.jpg' WHERE (Variant_ID = '49');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106583/dfqpkjvh8/uvmsedjynyw99hykk4k2.jpg' WHERE (Variant_ID = '48');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106551/dfqpkjvh8/rneahqssp8qdkxp4dmcj.webp' WHERE (Variant_ID = '47');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106578/dfqpkjvh8/rjqnou7lc4yldsivcrux.webp' WHERE (Variant_ID = '46');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106554/dfqpkjvh8/xsfn8yicrw3lthu2lryy.jpg' WHERE (Variant_ID = '45');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106580/dfqpkjvh8/ljuxtochd2wozogbendv.jpg' WHERE (Variant_ID = '44');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106549/dfqpkjvh8/mhjrvav9lftv28vnf00r.png' WHERE (Variant_ID = '43');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106526/dfqpkjvh8/sev8nlq8mfsyhdoaep0o.jpg' WHERE (Variant_ID = '42');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106523/dfqpkjvh8/coms2xptzjfkmbwfm5uq.webp' WHERE (Variant_ID = '41');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106565/dfqpkjvh8/sb3algkpn82zygwhzkcx.webp' WHERE (Variant_ID = '40');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106536/dfqpkjvh8/oqpbta0mu0ylixfcl5o0.jpg' WHERE (Variant_ID = '2');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106539/dfqpkjvh8/zj1rak94ub2jtxlu39zt.jpg' WHERE (Variant_ID = '1');
 
---
--- Table structure for table `delivery`
---
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760247910/dfqpkjvh8/wm0i2mgnpltqy1t0yk4j.jpg' WHERE (Variant_ID = '39');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106520/dfqpkjvh8/iv3sasd35vmybf1ombrh.webp' WHERE (Variant_ID = '38');
+UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106522/dfqpkjvh8/rq2ofeijp6whnixbuaew.webp' WHERE (Variant_ID = '37');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106552/dfqpkjvh8/jrjb9ktrzff2hceybbwu.jpg' WHERE (Variant_ID = '36');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106587/dfqpkjvh8/rbxts3an7nopde4aewf3.jpg' WHERE (Variant_ID = '35');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106575/dfqpkjvh8/quwuir8fpnu1mebzzl1y.webp' WHERE (Variant_ID = '34');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106577/dfqpkjvh8/nhnpi6ly4qsspqgwv2na.jpg' WHERE (Variant_ID = '33');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106529/dfqpkjvh8/xytqzmdvgw4jwiz8o0gx.png' WHERE (Variant_ID = '32');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106533/dfqpkjvh8/rrsbucas3wooqiwwrm3y.jpg' WHERE (Variant_ID = '31');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106588/dfqpkjvh8/th07jk1tlntjuqtolnht.png' WHERE (Variant_ID = '30');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106556/dfqpkjvh8/nzjqqoru1s7ibr6a1elw.webp' WHERE (Variant_ID = '29');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106557/dfqpkjvh8/ezuf0itfvm5czbnf06pu.webp' WHERE (Variant_ID = '28');
+UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106555/dfqpkjvh8/bjdzn41uyhjkhyzpdeqg.png' WHERE (Variant_ID = '27');
+UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106571/dfqpkjvh8/qrkwplwrebdlfyy4qhkm.png' WHERE (Variant_ID = '26');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106571/dfqpkjvh8/qrkwplwrebdlfyy4qhkm.png' WHERE (Variant_ID = '25');
+UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106560/dfqpkjvh8/whue1zhtlen59innvc6t.jpg' WHERE (Variant_ID = '24');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106559/dfqpkjvh8/bjajvdkwc2q07xzeq1be.png' WHERE (Variant_ID = '23');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106558/dfqpkjvh8/nslwyc5nm1xkcbcrvxtu.webp' WHERE (Variant_ID = '22');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106562/dfqpkjvh8/p7ekjm2pxjgxjv38gwn5.png' WHERE (Variant_ID = '21');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106564/dfqpkjvh8/romtr0mck7lggahk2mjj.avif' WHERE (Variant_ID = '19');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106519/dfqpkjvh8/lz6xd5ntzunpbji3p8fv.jpg' WHERE (Variant_ID = '20');
+UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106572/dfqpkjvh8/wb0x0jwzifxizeqliqbd.webp' WHERE (Variant_ID = '18');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106576/dfqpkjvh8/soc7fa9y4b7wnzc2cul1.webp' WHERE (Variant_ID = '16');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106516/dfqpkjvh8/czcrnkhjk7xmv3rruzyy.jpg' WHERE (Variant_ID = '17');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106543/dfqpkjvh8/zbdru69e2tafcax2xrtb.webp' WHERE (Variant_ID = '15');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106546/dfqpkjvh8/h8hkgnhnym1kdgby4weh.avif' WHERE (Variant_ID = '14');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106540/dfqpkjvh8/uw4lhvy5chjmncj3m8zs.webp' WHERE (Variant_ID = '12');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106525/dfqpkjvh8/wowfcblcgxjvczikicn0.png' WHERE (Variant_ID = '13');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106534/dfqpkjvh8/w5zvgtq4suhvlhx4ybs2.png' WHERE (Variant_ID = '10');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106538/dfqpkjvh8/qpgun6ioljn4ptqfkrbv.jpg' WHERE (Variant_ID = '11');
+UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106524/dfqpkjvh8/yvakdeuqp3xecqpbqbqo.jpg' WHERE (Variant_ID = '9');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106531/dfqpkjvh8/kfpv2oxhknfu3b6uhlpf.jpg' WHERE (Variant_ID = '8');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106528/dfqpkjvh8/f9kd3lk8atkxjjz2sge0.avif' WHERE (Variant_ID = '7');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106514/dfqpkjvh8/x1ynh57etupksqfscecr.jpg' WHERE (Variant_ID = '6');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106518/dfqpkjvh8/p5h3hr6g7cvpinuwjyr1.jpg' WHERE (Variant_ID = '5');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106513/dfqpkjvh8/bnl0jvuw3myjy3ooqvk9.jpg' WHERE (Variant_ID = '4');
+UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106563/dfqpkjvh8/yjl79thhm1wsen8wakvl.jpg' WHERE (Variant_ID = '3');
 
-DROP TABLE IF EXISTS `delivery`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `delivery` (
-  `Delivery_ID` int NOT NULL AUTO_INCREMENT,
-  `Delivery_Method` varchar(25) DEFAULT NULL,
-  `Delivery_Address` varchar(50) DEFAULT NULL,
-  `Delivery_Status` varchar(25) DEFAULT NULL,
-  `Estimated_delivery_Date` date DEFAULT NULL,
-  PRIMARY KEY (`Delivery_ID`),
-  KEY `idx_delivery_estimated_date` (`Estimated_delivery_Date`),
-  KEY `idx_delivery_status` (`Delivery_Status`)
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- Insert User data (6 users: 4 customers, 2 admins)
+INSERT INTO `user` 
+(user_id, name, password, address, city_ID, email, role)
+VALUES
+(1, 'John Smith', '$2b$10$5uQp7jO9Z1h7b3qM3LmqL.2x/Uf0GeykW6v36LgTzptE5ZmZkMo2y', '123 Broadway Ave', NULL, 'john.smith@email.com', 'customer'),
+(2, 'Maria Garcia', '$2b$10$1HnHZY0gk1aIqqoxmOfpUe8Z9UBHq5OJwITCwM3cjsCF14Cb0Lzj6', '456 Sunset Blvd', NULL, 'maria.garcia@email.com', 'customer'),
+(3, 'Admin User', '$2b$10$3P8Wq90x9dR.4ysYWj9pIuaQb0iVik4aS8PKotcJqSb5kKFXs4fQ6', '789 Michigan Ave', NULL, 'admin@brightbuy.com', 'admin'),
+(4, 'David Johnson', '$2b$10$0nM9Hx3QnFUkzqD95v7eReN2/NnQ5LbYfY8zjYl4V7PmVvN49hw5u', '321 Main Street', NULL, 'david.johnson@email.com', 'customer'),
+(5, 'Sarah Wilson', '$2b$10$gW3ap0LJGyjWJpVk6k6GeOlDq5Uu0g7qB4zF6wA5p1pCBP.jkW5Rm', '654 Central Ave', NULL, 'sarah.wilson@email.com', 'customer'),
+(6, 'admin2 User', '$2b$10$ns35RoYdRZMFctzh8Up3Lu7gK9fIu9XiM/CeRajGqI9PRByim5jEy', NULL, NULL, 'Admin2@example.com', 'admin');
 
---
--- Dumping data for table `delivery`
---
+-- Insert City data (Texas cities)
+INSERT INTO City (City_ID, City_Name, Main_City) VALUES
+(1, 'Houston', TRUE),
+(2, 'Dallas', TRUE),
+(3, 'Austin', TRUE),
+(4, 'San Antonio', TRUE),
+(5, 'Fort Worth', TRUE),
+(6, 'El Paso', FALSE),
+(7, 'Arlington', FALSE),
+(8, 'Corpus Christi', FALSE),
+(9, 'Plano', FALSE),
+(10, 'Lubbock', FALSE),
+(11, 'Garland', FALSE),
+(12, 'Irving', FALSE),
+(13, 'Laredo', FALSE),
+(14, 'Frisco', FALSE),
+(15, 'McKinney', FALSE);
 
-LOCK TABLES `delivery` WRITE;
-/*!40000 ALTER TABLE `delivery` DISABLE KEYS */;
-INSERT INTO `delivery` VALUES (1,'Standard Delivery','123 Broadway Ave, Houston, TX 77002','Delivered','2024-01-15'),(2,'Express Delivery','456 Elm Street, Dallas, TX 75201','In Transit','2024-01-20'),(3,'Standard Delivery','321 Main Street, Austin, TX 73301','Processing','2024-01-25'),(4,'Express Delivery','654 Central Ave, San Antonio, TX 78205','Delivered','2024-01-18'),(5,'Standard Delivery','789 Richmond Ave, Houston, TX 77057','Delivered','2024-01-12'),(6,'Express Delivery','123 Broadway Ave, Houston, TX 77002','In Transit','2024-01-22'),(7,'Standard Delivery','456 Commerce St, Dallas, TX 75202','Processing','2024-01-28'),(8,'Express Delivery','321 Congress Ave, Austin, TX 78701','Shipped','2024-01-24'),(9,'Standard Delivery','654 Market St, San Antonio, TX 78205','Processing','2024-01-30'),(10,'Express Delivery','789 Westheimer Rd, Houston, TX 77027','Delivered','2024-01-16'),(21,'Standard Delivery','100, perathediya road','Delivered','2025-10-18'),(22,'Standard Delivery','100, perathediya road','Delivered','2025-10-18'),(23,'Standard Delivery','100, perathediya road','Delivered','2025-10-18'),(24,'Standard Delivery','100, perathediya road','Pending','2025-10-16'),(30,'Standard Delivery','100, perathediya road','Pending','2025-10-16'),(31,'Standard Delivery','100, perathediya road','Pending','2025-10-18'),(32,'Standard Delivery','100, perathediya road','Pending','2025-10-18'),(33,'Standard Delivery','100, perathediya road','Pending','2025-10-18'),(34,'Standard Delivery','192, main street','Pending','2025-10-18'),(35,'Standard Delivery','192, main street','Pending','2025-10-18'),(36,'Standard Delivery','192, main street','Pending','2025-10-19'),(37,'Store Pickup','192, main street','Pending','2025-10-19'),(38,'Standard Delivery','192, main street','Pending','2025-10-19'),(39,'Standard Delivery','192, main street','Pending','2025-10-19'),(40,'Standard Delivery','192, main street','Pending','2025-10-19'),(41,'Store Pickup','100, perathediya road','Pending','2025-10-19'),(42,'Standard Delivery','100, perathediya road','Pending','2025-10-19'),(43,'Standard Delivery','100, perathediya road','Pending','2025-10-19'),(44,'Standard Delivery','100, perathediya road','Pending','2025-10-19'),(45,'Standard Delivery','76, hijra road','Pending','2025-10-19'),(46,'Standard Delivery','192, main street','Pending','2025-10-19'),(47,'Standard Delivery','192, main street','Pending','2025-10-19'),(48,'Standard Delivery','192, main street','Pending','2025-10-19'),(52,'Standard Delivery','192, main street','Pending','2025-10-20'),(53,'Standard Delivery','192, main street','Pending','2025-10-20'),(54,'Standard Delivery','192, main street','Pending','2025-10-20'),(55,'Standard Delivery','192, main street','Pending','2025-10-20'),(56,'Standard Delivery','192, main street','Delivered','2025-10-20'),(57,'Standard Delivery','192, main street','Delivered','2025-10-20'),(58,'Standard Delivery','192, main street','Pending','2025-10-20'),(59,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(60,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(61,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(62,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(63,'Standard Delivery','76, hijra road','Delivered','2025-10-20'),(64,'Standard Delivery','76, hijra road','Delivered','2025-10-20'),(65,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(66,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(67,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(68,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(69,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(70,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(71,'Standard Delivery','76, hijra road','Pending','2025-10-20'),(72,'Standard Delivery','150,Molpe  road','Pending','2025-10-20'),(74,'Standard Delivery','150,Molpe  road','Pending','2025-10-20'),(75,'Standard Delivery','132,main road','Delivered','2025-10-20'),(76,'Standard Delivery','132,main road','Delivered','2025-10-20'),(77,'Standard Delivery','132,main road','Pending','2025-10-20'),(78,'Standard Delivery','192, main street','Pending','2025-10-21'),(79,'Standard Delivery','192, main street','Pending','2025-10-21'),(80,'Standard Delivery','192, main street','Pending','2025-10-21'),(81,'Standard Delivery','192, main street','Pending','2025-10-21'),(82,'Standard Delivery','76, hijra road','Pending','2025-10-22');
-/*!40000 ALTER TABLE `delivery` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Update existing users with city information
+UPDATE User SET City_ID = 1 WHERE User_ID = 1; -- John Smith in Houston
+UPDATE User SET City_ID = 2 WHERE User_ID = 2; -- Maria Garcia in Dallas
+UPDATE User SET City_ID = 1 WHERE User_ID = 3; -- Admin User in Houston
+UPDATE User SET City_ID = 3 WHERE User_ID = 4; -- David Johnson in Austin
+UPDATE User SET City_ID = 4 WHERE User_ID = 5; -- Sarah Wilson in San Antonio
+UPDATE User SET City_ID = 1 WHERE User_ID = 6;
 
---
--- Temporary view structure for view `monthlytopsellingproducts`
---
 
-DROP TABLE IF EXISTS `monthlytopsellingproducts`;
-/*!50001 DROP VIEW IF EXISTS `monthlytopsellingproducts`*/;
-SET @saved_cs_client     = @@character_set_client;
-/*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `monthlytopsellingproducts` AS SELECT 
- 1 AS `month`,
- 1 AS `Product_ID`,
- 1 AS `Product_Name`,
- 1 AS `Brand`,
- 1 AS `total_quantity_sold`,
- 1 AS `total_revenue`*/;
-SET character_set_client = @saved_cs_client;
+-- Insert Delivery data
+INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
+(1, 'Standard Delivery', '123 Broadway Ave, Houston, TX 77002', 'Delivered', '2024-01-15'),
+(2, 'Express Delivery', '456 Elm Street, Dallas, TX 75201', 'Delivered', '2024-01-20'),
+(3, 'Standard Delivery', '321 Main Street, Austin, TX 73301', 'Pending', '2024-01-25'),
+(4, 'Express Delivery', '654 Central Ave, San Antonio, TX 78205', 'Delivered', '2024-01-18'),
+(5, 'Standard Delivery', '789 Richmond Ave, Houston, TX 77057', 'Delivered', '2024-01-12'),
+(6, 'Express Delivery', '123 Broadway Ave, Houston, TX 77002', 'Pending', '2024-01-22'),
+(7, 'Standard Delivery', '456 Commerce St, Dallas, TX 75202', 'Pending', '2024-01-28'),
+(8, 'Express Delivery', '321 Congress Ave, Austin, TX 78701', 'Delivered', '2024-01-24'),
+(9, 'Standard Delivery', '654 Market St, San Antonio, TX 78205', 'Pending', '2024-01-30'),
+(10, 'Express Delivery', '789 Westheimer Rd, Houston, TX 77027', 'Delivered', '2024-01-16');
 
---
--- Table structure for table `order`
---
+-- Insert Cart data (one cart per user)
+INSERT INTO Cart (Cart_ID, User_ID) VALUES
+(1, 1), -- John Smith's cart
+(2, 2), -- Maria Garcia's cart
+(3, 4), -- David Johnson's cart
+(4, 5), -- Sarah Wilson's cart
+(5, 1), -- John Smith's second cart (for multiple orders)
+(6, 2), -- Maria Garcia's second cart
+(7, 4), -- David Johnson's second cart
+(8, 5); -- Sarah Wilson's second cart
 
-DROP TABLE IF EXISTS `order`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `order` (
-  `Order_ID` int NOT NULL AUTO_INCREMENT,
-  `User_ID` int DEFAULT NULL,
-  `Cart_ID` int DEFAULT NULL,
-  `Total_Amount` decimal(9,2) DEFAULT NULL,
-  `Payment_method` varchar(25) DEFAULT NULL,
-  `Delivery_ID` int DEFAULT NULL,
-  `Order_Date` date DEFAULT NULL,
-  PRIMARY KEY (`Order_ID`),
-  KEY `User_ID` (`User_ID`),
-  KEY `fk_order_cart` (`Cart_ID`),
-  KEY `fk_order_delivery` (`Delivery_ID`),
-  CONSTRAINT `fk_order_cart` FOREIGN KEY (`Cart_ID`) REFERENCES `cart` (`Cart_ID`),
-  CONSTRAINT `fk_order_delivery` FOREIGN KEY (`Delivery_ID`) REFERENCES `delivery` (`Delivery_ID`),
-  CONSTRAINT `order_ibfk_1` FOREIGN KEY (`User_ID`) REFERENCES `user` (`User_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `order`
---
+-- Insert Cart_Item data (items in various carts)
+INSERT INTO Cart_Item (Cart_Item_ID, Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES
+-- John Smith's first cart
+(1, 1, 1, 1, 1, 799.00),    -- iPhone 15 Black 128GB
+(2, 1, 5, 9, 2, 79.98),     -- 2x USB-C Charger
+(3, 1, 28, 38, 1, 249.00),  -- AirPods Pro
 
-LOCK TABLES `order` WRITE;
-/*!40000 ALTER TABLE `order` DISABLE KEYS */;
-/*!40000 ALTER TABLE `order` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Maria Garcia's first cart
+(4, 2, 2, 3, 1, 699.00),    -- Pixel 8 Porcelain 128GB
+(5, 2, 31, 41, 1, 59.00),   -- PowerCore 20K
 
---
--- Table structure for table `product`
---
+-- Sarah Wilson's first cart
+(9, 4, 4, 7, 1, 599.00),    -- iPad Air Starlight 64GB
+(10, 4, 32, 42, 1, 129.00), -- 3-in-1 MagSafe Stand
 
-DROP TABLE IF EXISTS `product`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `product` (
-  `Product_ID` int NOT NULL AUTO_INCREMENT,
-  `Category_ID` int DEFAULT NULL,
-  `Product_Name` varchar(225) DEFAULT NULL,
-  `Brand` varchar(225) DEFAULT NULL,
-  `SKU` varchar(255) DEFAULT NULL,
-  `Description` text,
-  PRIMARY KEY (`Product_ID`),
-  KEY `fk_product_category` (`Category_ID`),
-  CONSTRAINT `fk_product_category` FOREIGN KEY (`Category_ID`) REFERENCES `category` (`Category_ID`),
-  CONSTRAINT `product_ibfk_1` FOREIGN KEY (`Category_ID`) REFERENCES `category` (`Category_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- John Smith's second cart (for another order)
+(11, 5, 6, 10, 1, 1099.00), -- iPhone 15 Pro Black 128GB
+(12, 5, 35, 45, 1, 99.00),  -- MX Master 3S
 
---
--- Dumping data for table `product`
---
+-- Maria Garcia's second cart
+(13, 6, 11, 19, 1, 999.00), -- Pixel 8 Pro Obsidian 128GB
+(14, 6, 30, 40, 1, 199.00), -- Pixel Buds Pro
 
-LOCK TABLES `product` WRITE;
-/*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,1,'Galaxy S25 Ultra','Samsung','SAMSUNG_GALAXY_S25_ULTRA','Flagship model from Samsung'),(2,1,'iPhone 16 Pro Max','Apple','APPLE_IPHONE_16_PRO_MAX','Latest Pro Max version of iPhone'),(3,1,'Google Pixel 10','Google','GOOGLE_PIXEL_10','Pixel flagship with advanced AI camera'),(4,1,'OnePlus 13','OnePlus','OONEPLUS_13','High performance Android phone'),(5,2,'MacBook Air M4','Apple','APPLE_MACBOOK_AIR_M4','Lightweight laptop with Apple Silicon M4'),(6,2,'Dell XPS 15 2025','Dell','DELL_XPS_15_2025','Dell flagship 15-inch XPS'),(7,2,'ThinkPad X1 Carbon','Lenovo','LENOVO_THINKPAD_X1_CARBON','Durable business ultrabook'),(8,2,'ROG Strix G17','ASUS','ASUS_ROG_STRIX_G17','Gaming laptop with RTX GPU'),(9,3,'USB-C 65W GaN Charger','Anker','ANKER_USB_C_65W_GAN_CHARGER','Compact gallium nitride charger 65W'),(10,3,'MagSafe Fast Charger','Apple','APPLE_MAGSAFE_FAST_CHARGER','MagSafe wireless fast charger'),(11,3,'PowerPort III 108W','Anker','ANKER_POWERPORT_III_108W','GaN charger with 2 USB-C ports'),(12,3,'HyperJuice 100W Charging Station','Hyper','HYPER_HYPERJUICE_100W_CHARGING_STATION','Multi-port USB-C charging station'),(13,4,'AirPods Pro 3','Apple','APPLE_AIRPODS_PRO_3','Latest Apple noise cancelling earbuds'),(14,4,'WH-1000XM6','Sony','SONY_WH_1000XM6','Flagship Sony noise cancelling over-ear'),(15,4,'QuietComfort Ultra','Bose','BOSE_QUIETCOMFORT_ULTRA','Ultra noise cancelling headset'),(16,4,'Elite 10','Jabra','JABRA_ELITE_10','True wireless earbuds with ANC'),(17,5,'EOS R8','Canon','CANON_EOS_R8','Mirrorless full-frame camera'),(18,5,'A7 IV','Sony','SONY_A7_IV','Sony’s full-frame mirrorless camera'),(19,5,'Z5 II','Nikon','NIKON_Z5_II','Entry-level full-frame mirrorless camera'),(20,5,'X-T5','Fujifilm','FUJIFILM_X_T5','APS-C mirrorless camera'),(21,6,'Apple Watch Series 11','Apple','APPLE_APPLE_WATCH_SERIES_11','Latest Apple smartwatch'),(22,6,'Galaxy Watch 7','Samsung','SAMSUNG_GALAXY_WATCH_7','Samsung flagship smartwatch'),(23,6,'Fenix 8','Garmin','GARMIN_FENIX_8','High end multisport GPS watch'),(24,6,'Charge 7 Pro','Fitbit','FITBIT_CHARGE_7_PRO','Fitness tracker and smartwatch hybrid'),(25,7,'Echo Show 15','Amazon','AMAZON_ECHO_SHOW_15','Smart display with Alexa'),(26,7,'Nest Hub Max','Google','GOOGLE_NEST_HUB_MAX','Google smart home hub display'),(27,7,'Streaming Stick Plus','Roku','ROKU_STREAMING_STICK_PLUS','4K streaming stick device'),(28,7,'Fire TV Cube 3rd Gen','Amazon','AMAZON_FIRE_TV_CUBE_3RD_GEN','Streaming device plus Alexa hub'),(29,8,'iPad Pro 13','Apple','APPLE_IPAD_PRO_13','Latest iPad Pro large model'),(30,8,'Galaxy Tab S10','Samsung','SAMSUNG_GALAXY_TAB_S10','Flagship Android tablet'),(31,8,'Surface Pro 11','Microsoft','MICROSOFT_SURFACE_PRO_11','Hybrid 2-in-1 tablet PC'),(32,8,'Tab P12','Lenovo','LENOVO_TAB_P12','High performance Android tablet'),(33,9,'Air Jordan 1 High','Nike','NIKE_AIR_JORDAN_1_HIGH','Classic high-top basketball shoe'),(34,9,'UltraBoost 24','Adidas','ADIDAS_ULTRABOOST_24','Running shoe with Boost midsole'),(35,9,'RS-X3','Puma','PUMA_RS_X3','Lifestyle chunky sneaker'),(36,9,'550','New Balance','NEW_BALANCE_550','Retro basketball style shoe'),(37,10,'Neverfull MM','Louis Vuitton','LOUIS_VUITTON_NEVERFULL_MM','Luxury tote bag'),(38,10,'Little America Backpack','Herschel','HERSCHEL_LITTLE_AMERICA_BACKPACK','Classic backpack style'),(39,10,'Alpha Bravo Sling','Tumi','TUMI_ALPHA_BRAVO_SLING','Crossbody sling bag'),(40,10,'Winfield 3','Samsonite','SAMSONITE_WINFIELD_3','Hard shell carry-on suitcase'),(41,11,'T7 Shield 1TB','Samsung','SAMSUNG_T7_SHIELD_1TB','Portable SSD with rugged design'),(42,11,'Extreme Pro 1TB','SanDisk','SANDISK_EXTREME_PRO_1TB','High speed portable SSD'),(43,11,'MyBook 10TB','Western Digital','WESTERN_DIGITAL_MYBOOK_10TB','Desktop external HDD'),(44,11,'Barracuda 4TB','Seagate','SEAGATE_BARRACUDA_4TB','Internal HDD 3.5 inch model');
-/*!40000 ALTER TABLE `product` ENABLE KEYS */;
-UNLOCK TABLES;
+-- David Johnson's second cart
+(15, 7, 9, 16, 1, 1199.00), -- Galaxy S23 Ultra Black 256GB
+(16, 7, 39, 49, 1, 29.00),  -- Spigen Case
 
---
--- Table structure for table `report`
---
+-- Sarah Wilson's second cart
+(17, 8, 21, 31, 1, 1099.00), -- iPad Pro 11" Silver 256GB
+(18, 8, 28, 38, 1, 249.00),  -- AirPods Pro
+(19, 8, 36, 46, 2, 38.00);   -- 2x microSD 128GB
 
-DROP TABLE IF EXISTS `report`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `report` (
-  `Report_ID` int NOT NULL AUTO_INCREMENT,
-  `Report_Type` varchar(25) DEFAULT NULL,
-  `Report_Name` varchar(25) DEFAULT NULL,
-  `Time_Period` varchar(25) DEFAULT NULL,
-  PRIMARY KEY (`Report_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- Insert Order data
+INSERT INTO `Order` (Order_ID, User_ID, Cart_ID, `Total Amount`, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
+(3, 4, 3, 1877.00, 'Cash on Delivery', 3, '2024-01-14', 1003),
+(4, 3, 4, 728.00, 'Cash on Delivery', 4, '2024-01-15', 1004),
+(5, 1, 5, 1198.00, 'Online Payment', 5, '2024-01-08', 1005),
+(7, 4, 7, 1228.00, 'Cash on Delivery', 7, '2024-01-18', 1007),
+(8, 2, 8, 1386.00, 'Online Payment', 8, '2024-01-19', 1008);
 
---
--- Dumping data for table `report`
---
+-- Add foreign key constraint for Product -> Category (if not already added)
+ALTER TABLE Product 
+ADD CONSTRAINT fk_product_category 
+FOREIGN KEY (Category_ID) REFERENCES Category(Category_ID);
 
-LOCK TABLES `report` WRITE;
-/*!40000 ALTER TABLE `report` DISABLE KEYS */;
-/*!40000 ALTER TABLE `report` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Add foreign key constraint for Order -> Delivery (if not already added)
+ALTER TABLE `Order` 
+ADD CONSTRAINT fk_order_delivery 
+FOREIGN KEY (Delivery_ID) REFERENCES Delivery(Delivery_ID);
 
---
--- Table structure for table `user`
---
+-- Add foreign key constraint for Order -> Cart (if not already added)
+ALTER TABLE `Order` 
+ADD CONSTRAINT fk_order_cart 
+FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
 
-DROP TABLE IF EXISTS `user`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
-  `User_ID` int NOT NULL AUTO_INCREMENT,
-  `Name` varchar(25) DEFAULT NULL,
-  `Password` varchar(100) DEFAULT NULL,
-  `Address` varchar(50) DEFAULT NULL,
-  `City_ID` int DEFAULT NULL,
-  `Email` varchar(25) DEFAULT NULL,
-  `Role` varchar(10) DEFAULT NULL,
-  `image_URL` varchar(300) DEFAULT NULL,
-  PRIMARY KEY (`User_ID`),
-  KEY `City_ID` (`City_ID`),
-  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`City_ID`) REFERENCES `city` (`City_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- Modify Main_City column to have default value FALSE and update existing cities accordingly
+ALTER TABLE city
+CHANGE Main_City Main_City BOOL DEFAULT 0;
+UPDATE city SET Main_City=0 WHERE City_ID=5;
+UPDATE city SET Main_City=0 WHERE City_ID=6;
+UPDATE city SET Main_City=0 WHERE City_ID=7;
+UPDATE city SET Main_City=0 WHERE City_ID=8;
+UPDATE city SET Main_City=0 WHERE City_ID=9;
 
---
--- Dumping data for table `user`
---
+-- Create indexes to optimize queries
+CREATE INDEX idx_delivery_estimated_date ON delivery (Estimated_delivery_Date);
+CREATE INDEX idx_delivery_status ON delivery (Delivery_Status);
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'John Smith','$2b$10$5uQp7jO9Z1h7b3qM3LmqL.2x/Uf0GeykW6v36LgTzptE5ZmZkMo2y','123 Broadway Ave',1,'john.smith@email.com','customer',NULL),(2,'Maria Garcia','$2b$10$1HnHZY0gk1aIqqoxmOfpUe8Z9UBHq5OJwITCwM3cjsCF14Cb0Lzj6','456 Sunset Blvd',2,'maria.garcia@email.com','customer',NULL),(3,'Admin User','$2b$10$3P8Wq90x9dR.4ysYWj9pIuaQb0iVik4aS8PKotcJqSb5kKFXs4fQ6','789 Michigan Ave',1,'admin@brightbuy.com','customer',NULL),(4,'David Johnson','$2b$10$0nM9Hx3QnFUkzqD95v7eReN2/NnQ5LbYfY8zjYl4V7PmVvN49hw5u','321 Main Street',3,'david.johnson@email.com','customer',NULL),(5,'Sarah Wilson','$2b$10$gW3ap0LJGyjWJpVk6k6GeOlDq5Uu0g7qB4zF6wA5p1pCBP.jkW5Rm','654 Central Ave',4,'sarah.wilson@email.com','customer',NULL),(6,'admin2 User','$2b$10$ns35RoYdRZMFctzh8Up3Lu7gK9fIu9XiM/CeRajGqI9PRByim5jEy',NULL,1,'Admin2@example.com','customer',NULL),(7,'Admin_Ilham','$2b$10$jqWG9lDSLDZmwGpLHuvmhuZ1h6RDDFzdfLFWi4aU9L8HY/hwVbEqC','192, main street',19,'mimilhamazaab51@gmail.com','admin',NULL),(8,'sabith','$2b$10$hfdaC.YIGKzuxcWC.Cw9XuIiymWh9RC.tId9k1.gUQ2en4Zx6g3Py','76, hijra road',20,'sabithjiffrey@gmail.com','customer','/uploads/1759554194249-official_photo.png'),(9,'ilhamazaab1','$2b$10$aSBUxsI4BpxHovy.NRCQI.ghs72.kBoDaTiYEn9IcL2fDzdPxDAaG','150,Molpe  road',21,'ilhamazaab@gmail.com','customer',NULL),(10,'user1','$2b$10$STJby9vv0hJiazgGEVzYG.byPNgDxxFSv8egsc7dpZfxwdOP50ayS','132,main road',20,'user1@gmail.com','customer',NULL);
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
-UNLOCK TABLES;
+-- Create stored procedure to get quarterly sales report
+DELIMITER $$
+CREATE PROCEDURE GetQuarterlySales(IN selectedYear INT)
+BEGIN
+  SELECT
+    YEAR(o.Order_Date) AS Year,
+    QUARTER(o.Order_Date) AS Quarter,
+    -- use the actual column name in the orders table (has a space), alias as Total_Sales
+    SUM(o.`Total_Amount`) AS Total_Sales,
+    COUNT(o.Order_ID) AS Total_Orders,
+    AVG(o.`Total_Amount`) AS Avg_Order_Value
+  FROM brightbuy.`Order` o
+  WHERE YEAR(o.Order_Date) = selectedYear
+  GROUP BY Year, Quarter
+  ORDER BY Quarter;
+END $$
+DELIMITER ;
 
---
--- Table structure for table `variant`
---
 
-DROP TABLE IF EXISTS `variant`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `variant` (
-  `Variant_ID` int NOT NULL AUTO_INCREMENT,
-  `Product_ID` int DEFAULT NULL,
-  `Price` decimal(10,2) DEFAULT NULL,
-  `Stock_quantity` int DEFAULT NULL,
-  `Colour` varchar(25) DEFAULT NULL,
-  `Size` int DEFAULT NULL,
-  `Image_URL` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`Variant_ID`),
-  KEY `Product_ID` (`Product_ID`),
-  CONSTRAINT `variant_ibfk_1` FOREIGN KEY (`Product_ID`) REFERENCES `product` (`Product_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=149 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+-- Create a view to summarize total orders per category
+CREATE VIEW CategoryOrderSummary AS
+SELECT 
+    c.Category_Name, 
+    COUNT(DISTINCT o.Order_ID) AS TotalOrders
+FROM Category c
+LEFT JOIN Product p ON c.Category_ID = p.Category_ID
+LEFT JOIN Variant v ON p.Product_ID = v.Product_ID
+LEFT JOIN Cart_Item ci ON v.Variant_ID = ci.Variant_ID
+LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
+WHERE o.Order_ID IS NOT NULL
+GROUP BY c.Category_ID, c.Category_Name
+ORDER BY TotalOrders DESC;
 
---
--- Dumping data for table `variant`
---
-
-LOCK TABLES `variant` WRITE;
-/*!40000 ALTER TABLE `variant` DISABLE KEYS */;
-INSERT INTO `variant` VALUES (61,1,1299.00,50,'Black',256,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875752/dfqpkjvh8/hgmmrbcaf1aw3p5c8j5m.webp'),(62,1,1399.00,40,'Silver',512,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875755/dfqpkjvh8/vbkvdmjphyrdidlogbds.jpg'),(63,2,1599.00,35,'Gold',256,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875746/dfqpkjvh8/qxycyracr3glvm98gtnv.jpg'),(64,2,1799.00,25,'Blue',512,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875744/dfqpkjvh8/mx3fgkydfjtnzqgx7w9x.avif'),(65,3,999.00,45,'Obsidian',128,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875747/dfqpkjvh8/ngt7yni8yjxsheuxse0s.jpg'),(66,3,1099.00,40,'Snow',256,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875748/dfqpkjvh8/ruiok5qef8xzvr3mud17.webp'),(67,4,899.00,60,'Green',128,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875751/dfqpkjvh8/tugtp1jksszykc2h7u46.png'),(68,4,999.00,50,'Black',256,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875749/dfqpkjvh8/yq1wa4fwux7cdye4hssb.avif'),(69,5,1399.00,30,'Silver',512,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875675/dfqpkjvh8/sxujqrbu2yqyd2pinrlc.jpg'),(70,5,1599.00,25,'Space Gray',1024,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875678/dfqpkjvh8/iquhl88qt6l1dzxkg6q7.jpg'),(71,6,1699.00,20,'Platinum',1024,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875689/dfqpkjvh8/q843i5xgbs31soa19ggw.avif'),(72,6,1899.00,15,'Black',2048,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875690/dfqpkjvh8/xyylqojhherh9bxetdiq.avif'),(73,7,1499.00,30,'Black',512,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875691/dfqpkjvh8/f6nnysmabzioaibejlza.jpg'),(74,7,1699.00,25,'Carbon Fiber',1024,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875693/dfqpkjvh8/nay2pcftrawz5hu7rq6e.avif'),(75,8,1799.00,20,'Black',1024,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875679/dfqpkjvh8/onbuce12axxfpqrnqob4.png'),(76,8,1999.00,15,'Red',2048,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875687/dfqpkjvh8/slwl5pkjhanqqx76zjbc.png'),(77,9,59.00,100,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875562/dfqpkjvh8/dggxprfefokfkhhgd06f.avif'),(78,9,64.00,80,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875561/dfqpkjvh8/leyalydx1lrmablnyods.avif'),(79,10,79.00,60,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875565/dfqpkjvh8/pymtdn7mcgqrgjbkn3ky.webp'),(80,10,85.00,50,'Midnight',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875564/dfqpkjvh8/xpkabacc1ajd7hfnfw00.jpg'),(81,11,89.00,70,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875559/dfqpkjvh8/dw9amqc1e4f326iwbtcd.avif'),(82,11,95.00,65,'Silver',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875560/dfqpkjvh8/ccv6n9ztslxckjtzwepw.avif'),(83,12,99.00,40,'Gray',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875566/dfqpkjvh8/f3uem8wjrq0bkyiyjfpy.webp'),(84,12,109.00,35,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875567/dfqpkjvh8/g3pjkoa0zitc8ewr3mnl.jpg'),(85,13,249.00,70,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875642/dfqpkjvh8/rhwyt3diywhzjkiy43iw.jpg'),(86,13,259.00,60,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875641/dfqpkjvh8/rzcwaie8ccw23x5dfwhq.jpg'),(87,14,399.00,50,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875648/dfqpkjvh8/q3etbprwda7fkam4lxad.webp'),(88,14,429.00,45,'Silver',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875649/dfqpkjvh8/liitmun8ugytkhbgiuw1.png'),(89,15,349.00,55,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875645/dfqpkjvh8/lwgtimwuvzhzkv0jygkr.jpg'),(90,15,359.00,50,'Blue',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875643/dfqpkjvh8/kqeuuzqwwftedtglih32.jpg'),(91,16,199.00,80,'Gray',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875647/dfqpkjvh8/i5yctpbrzzda6rweu9fx.jpg'),(92,16,209.00,70,'Beige',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875646/dfqpkjvh8/ir6orqfhf18prine6fta.jpg'),(93,17,2499.00,10,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875509/dfqpkjvh8/ea1kitccmdtzkqyfb01l.jpg'),(94,17,2699.00,5,'Silver',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875510/dfqpkjvh8/rmbrbnlklzimmzzqwjnn.jpg'),(95,18,2199.00,12,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875515/dfqpkjvh8/xb8j2lj6dzquomojznze.webp'),(96,18,2399.00,6,'Silver',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875516/dfqpkjvh8/jzjgltys6smyoubn6ajy.jpg'),(97,19,1499.00,14,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875513/dfqpkjvh8/x0xlolmtyxrepkjakbye.jpg'),(98,19,1599.00,7,'Silver',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875514/dfqpkjvh8/mkzklxcfh0zcnwhwf2ut.jpg'),(99,20,1699.00,13,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875511/dfqpkjvh8/ac3ntqcsrkke0isgqgjb.jpg'),(100,20,1799.00,8,'Silver',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875512/dfqpkjvh8/zxz8isjgkdnm7qcdbyat.jpg'),(101,21,499.00,60,'Midnight',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875916/dfqpkjvh8/wa2udphmsivbhcvndsvf.jpg'),(102,21,549.00,55,'Starlight',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875917/dfqpkjvh8/yuan3lgeidaxzlgmxv9w.jpg'),(103,22,449.00,70,'Graphite',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875923/dfqpkjvh8/k4sg6cmjxeabkqnpr799.webp'),(104,22,469.00,60,'Silver',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875925/dfqpkjvh8/hkekyxoof5dyuth9gcbr.jpg'),(105,23,899.00,40,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875921/dfqpkjvh8/xygehulttzc4g2kvxzh5.webp'),(106,23,949.00,35,'Blue',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875922/dfqpkjvh8/ww1ce2uqyqa70a8po4jt.webp'),(107,24,299.00,80,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875918/dfqpkjvh8/poys7acidq8abgdjnkjr.jpg'),(108,24,319.00,70,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875920/dfqpkjvh8/ne3oavdks2lysrmibhxr.webp'),(109,25,249.00,60,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875610/dfqpkjvh8/pxxhf6aiqdixm1t1qhe9.png'),(110,25,269.00,50,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875606/dfqpkjvh8/bcuzzii4pfwkay34ckqm.avif'),(111,26,229.00,55,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875617/dfqpkjvh8/rnorbiyahyydjl096ei2.jpg'),(112,26,239.00,45,'Gray',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875615/dfqpkjvh8/ylvjqqdjqxzvfyhkquab.avif'),(113,27,59.00,100,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875618/dfqpkjvh8/sh5aa8urbwl02xzpjo8o.jpg'),(114,27,69.00,90,'Purple',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875619/dfqpkjvh8/vaymolmzc2boqousz053.webp'),(115,28,139.00,50,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875612/dfqpkjvh8/spm6ydmtb444qqvhwwjm.webp'),(116,28,149.00,40,'Gray',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875614/dfqpkjvh8/wttpi8fgmsvwd3mcjhap.jpg'),(117,29,1299.00,40,'Silver',512,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875881/dfqpkjvh8/taxn5irvmjwokectfwwp.jpg'),(118,29,1399.00,35,'Space Gray',1024,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875882/dfqpkjvh8/uow3il1plwnaxezbqzzn.jpg'),(119,30,1099.00,50,'Graphite',256,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875887/dfqpkjvh8/gg5wruelwpq4hvy6bmx3.jpg'),(120,30,1199.00,40,'Beige',512,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875888/dfqpkjvh8/ydre6excdl4ef85ksnzj.avif'),(121,31,1399.00,35,'Silver',512,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875886/dfqpkjvh8/gl7de8wyuug9b8wzl5rx.jpg'),(122,31,1499.00,30,'Black',1024,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875885/dfqpkjvh8/i6puejt11gop9k3nmrpv.jpg'),(123,32,999.00,50,'Gray',128,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875883/dfqpkjvh8/jsjpzuaqlkioywyisj2d.jpg'),(124,32,1099.00,45,'Blue',256,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875884/dfqpkjvh8/ovkzcho5yxygruadu1dr.jpg'),(125,33,179.00,60,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875782/dfqpkjvh8/gtmbzkafjjadtzbpkovb.jpg'),(126,33,189.00,50,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875783/dfqpkjvh8/vsu6xcneplkhuo1lzl4s.webp'),(127,34,159.00,70,'Gray',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875778/dfqpkjvh8/nl055nx3fiw7fefxdvvv.webp'),(128,34,169.00,65,'Navy',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875779/dfqpkjvh8/xztcsewzocsuyvqpmhps.jpg'),(129,35,149.00,75,'Red',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875785/dfqpkjvh8/r9kgsvfoingfwuwug94w.webp'),(130,35,159.00,65,'Blue',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875784/dfqpkjvh8/kzzjvyafakg10t4zqalx.avif'),(131,36,139.00,80,'Green',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875780/dfqpkjvh8/labewa8hrq2g1djq1gum.webp'),(132,36,149.00,70,'White',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875781/dfqpkjvh8/dxoxtbe2smx5jiousj8r.jpg'),(133,37,1599.00,20,'Brown',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875006/dfqpkjvh8/gfgc8u5au4ylcv8b5xqm.webp'),(134,37,1699.00,15,'Monogram',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875007/dfqpkjvh8/sdnjh7z7lhrifq0zcolw.webp'),(135,38,129.00,50,'Navy',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875005/dfqpkjvh8/uyvxquinuggrtuuskxou.jpg'),(136,38,139.00,45,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875004/dfqpkjvh8/oh6ou9ibpuh8otarlsis.jpg'),(137,39,249.00,40,'Gray',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875011/dfqpkjvh8/chi8pr3be7dcvfcxzhlc.jpg'),(138,39,259.00,35,'Black',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875012/dfqpkjvh8/ugmdqrx2jsesqaxdeiuu.jpg'),(139,40,199.00,50,'Silver',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875010/dfqpkjvh8jvh8/image/upload/v1760875010/dfqpkjvh8/dcnki1ly5lmnkljy0vwg.jpg'),(140,40,219.00,45,'Blue',NULL,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875008/dfqpkjvh8/qpu86w4gvt9u3m3mjdvw.jpg'),(141,41,129.00,80,'Blue',1000,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875850/dfqpkjvh8/kei9ewampl45ziurhbe1.webp'),(142,41,149.00,70,'Black',2000,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875848/dfqpkjvh8/atdzk5jl7ogdce3ucthz.avif'),(143,42,139.00,75,'Gray',1000,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875851/dfqpkjvh8/ghyuzly7c47uidyxt83l.webp'),(144,42,159.00,65,'Red',2000,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875852/dfqpkjvh8/l0gnlqccch8flwzv97qi.png'),(145,43,259.00,60,'Black',10000,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875855/dfqpkjvh8/darv0dpgsqddknqcew0x.png'),(146,43,279.00,55,'White',10000,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875856/dfqpkjvh8/mg8jqzflooukzxzvqfrx.jpg'),(147,44,109.00,90,'Green',4000,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875854/dfqpkjvh8/enxlyxkcgrsi7nztrpkj.jpg'),(148,44,119.00,85,'Black',6000,'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875853/dfqpkjvh8/tdvsrhzoq2xhyxk1hxal.webp');
-/*!40000 ALTER TABLE `variant` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Final view structure for view `categoryordersummary`
---
-
-/*!50001 DROP VIEW IF EXISTS `categoryordersummary`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `categoryordersummary` AS select `c`.`Category_Name` AS `Category_Name`,count(distinct `o`.`Order_ID`) AS `TotalOrders` from ((((`category` `c` left join `product` `p` on((`c`.`Category_ID` = `p`.`Category_ID`))) left join `variant` `v` on((`p`.`Product_ID` = `v`.`Product_ID`))) left join `cart_item` `ci` on((`v`.`Variant_ID` = `ci`.`Variant_ID`))) left join `order` `o` on((`ci`.`Cart_ID` = `o`.`Cart_ID`))) where (`o`.`Order_ID` is not null) group by `c`.`Category_ID`,`c`.`Category_Name` order by `TotalOrders` desc */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
-
---
--- Final view structure for view `monthlytopsellingproducts`
---
-
-/*!50001 DROP VIEW IF EXISTS `monthlytopsellingproducts`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `monthlytopsellingproducts` AS select date_format(`o`.`Order_Date`,'%Y-%m') AS `month`,`p`.`Product_ID` AS `Product_ID`,`p`.`Product_Name` AS `Product_Name`,`p`.`Brand` AS `Brand`,sum(`ci`.`Quantity`) AS `total_quantity_sold`,sum(`ci`.`Total_price`) AS `total_revenue` from ((`order` `o` join `cart_item` `ci` on((`o`.`Cart_ID` = `ci`.`Cart_ID`))) join `product` `p` on((`ci`.`Product_ID` = `p`.`Product_ID`))) group by `month`,`p`.`Product_ID` order by `month` desc,`total_quantity_sold` desc */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2025-10-19 21:45:53
+-- Create view for monthly top-selling products
+CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
+SELECT
+    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month,
+    p.Product_ID,
+    p.Product_Name,
+    p.Brand,
+    SUM(ci.Quantity) AS total_quantity_sold,
+    SUM(ci.Total_price) AS total_revenue
+FROM
+    `Order` o
+JOIN
+    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
+JOIN
+    Variant v ON ci.Variant_ID = v.Variant_ID
+JOIN
+    Product p ON v.Product_ID = p.Product_ID
+GROUP BY
+    month, p.Product_ID
+ORDER BY
+    month, total_quantity_sold DESC;

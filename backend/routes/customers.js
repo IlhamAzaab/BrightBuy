@@ -14,11 +14,11 @@ router.get('/', async (req, res) => {
 
   // Base SQL with LEFT JOIN to count orders and get last order date
   let sql = `SELECT u.User_ID AS id, u.Name AS name, u.Email AS email,
-                    COUNT(DISTINCT o.Order_ID) AS orderCount,
-                    MAX(o.Order_Date) AS lastOrderDate
-             FROM user u
-             LEFT JOIN \`Order\` o ON o.User_ID = u.User_ID
-             WHERE u.Role = 'customer'`;
+          COUNT(DISTINCT o.Order_Number) AS orderCount,
+          MAX(o.Order_Date) AS lastOrderDate
+        FROM user u
+        LEFT JOIN \`Order\` o ON o.User_ID = u.User_ID
+        WHERE u.Role IN ('customer', 'user')`;
   const params = [];
 
   if (search.trim()) {
@@ -38,6 +38,7 @@ router.get('/', async (req, res) => {
   }
 
   try {
+    console.debug('[customers] sql:', sql, 'params:', params);
     const [rows] = await db.query(sql, params);
     res.json(rows.map(r => ({
       ...r,
