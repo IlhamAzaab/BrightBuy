@@ -19,7 +19,7 @@ const adminOnly = (req, res, next) => {
  */
 router.get('/', auth, adminOnly, async (req, res) => {
   try {
-    const [rows] = await db.query(`SELECT* FROM CategoryOrderSummary`);
+    const [rows] = await db.query(`SELECT* FROM categoryordersummary`);
 
     res.json({
       success: true,

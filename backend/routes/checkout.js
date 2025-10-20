@@ -45,7 +45,7 @@ router.post("/", auth, async (req, res) => {
     // 4️⃣ Insert order record - fix column name with backticks and add Order_Number
     const orderNumber = Date.now(); // Simple order number generation
     const [orderResult] = await connection.query(
-      `INSERT INTO \`Order\` (User_ID, Cart_ID, \`Total_Amount\`, Delivery_ID, Payment_Method, Order_Date, Order_Number)
+      `INSERT INTO \`order\` (User_ID, Cart_ID, \`Total_Amount\`, Delivery_ID, Payment_Method, Order_Date, Order_Number)
        VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
       [userId, cartId, totalAmount, deliveryId, paymentMethod, orderNumber]
     );
@@ -66,11 +66,12 @@ router.post("/", auth, async (req, res) => {
         [newStock < 0 ? 0 : newStock, item.Variant_ID]
       );
     }
-    // 6️⃣ Mark the old cart as "CheckedOut"
-  await connection.query(
-  "UPDATE cart SET Status = 'CheckedOut' WHERE Cart_ID = ?",
-  [cartId]
-  );
+
+    // Mark the cart as checked out
+    await connection.query(
+      "UPDATE cart SET Status = 'CheckedOut' WHERE Cart_ID = ?",
+      [cartId]
+    );
 
     await connection.commit();
 

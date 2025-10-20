@@ -5,11 +5,12 @@ const MostPopular = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
 
   useEffect(() => {
     const fetchMostPopularProducts = async () => {
       try {
-        const response = await fetch("http://localhost:9000/api/mostpopular");
+        const response = await fetch(`${API}/api/mostpopular`);
         if (!response.ok) {
           throw new Error("Failed to fetch most popular products");
         }

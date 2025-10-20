@@ -11,7 +11,7 @@ const router = express.Router();
 router.get("/categories", async (req, res) => {
   try {
     const [categories] = await db.query(
-      "SELECT Category_ID, Category_Name FROM Category"
+      "SELECT Category_ID, Category_Name FROM category"
     );
     res.json(categories);
   } catch (err) {
@@ -24,7 +24,7 @@ router.get("/categories", async (req, res) => {
 router.get("/categories/top3", async (req, res) => {
   try {
     const [categories] = await db.query(
-      "SELECT Category_ID, Category_Name, Description FROM Category LIMIT 2"
+      "SELECT Category_ID, Category_Name, Description FROM category LIMIT 2"
     );
     res.json(categories);
   } catch (err) {
@@ -66,69 +66,59 @@ router.post(
           .json({ error: "Please fill all required fields" });
       }
 
-      const connection = await db.getConnection();
-      await connection.beginTransaction();
+      // Insert Product
+      const [productResult] = await db.query(
+        "INSERT INTO product (Category_ID, Product_Name, Brand, SKU, Description) VALUES (?, ?, ?, ?, ?)",
+        [categoryId, productName, brand, sku, description]
+      );
+      const productId = productResult.insertId;
 
-      try {
-        // Insert Product
-        const [productResult] = await connection.query(
-          "INSERT INTO Product (Category_ID, Product_Name, Brand, SKU, Description) VALUES (?, ?, ?, ?, ?)",
-          [categoryId, productName, brand, sku, description]
-        );
-        const productId = productResult.insertId;
+      // Parse variant fields
+      const priceArr = Array.isArray(price) ? price : [price];
+      const stockArr = Array.isArray(stockQuantity)
+        ? stockQuantity
+        : [stockQuantity];
+      const sizeArr = Array.isArray(size) ? size : [size];
+      const colourArr = Array.isArray(colour) ? colour : [colour];
 
-        // Parse variant fields
-        const priceArr = Array.isArray(price) ? price : [price];
-        const stockArr = Array.isArray(stockQuantity)
-          ? stockQuantity
-          : [stockQuantity];
-        const sizeArr = Array.isArray(size) ? size : [size];
-        const colourArr = Array.isArray(colour) ? colour : [colour];
-
-        for (let i = 0; i < variantCount; i++) {
-          if (!req.files[i]) {
-            throw new Error(`Image missing for variant ${i + 1}`);
-          }
-
-          // Upload variant image to Cloudinary
-          const uploaded = await new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-              { folder: "products" },
-              (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-              }
-            );
-            stream.end(req.files[i].buffer);
-          });
-
-          await connection.query(
-            "INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES (?, ?, ?, ?, ?, ?)",
-            [
-              productId,
-              priceArr[i],
-              stockArr[i],
-              colourArr[i],
-              sizeArr[i] && sizeArr[i] !== ""
-                ? parseInt(sizeArr[i], 10) || null
-                : null, // Ensure size is an integer or null
-              uploaded.secure_url,
-            ]
-          );
+      for (let i = 0; i < variantCount; i++) {
+        if (!req.files[i]) {
+          throw new Error(`Image missing for variant ${i + 1}`);
         }
 
-        await connection.commit();
-        return res.json({ message: "Product and variants added successfully" });
-      } catch (err) {
-        await connection.rollback();
-        console.error("Add Product Error:", err);
-        return res.status(500).json({ error: err.message || "Server error" });
-      } finally {
-        connection.release();
+        // Upload variant image to Cloudinary
+        const uploaded = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "products" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(req.files[i].buffer);
+        });
+
+        await db.query(
+          "INSERT INTO variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES (?, ?, ?, ?, ?, ?)",
+          [
+            productId,
+            priceArr[i],
+            stockArr[i],
+            colourArr[i],
+            sizeArr[i],
+            uploaded.secure_url,
+          ]
+        );
       }
+
+      await connection.commit();
+      return res.json({ message: "Product and variants added successfully" });
     } catch (err) {
+      await connection.rollback();
       console.error("Add Product Error:", err);
       return res.status(500).json({ error: err.message || "Server error" });
+    } finally {
+      connection.release();
     }
   }
 );

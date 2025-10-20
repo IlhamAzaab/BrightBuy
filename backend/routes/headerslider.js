@@ -15,13 +15,13 @@ router.get("/", async (req, res) => {
           p.Product_Name,
           v.Price,
           v.Image_URL
-       FROM Category c
-       JOIN Product p ON c.Category_ID = p.Category_ID
-       JOIN Variant v ON p.Product_ID = v.Product_ID
+       FROM category c
+       JOIN product p ON c.Category_ID = p.Category_ID
+       JOIN variant v ON p.Product_ID = v.Product_ID
        JOIN (
           SELECT p2.Category_ID, MIN(v2.Price) AS MinPrice
-          FROM Product p2
-          JOIN Variant v2 ON p2.Product_ID = v2.Product_ID
+          FROM product p2
+          JOIN variant v2 ON p2.Product_ID = v2.Product_ID
           GROUP BY p2.Category_ID
        ) AS cheapest ON cheapest.Category_ID = c.Category_ID AND v.Price = cheapest.MinPrice`
     );
