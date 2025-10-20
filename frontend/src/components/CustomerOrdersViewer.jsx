@@ -15,19 +15,24 @@ import React, { useMemo, useState, useEffect } from 'react';
 */
 
 // Backend base URL (configure via environment variable for flexibility)
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:9000';
+const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:9000';
 
 // Utility formatters
 function formatDate(iso) {
   try {
-    return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   } catch {
     return iso;
   }
 }
 
 function currency(amount) {
-  return amount.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
+  const n = typeof amount === 'number' ? amount : Number(amount);
+  if (Number.isNaN(n)) return '';
+  return n.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
 }
 
 const statusColors = {
