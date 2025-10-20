@@ -1,18 +1,20 @@
 import React from "react";
-import {assets} from "../assets/assets";
+import { assets } from "../assets/assets";
 
 const Footer = () => {
   return (
     <footer>
-      <div className="flex flex-col md:flex-row items-start justify-center px-6 md:px-16 lg:px-32 gap-10 py-14 border-b border-gray-500/30 text-gray-500">
+      <div className="flex flex-col md:flex-row items-start justify-left px-4 md:px-16 lg:px-32 gap-15 py-14 border border-orange-500 text-gray-500">
         {/* Logo & Description */}
-        <div className="w-4/5">
+        <div className="w-4/5 ml-4">
+          {" "}
+          {/* Added margin-left to shift the logo slightly left */}
           <img className="w-20 md:w-24" src={assets.logo} alt="logo" />
           <p className="mt-6 text-sm">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
+            BrightBuy is your one-stop e-commerce platform, offering a wide
+            range of products with flexible delivery options and secure payment
+            methods. Shop with ease and confidence, and enjoy a seamless online
+            shopping experience tailored to your needs.
           </p>
         </div>
 
@@ -22,23 +24,18 @@ const Footer = () => {
             <h2 className="font-medium text-gray-900 mb-5">Company</h2>
             <ul className="text-sm space-y-2">
               <li>
-                <a className="hover:underline transition" href="https://www.google.com">
+                <a className="hover:underline transition" href="/home">
                   Home
                 </a>
               </li>
               <li>
-                <a className="hover:underline transition" href="https://www.google.comv">
+                <a className="hover:underline transition" href="/about">
                   About us
                 </a>
               </li>
               <li>
-                <a className="hover:underline transition" href="https://www.google.com">
+                <a className="hover:underline transition" href="/contact">
                   Contact us
-                </a>
-              </li>
-              <li>
-                <a className="hover:underline transition" href="https://www.google.com">
-                  Privacy policy
                 </a>
               </li>
             </ul>
