@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
       // DB column is now `Total_Amount`
       const totalExpr = 'o.`Total_Amount`';
 
-    let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date,
+  let sql = `SELECT o.Order_Number AS Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date,
                       ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price
                FROM \`Order\` o
                JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
@@ -95,7 +95,7 @@ router.put("/:id/status", async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      'SELECT o.Order_ID, d.Delivery_ID, d.Delivery_Status FROM `Order` o JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
+      'SELECT o.Order_Number AS Order_ID, d.Delivery_ID, d.Delivery_Status FROM `Order` o JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_Number = ?',
       [id]
     );
     if (rows.length === 0) {
@@ -118,12 +118,12 @@ router.put("/:id/status", async (req, res) => {
       `UPDATE Delivery d
          JOIN \`Order\` o ON o.Delivery_ID = d.Delivery_ID
          SET d.Delivery_Status = ?
-       WHERE o.Order_ID = ?`,
+       WHERE o.Order_Number = ?`,
       [targetDeliveryStatus, id]
     );
 
     const [after] = await pool.query(
-      'SELECT d.Delivery_Status FROM `Order` o JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
+      'SELECT d.Delivery_Status FROM `Order` o JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_Number = ?',
       [id]
     );
     const afterStatus = after[0]?.Delivery_Status;
@@ -148,10 +148,10 @@ router.get('/:id/debug', async (req, res) => {
   const { id } = req.params;
   try {
     const [rows] = await pool.query(`
-      SELECT o.Order_ID, o.User_ID, o.Delivery_ID, d.Delivery_Status, o.Order_Date
+      SELECT o.Order_Number AS Order_ID, o.User_ID, o.Delivery_ID, d.Delivery_Status, o.Order_Date
       FROM \`Order\` o
       LEFT JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
-      WHERE o.Order_ID = ?
+      WHERE o.Order_Number = ?
     `, [id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Order not found' });
     res.json(rows[0]);

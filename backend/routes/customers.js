@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 
   // Base SQL with LEFT JOIN to count orders and get last order date
   let sql = `SELECT u.User_ID AS id, u.Name AS name, u.Email AS email,
-          COUNT(DISTINCT o.Order_ID) AS orderCount,
+          COUNT(DISTINCT o.Order_Number) AS orderCount,
           MAX(o.Order_Date) AS lastOrderDate
         FROM user u
         LEFT JOIN \`Order\` o ON o.User_ID = u.User_ID
