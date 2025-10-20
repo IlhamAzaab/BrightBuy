@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "../db.js";
+import db from "../db.js";
 
 const router = express.Router();
 
@@ -9,20 +9,18 @@ router.get("/", async (req, res) => {
   if (!userId) return res.status(400).json({ error: "Missing userId" });
 
   try {
-    // Determine total column variant
-    const [cols] = await pool.query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'order'`);
-    const names = cols.map(c => c.COLUMN_NAME);
-    const totalExpr = names.includes('Total_Amount') ? 'o.Total_Amount' : names.includes('Total Amount') ? 'o.`Total Amount`' : '0';
+      // DB column is now `Total_Amount`
+      const totalExpr = 'o.`Total_Amount`';
 
-  let sql = `SELECT o.Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, d.Delivery_Status, d.Estimated_delivery_Date, d.Delivery_Method,
-       ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price
-     FROM \`order\` o
-     LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID
-     JOIN cart c ON o.Cart_ID = c.Cart_ID
-     JOIN cart_item ci ON c.Cart_ID = ci.Cart_ID
-     JOIN product p ON ci.Product_ID = p.Product_ID
-     JOIN variant v ON ci.Variant_ID = v.Variant_ID
-     WHERE o.User_ID = ?`;
+  let sql = `SELECT o.Order_Number AS Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date, d.Delivery_Method, o.Payment_method,
+                      ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price
+               FROM \`order\` o
+               JOIN delivery d ON o.Delivery_ID = d.Delivery_ID
+               JOIN cart c ON o.Cart_ID = c.Cart_ID
+               JOIN cart_item ci ON c.Cart_ID = ci.Cart_ID
+               JOIN product p ON ci.Product_ID = p.Product_ID
+               JOIN variant v ON ci.Variant_ID = v.Variant_ID
+               WHERE o.User_ID = ?`;
     const params = [userId];
 
     // Filter by derived status using delivery status (only 'Delivered' and 'Pending' are supported)
@@ -34,7 +32,7 @@ router.get("/", async (req, res) => {
 
     sql += ' ORDER BY o.Order_Date DESC';
 
-    const [rows] = await pool.query(sql, params);
+  const [rows] = await db.query(sql, params);
 
     const grouped = {};
     rows.forEach(r => {
@@ -47,6 +45,8 @@ router.get("/", async (req, res) => {
           status: logicalStatus,    
           deliveryStatus: r.Delivery_Status, 
           estimatedDelivery: !isDelivered ? r.Estimated_delivery_Date : null,
+          deliveryMethod: r.Delivery_Method || null,
+          paymentMethod: r.Payment_method || null,
           date: r.Order_Date,
           Number: r.Order_Number,
           items: []
@@ -96,8 +96,8 @@ router.put("/:id/status", async (req, res) => {
   }
 
   try {
-    const [rows] = await pool.query(
-      'SELECT o.Order_ID, o.Delivery_ID, d.Delivery_ID AS Linked_Delivery_ID, d.Delivery_Status FROM `order` o LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
+  const [rows] = await db.query(
+      'SELECT o.Order_Number AS Order_ID, d.Delivery_ID, d.Delivery_Status FROM `order` o JOIN delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_Number = ?',
       [id]
     );
     if (rows.length === 0) {
@@ -116,41 +116,16 @@ router.put("/:id/status", async (req, res) => {
       });
     }
 
-    const [updateResult] = await pool.query(
+  const [updateResult] = await db.query(
       `UPDATE Delivery d
          JOIN \`Order\` o ON o.Delivery_ID = d.Delivery_ID
          SET d.Delivery_Status = ?
-       WHERE o.Order_ID = ?`,
+       WHERE o.Order_Number = ?`,
       [targetDeliveryStatus, id]
     );
 
-    if (orderRow.Linked_Delivery_ID) {
-      // Update existing Delivery row
-      const [updateResult] = await pool.query(
-        `UPDATE delivery d
-           JOIN \`order\` o ON o.Delivery_ID = d.Delivery_ID
-           SET d.Delivery_Status = ?
-         WHERE o.Order_ID = ?`,
-        [targetDeliveryStatus, id]
-      );
-      affectedRows = updateResult.affectedRows;
-    } else {
-      // No Delivery row linked: create one and attach to order
-      const [insertResult] = await pool.query(
-        `INSERT INTO delivery (Delivery_Status) VALUES (?)`,
-        [targetDeliveryStatus]
-      );
-      const newDeliveryId = insertResult.insertId;
-      await pool.query(
-        `UPDATE \`order\` SET Delivery_ID = ? WHERE Order_ID = ?`,
-        [newDeliveryId, id]
-      );
-      affectedRows = 1;
-    }
-
-    // Fetch final status
-    const [after] = await pool.query(
-      'SELECT d.Delivery_Status FROM `order` o LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
+  const [after] = await db.query(
+      'SELECT d.Delivery_Status FROM `order` o JOIN delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_Number = ?',
       [id]
     );
     const afterStatus = after[0]?.Delivery_Status;
@@ -174,11 +149,11 @@ router.put("/:id/status", async (req, res) => {
 router.get('/:id/debug', async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await pool.query(`
-      SELECT o.Order_ID, o.User_ID, o.Delivery_ID, d.Delivery_Status, o.Order_Date
+  const [rows] = await db.query(`
+      SELECT o.Order_Number AS Order_ID, o.User_ID, o.Delivery_ID, d.Delivery_Status, o.Order_Date
       FROM \`order\` o
       LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID
-      WHERE o.Order_ID = ?
+      WHERE o.Order_Number = ?
     `, [id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Order not found' });
     res.json(rows[0]);

@@ -1,13 +1,13 @@
 // backend/routes/products.js
 import { Router } from "express";
-import pool from "../db.js";
+import db from "../db.js";
 
 const router = Router();
 
 // GET /api/products  (all)
 router.get("/", async (_req, res) => {
   try {
-    const [rows] = await pool.query(`
+  const [rows] = await db.query(`
       SELECT
         p.Product_ID, p.Product_Name, p.Brand, p.SKU, p.Description,
         v.Variant_ID, v.Colour, v.Size, v.Price, v.Image_URL
@@ -53,7 +53,7 @@ router.get("/:id", async (req, res) => {
   if (!Number.isInteger(id)) return res.status(400).json({ error: "Invalid id" });
 
   try {
-    const [rows] = await pool.query(
+  const [rows] = await db.query(
       `
       SELECT
         p.Product_ID, p.Product_Name, p.Brand, p.SKU, p.Description,

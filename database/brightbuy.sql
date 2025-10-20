@@ -4,7 +4,7 @@ drop database brightbuy;
 create database brightbuy;
 use brightbuy;
 
-CREATE TABLE `Product` (
+CREATE TABLE `product` (
   `Product_ID` Int not null AUTO_INCREMENT,
   `Category_ID` Int,
   `Product_Name` Varchar(225),
@@ -14,14 +14,14 @@ CREATE TABLE `Product` (
   PRIMARY KEY (`Product_ID`)
 );
 
-CREATE TABLE `Cart` (
+CREATE TABLE `cart` (
   `Cart_ID` Int AUTO_INCREMENT,
   `User_ID` Int,
   Status ENUM('Active', 'CheckedOut') DEFAULT 'Active',
   PRIMARY KEY (`Cart_ID`)
 );
 
-CREATE TABLE `Variant` (
+CREATE TABLE `variant` (
   `Variant_ID` Int not null AUTO_INCREMENT,
   `Product_ID` Int,
   `Price` decimal(10,2),
@@ -34,7 +34,7 @@ CREATE TABLE `Variant` (
       REFERENCES `Product`(`Product_ID`)
 );
 
-CREATE TABLE `Cart_Item` (
+CREATE TABLE `cart_item` (
   `Cart_Item_ID` Int AUTO_INCREMENT,
   `Cart_ID` Int,
   `Product_ID` Int,
@@ -50,14 +50,14 @@ CREATE TABLE `Cart_Item` (
       REFERENCES `Variant`(`Variant_ID`)
 );
 
-CREATE TABLE `City` (
+CREATE TABLE `city` (
   `City_ID` Int AUTO_INCREMENT,
   `City_Name` Varchar(25),
-  `Main_City` BOOL,
+  `Main_City` BOOL default 0,
   PRIMARY KEY (`City_ID`)
 );
 
-CREATE TABLE `User` (
+CREATE TABLE `user` (
   `User_ID` Int AUTO_INCREMENT,
   `Name` Varchar(25),
   `Password` Varchar(100),
@@ -71,14 +71,13 @@ CREATE TABLE `User` (
       REFERENCES `City`(`City_ID`)
 );
 
-CREATE TABLE `Category` (
+CREATE TABLE `category` (
   `Category_ID` Int ,
   `Category_Name` Varchar(25),
   PRIMARY KEY (`Category_ID`)
 );
 
-CREATE TABLE `Order` (
-  `Order_ID` Int AUTO_INCREMENT,
+CREATE TABLE `order` (
   `User_ID` Int,
   `Cart_ID` Int,
   `Total_Amount` Numeric(9,2),
@@ -86,12 +85,12 @@ CREATE TABLE `Order` (
   `Delivery_ID` Int,
   `Order_Date` DATE,
   `Order_Number` BIGINT,
-  PRIMARY KEY (`Order_ID`),
+  PRIMARY KEY (`Order_Number`),
   FOREIGN KEY (`User_ID`)
       REFERENCES `User`(`User_ID`)
 );
 
-CREATE TABLE `Delivery` (
+CREATE TABLE `delivery` (
   `Delivery_ID` Int AUTO_INCREMENT,
   `Delivery_Method` Varchar(25),
   `Delivery_Address` Varchar(50),
@@ -99,6 +98,813 @@ CREATE TABLE `Delivery` (
   `Estimated_delivery_Date` DATE,
   PRIMARY KEY (`Delivery_ID`)
 );
+
+-- add sample data for category table
+INSERT INTO category (Category_ID, Category_Name)
+VALUES
+  (1, 'Mobile Phones'),
+  (2, 'Laptops'),
+  (3, 'Chargers'),
+  (4, 'Headsets'),
+  (5, 'Camera'),
+  (6, 'Watch'),
+  (7, 'Electronic Device'),
+  (8, 'Tablets'),
+  (9, 'Shoes'),
+  (10, 'Bags'),
+  (11, 'Storage Devices');
+  
+INSERT INTO product (Product_ID, Category_ID, Product_Name, Brand, SKU, Description) VALUES
+-- Category 1: Mobile Phones
+(1, 1, 'Galaxy S25 Ultra', 'Samsung', 'SAMSUNG_GALAXY_S25_ULTRA', 'Flagship model from Samsung'),
+(2, 1, 'iPhone 16 Pro Max', 'Apple', 'APPLE_IPHONE_16_PRO_MAX', 'Latest Pro Max version of iPhone'),
+(3, 1, 'Google Pixel 10', 'Google', 'GOOGLE_PIXEL_10', 'Pixel flagship with advanced AI camera'),
+(4, 1, 'OnePlus 13', 'OnePlus', 'ONEPLUS_ONEPLUS_13', 'High performance Android phone'),
+
+-- Category 2: Laptops
+(5, 2, 'MacBook Air M4', 'Apple', 'APPLE_MACBOOK_AIR_M4', 'Lightweight laptop with Apple Silicon M4'),
+(6, 2, 'Dell XPS 15 2025', 'Dell', 'DELL_XPS_15_2025', 'Dell flagship 15-inch XPS'),
+(7, 2, 'ThinkPad X1 Carbon', 'Lenovo', 'LENOVO_THINKPAD_X1_CARBON', 'Durable business ultrabook'),
+(8, 2, 'ROG Strix G17', 'ASUS', 'ASUS_ROG_STRIX_G17', 'Gaming laptop with RTX GPU'),
+
+-- Category 3: Chargers
+(9, 3, 'USB-C 65W GaN Charger', 'Anker', 'ANKER_USB_C_65W_GAN_CHARGER', 'Compact gallium nitride charger 65W'),
+(10, 3, 'MagSafe Fast Charger', 'Apple', 'APPLE_MAGSAFE_FAST_CHARGER', 'MagSafe wireless fast charger'),
+(11, 3, 'PowerPort III 108W', 'Anker', 'ANKER_POWERPORT_III_108W', 'GaN charger with 2 USB-C ports'),
+(12, 3, 'HyperJuice 100W Charging Station', 'Hyper', 'HYPER_HYPERJUICE_100W_CHARGING_STATION', 'Multi-port USB-C charging station'),
+
+-- Category 4: Headsets
+(13, 4, 'AirPods Pro 3', 'Apple', 'APPLE_AIRPODS_PRO_3', 'Latest Apple noise cancelling earbuds'),
+(14, 4, 'WH-1000XM6', 'Sony', 'SONY_WH_1000XM6', 'Flagship Sony noise cancelling over-ear'),
+(15, 4, 'QuietComfort Ultra', 'Bose', 'BOSE_QUIETCOMFORT_ULTRA', 'Ultra noise cancelling headset'),
+(16, 4, 'Elite 10', 'Jabra', 'JABRA_ELITE_10', 'True wireless earbuds with ANC'),
+
+-- Category 5: Cameras
+(17, 5, 'EOS R8', 'Canon', 'CANON_EOS_R8', 'Mirrorless full-frame camera'),
+(18, 5, 'A7 IV', 'Sony', 'SONY_A7_IV', 'Sony’s full-frame mirrorless camera'),
+(19, 5, 'Z5 II', 'Nikon', 'NIKON_Z5_II', 'Entry-level full-frame mirrorless camera'),
+(20, 5, 'X-T5', 'Fujifilm', 'FUJIFILM_X_T5', 'APS-C mirrorless camera'),
+
+-- Category 6: Watches
+(21, 6, 'Apple Watch Series 11', 'Apple', 'APPLE_APPLE_WATCH_SERIES_11', 'Latest Apple smartwatch'),
+(22, 6, 'Galaxy Watch 7', 'Samsung', 'SAMSUNG_GALAXY_WATCH_7', 'Samsung flagship smartwatch'),
+(23, 6, 'Fenix 8', 'Garmin', 'GARMIN_FENIX_8', 'High end multisport GPS watch'),
+(24, 6, 'Charge 7 Pro', 'Fitbit', 'FITBIT_CHARGE_7_PRO', 'Fitness tracker and smartwatch hybrid'),
+
+-- Category 7: Electronic Devices
+(25, 7, 'Echo Show 15', 'Amazon', 'AMAZON_ECHO_SHOW_15', 'Smart display with Alexa'),
+(26, 7, 'Nest Hub Max', 'Google', 'GOOGLE_NEST_HUB_MAX', 'Google smart home hub display'),
+(27, 7, 'Streaming Stick Plus', 'Roku', 'ROKU_STREAMING_STICK_PLUS', '4K streaming stick device'),
+(28, 7, 'Fire TV Cube 3rd Gen', 'Amazon', 'AMAZON_FIRE_TV_CUBE_3RD_GEN', 'Streaming device plus Alexa hub'),
+
+-- Category 8: Tablets
+(29, 8, 'iPad Pro 13', 'Apple', 'APPLE_IPAD_PRO_13', 'Latest iPad Pro large model'),
+(30, 8, 'Galaxy Tab S10', 'Samsung', 'SAMSUNG_GALAXY_TAB_S10', 'Flagship Android tablet'),
+(31, 8, 'Surface Pro 11', 'Microsoft', 'MICROSOFT_SURFACE_PRO_11', 'Hybrid 2-in-1 tablet PC'),
+(32, 8, 'Tab P12', 'Lenovo', 'LENOVO_TAB_P12', 'High performance Android tablet'),
+
+-- Category 9: Shoes
+(33, 9, 'Air Jordan 1 High', 'Nike', 'NIKE_AIR_JORDAN_1_HIGH', 'Classic high-top basketball shoe'),
+(34, 9, 'UltraBoost 24', 'Adidas', 'ADIDAS_ULTRABOOST_24', 'Running shoe with Boost midsole'),
+(35, 9, 'RS-X3', 'Puma', 'PUMA_RS_X3', 'Lifestyle chunky sneaker'),
+(36, 9, '550', 'New Balance', 'NEW_BALANCE_550', 'Retro basketball style shoe'),
+
+-- Category 10: Bags
+(37, 10, 'Neverfull MM', 'Louis Vuitton', 'LOUIS_VUITTON_NEVERFULL_MM', 'Luxury tote bag'),
+(38, 10, 'Little America Backpack', 'Herschel', 'HERSCHEL_LITTLE_AMERICA_BACKPACK', 'Classic backpack style'),
+(39, 10, 'Alpha Bravo Sling', 'Tumi', 'TUMI_ALPHA_BRAVO_SLING', 'Crossbody sling bag'),
+(40, 10, 'Winfield 3', 'Samsonite', 'SAMSONITE_WINFIELD_3', 'Hard shell carry-on suitcase'),
+
+-- Category 11: Storage Devices
+(41, 11, 'T7 Shield 1TB', 'Samsung', 'SAMSUNG_T7_SHIELD_1TB', 'Portable SSD with rugged design'),
+(42, 11, 'Extreme Pro 1TB', 'SanDisk', 'SANDISK_EXTREME_PRO_1TB', 'High speed portable SSD'),
+(43, 11, 'MyBook 10TB', 'Western Digital', 'WESTERN_DIGITAL_MYBOOK_10TB', 'Desktop external HDD'),
+(44, 11, 'Barracuda 4TB', 'Seagate', 'SEAGATE_BARRACUDA_4TB', 'Internal HDD 3.5 inch model');
+
+INSERT INTO variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES
+-- Category 1: Mobile Phones 
+(1, 1299.00, 50, 'Black', 256, NULL),
+(1, 1399.00, 40, 'Silver', 512, NULL),
+(2, 1599.00, 35, 'Gold', 256, NULL),
+(2, 1799.00, 25, 'Blue', 512, NULL),
+(3, 999.00, 45, 'Obsidian', 128, NULL),
+(3, 1099.00, 40, 'Snow', 256, NULL),
+(4, 899.00, 60, 'Green', 128, NULL),
+(4, 999.00, 50, 'Black', 256, NULL),
+
+-- Category 2: Laptops 
+(5, 1399.00, 30, 'Silver', 512, NULL),
+(5, 1599.00, 25, 'Space Gray', 1024, NULL),
+(6, 1699.00, 20, 'Platinum', 1024, NULL),
+(6, 1899.00, 15, 'Black', 2048, NULL),
+(7, 1499.00, 30, 'Black', 512, NULL),
+(7, 1699.00, 25, 'Carbon Fiber', 1024, NULL),
+(8, 1799.00, 20, 'Black', 1024, NULL),
+(8, 1999.00, 15, 'Red', 2048, NULL),
+
+-- Category 3: Chargers 
+(9, 59.00, 100, 'White', NULL, NULL),
+(9, 64.00, 80, 'Black', NULL, NULL),
+(10, 79.00, 60, 'White', NULL, NULL),
+(10, 85.00, 50, 'Midnight', NULL, NULL),
+(11, 89.00, 70, 'Black', NULL, NULL),
+(11, 95.00, 65, 'Silver', NULL, NULL),
+(12, 99.00, 40, 'Gray', NULL, NULL),
+(12, 109.00, 35, 'White', NULL, NULL),
+
+-- Category 4: Headsets
+(13, 249.00, 70, 'White', NULL, NULL),
+(13, 259.00, 60, 'Black', NULL, NULL),
+(14, 399.00, 50, 'Black', NULL, NULL),
+(14, 429.00, 45, 'Silver', NULL, NULL),
+(15, 349.00, 55, 'White', NULL, NULL),
+(15, 359.00, 50, 'Blue', NULL, NULL),
+(16, 199.00, 80, 'Gray', NULL, NULL),
+(16, 209.00, 70, 'Beige', NULL, NULL),
+
+(17, 2499.00, 10, 'Black', NULL, NULL),
+(17, 2699.00, 5, 'Silver', NULL, NULL),
+(18, 2199.00, 12, 'Black', NULL, NULL),
+(18, 2399.00, 6, 'Silver', NULL, NULL),
+(19, 1499.00, 14, 'Black', NULL, NULL),
+(19, 1599.00, 7, 'Silver', NULL, NULL),
+(20, 1699.00, 13, 'Black', NULL, NULL),
+(20, 1799.00, 8, 'Silver', NULL, NULL),
+
+-- Category 6: Watches 
+(21, 499.00, 60, 'Midnight', NULL, NULL),
+(21, 549.00, 55, 'Starlight', NULL, NULL),
+(22, 449.00, 70, 'Graphite', NULL, NULL),
+(22, 469.00, 60, 'Silver', NULL, NULL),
+(23, 899.00, 40, 'Black', NULL, NULL),
+(23, 949.00, 35, 'Blue', NULL, NULL),
+(24, 299.00, 80, 'Black', NULL, NULL),
+(24, 319.00, 70, 'White', NULL, NULL),
+
+-- Category 7: Electronic Devices 
+(25, 249.00, 60, 'White', NULL, NULL),
+(25, 269.00, 50, 'Black', NULL, NULL),
+(26, 229.00, 55, 'White', NULL, NULL),
+(26, 239.00, 45, 'Gray', NULL, NULL),
+(27, 59.00, 100, 'Black', NULL, NULL),
+(27, 69.00, 90, 'Purple', NULL, NULL),
+(28, 139.00, 50, 'Black', NULL, NULL),
+(28, 149.00, 40, 'Gray', NULL, NULL),
+
+-- Category 8: Tablets 
+(29, 1299.00, 40, 'Silver', 512, NULL),
+(29, 1399.00, 35, 'Space Gray', 1024, NULL),
+(30, 1099.00, 50, 'Graphite', 256, NULL),
+(30, 1199.00, 40, 'Beige', 512, NULL),
+(31, 1399.00, 35, 'Silver', 512, NULL),
+(31, 1499.00, 30, 'Black', 1024, NULL),
+(32, 999.00, 50, 'Gray', 128, NULL),
+(32, 1099.00, 45, 'Blue', 256, NULL),
+
+-- Category 9: Shoes 
+(33, 179.00, 60, 'Black', NULL, NULL),
+(33, 189.00, 50, 'White', NULL, NULL),
+(34, 159.00, 70, 'Gray', NULL, NULL),
+(34, 169.00, 65, 'Navy', NULL, NULL),
+(35, 149.00, 75, 'Red', NULL, NULL),
+(35, 159.00, 65, 'Blue', NULL, NULL),
+(36, 139.00, 80, 'Green', NULL, NULL),
+(36, 149.00, 70, 'White', NULL, NULL),
+
+-- Category 10: Bags 
+(37, 1599.00, 20, 'Brown', NULL, NULL),
+(37, 1699.00, 15, 'Monogram', NULL, NULL),
+(38, 129.00, 50, 'Navy', NULL, NULL),
+(38, 139.00, 45, 'Black', NULL, NULL),
+(39, 249.00, 40, 'Gray', NULL, NULL),
+(39, 259.00, 35, 'Black', NULL, NULL),
+(40, 199.00, 50, 'Silver', NULL, NULL),
+(40, 219.00, 45, 'Blue', NULL, NULL),
+
+-- Category 11: Storage Devices 
+(41, 129.00, 80, 'Blue', 1000, NULL),
+(41, 149.00, 70, 'Black', 2000, NULL),
+(42, 139.00, 75, 'Gray', 1000, NULL),
+(42, 159.00, 65, 'Red', 2000, NULL),
+(43, 259.00, 60, 'Black', 10000, NULL),
+(43, 279.00, 55, 'White', 10000, NULL),
+(44, 109.00, 90, 'Green', 4000, NULL),
+(44, 119.00, 85, 'Black', 6000, NULL);
+
+-- Category 1: Mobile Phones
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875752/dfqpkjvh8/hgmmrbcaf1aw3p5c8j5m.webp' WHERE Product_ID = 1 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875755/dfqpkjvh8/vbkvdmjphyrdidlogbds.jpg' WHERE Product_ID = 1 AND Colour = 'Silver';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875746/dfqpkjvh8/qxycyracr3glvm98gtnv.jpg' WHERE Product_ID = 2 AND Colour = 'Gold';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875744/dfqpkjvh8/mx3fgkydfjtnzqgx7w9x.avif' WHERE Product_ID = 2 AND Colour = 'Blue';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875747/dfqpkjvh8/ngt7yni8yjxsheuxse0s.jpg' WHERE Product_ID = 3 AND Colour = 'Obsidian';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875748/dfqpkjvh8/ruiok5qef8xzvr3mud17.webp' WHERE Product_ID = 3 AND Colour = 'Snow';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875751/dfqpkjvh8/tugtp1jksszykc2h7u46.png' WHERE Product_ID = 4 AND Colour = 'Green';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875749/dfqpkjvh8/yq1wa4fwux7cdye4hssb.avif' WHERE Product_ID = 4 AND Colour = 'Black';
+
+-- Category 2: Laptops
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875675/dfqpkjvh8/sxujqrbu2yqyd2pinrlc.jpg' WHERE Product_ID = 5 AND Colour = 'Silver';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875678/dfqpkjvh8/iquhl88qt6l1dzxkg6q7.jpg' WHERE Product_ID = 5 AND Colour = 'Space Gray';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875689/dfqpkjvh8/q843i5xgbs31soa19ggw.avif' WHERE Product_ID = 6 AND Colour = 'Platinum';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875690/dfqpkjvh8/xyylqojhherh9bxetdiq.avif' WHERE Product_ID = 6 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875691/dfqpkjvh8/f6nnysmabzioaibejlza.jpg' WHERE Product_ID = 7 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875693/dfqpkjvh8/nay2pcftrawz5hu7rq6e.avif' WHERE Product_ID = 7 AND Colour = 'Carbon Fiber';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875679/dfqpkjvh8/onbuce12axxfpqrnqob4.png' WHERE Product_ID = 8 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875687/dfqpkjvh8/slwl5pkjhanqqx76zjbc.png' WHERE Product_ID = 8 AND Colour = 'Red';
+
+-- Category 3: Chargers
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875561/dfqpkjvh8/leyalydx1lrmablnyods.avif' WHERE Product_ID = 9 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875562/dfqpkjvh8/dggxprfefokfkhhgd06f.avif' WHERE Product_ID = 9 AND Colour = 'White';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875565/dfqpkjvh8/pymtdn7mcgqrgjbkn3ky.webp' WHERE Product_ID = 10 AND Colour = 'White';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875564/dfqpkjvh8/xpkabacc1ajd7hfnfw00.jpg' WHERE Product_ID = 10 AND Colour = 'Midnight';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875559/dfqpkjvh8/dw9amqc1e4f326iwbtcd.avif' WHERE Product_ID = 11 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875560/dfqpkjvh8/ccv6n9ztslxckjtzwepw.avif' WHERE Product_ID = 11 AND Colour = 'Silver';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875566/dfqpkjvh8/f3uem8wjrq0bkyiyjfpy.webp' WHERE Product_ID = 12 AND Colour = 'Gray';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875567/dfqpkjvh8/g3pjkoa0zitc8ewr3mnl.jpg' WHERE Product_ID = 12 AND Colour = 'White';
+
+-- Category 4: Headsets
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875642/dfqpkjvh8/rhwyt3diywhzjkiy43iw.jpg' WHERE Product_ID = 13 AND Colour = 'White';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875641/dfqpkjvh8/rzcwaie8ccw23x5dfwhq.jpg' WHERE Product_ID = 13 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875648/dfqpkjvh8/q3etbprwda7fkam4lxad.webp' WHERE Product_ID = 14 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875649/dfqpkjvh8/liitmun8ugytkhbgiuw1.png' WHERE Product_ID = 14 AND Colour = 'Silver';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875645/dfqpkjvh8/lwgtimwuvzhzkv0jygkr.jpg' WHERE Product_ID = 15 AND Colour = 'White';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875643/dfqpkjvh8/kqeuuzqwwftedtglih32.jpg' WHERE Product_ID = 15 AND Colour = 'Blue';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875647/dfqpkjvh8/i5yctpbrzzda6rweu9fx.jpg' WHERE Product_ID = 16 AND Colour = 'Gray';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875646/dfqpkjvh8/ir6orqfhf18prine6fta.jpg' WHERE Product_ID = 16 AND Colour = 'Beige';
+
+-- Category 5: Cameras
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875509/dfqpkjvh8/ea1kitccmdtzkqyfb01l.jpg' WHERE Product_ID = 17 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875510/dfqpkjvh8/rmbrbnlklzimmzzqwjnn.jpg' WHERE Product_ID = 17 AND Colour = 'Silver';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875515/dfqpkjvh8/xb8j2lj6dzquomojznze.webp' WHERE Product_ID = 18 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875516/dfqpkjvh8/jzjgltys6smyoubn6ajy.jpg' WHERE Product_ID = 18 AND Colour = 'Silver';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875513/dfqpkjvh8/x0xlolmtyxrepkjakbye.jpg' WHERE Product_ID = 19 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875514/dfqpkjvh8/mkzklxcfh0zcnwhwf2ut.jpg' WHERE Product_ID = 19 AND Colour = 'Silver';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875511/dfqpkjvh8/ac3ntqcsrkke0isgqgjb.jpg' WHERE Product_ID = 20 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875512/dfqpkjvh8/zxz8isjgkdnm7qcdbyat.jpg' WHERE Product_ID = 20 AND Colour = 'Silver';
+
+-- Category 6: Watches
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875916/dfqpkjvh8/wa2udphmsivbhcvndsvf.jpg' WHERE Product_ID = 21 AND Colour = 'Midnight';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875917/dfqpkjvh8/yuan3lgeidaxzlgmxv9w.jpg' WHERE Product_ID = 21 AND Colour = 'Starlight';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875923/dfqpkjvh8/k4sg6cmjxeabkqnpr799.webp' WHERE Product_ID = 22 AND Colour = 'Graphite';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875925/dfqpkjvh8/hkekyxoof5dyuth9gcbr.jpg' WHERE Product_ID = 22 AND Colour = 'Silver';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875921/dfqpkjvh8/xygehulttzc4g2kvxzh5.webp' WHERE Product_ID = 23 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875922/dfqpkjvh8/ww1ce2uqyqa70a8po4jt.webp' WHERE Product_ID = 23 AND Colour = 'Blue';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875918/dfqpkjvh8/poys7acidq8abgdjnkjr.jpg' WHERE Product_ID = 24 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875920/dfqpkjvh8/ne3oavdks2lysrmibhxr.webp' WHERE Product_ID = 24 AND Colour = 'White';
+
+-- Category 7: Electronic Devices
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875606/dfqpkjvh8/bcuzzii4pfwkay34ckqm.avif' WHERE Product_ID = 25 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875610/dfqpkjvh8/pxxhf6aiqdixm1t1qhe9.png' WHERE Product_ID = 25 AND Colour = 'White';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875617/dfqpkjvh8/rnorbiyahyydjl096ei2.jpg' WHERE Product_ID = 26 AND Colour = 'White';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875615/dfqpkjvh8/ylvjqqdjqxzvfyhkquab.avif' WHERE Product_ID = 26 AND Colour = 'Gray';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875618/dfqpkjvh8/sh5aa8urbwl02xzpjo8o.jpg' WHERE Product_ID = 27 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875619/dfqpkjvh8/vaymolmzc2boqousz053.webp' WHERE Product_ID = 27 AND Colour = 'Purple';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875612/dfqpkjvh8/spm6ydmtb444qqvhwwjm.webp' WHERE Product_ID = 28 AND Colour = 'Black';
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875614/dfqpkjvh8/wttpi8fgmsvwd3mcjhap.jpg' WHERE Product_ID = 28 AND Colour = 'Gray';
+
+-- Category 8: Tablets
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875881/dfqpkjvh8/taxn5irvmjwokectfwwp.jpg' 
+WHERE Product_ID = 29 AND Colour = 'Silver';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875882/dfqpkjvh8/uow3il1plwnaxezbqzzn.jpg' 
+WHERE Product_ID = 29 AND Colour = 'Space Gray';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875887/dfqpkjvh8/gg5wruelwpq4hvy6bmx3.jpg' 
+WHERE Product_ID = 30 AND Colour = 'Graphite';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875888/dfqpkjvh8/ydre6excdl4ef85ksnzj.avif' 
+WHERE Product_ID = 30 AND Colour = 'Beige';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875885/dfqpkjvh8/i6puejt11gop9k3nmrpv.jpg' 
+WHERE Product_ID = 31 AND Colour = 'Black';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875886/dfqpkjvh8/gl7de8wyuug9b8wzl5rx.jpg' 
+WHERE Product_ID = 31 AND Colour = 'Silver';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875883/dfqpkjvh8/jsjpzuaqlkioywyisj2d.jpg' 
+WHERE Product_ID = 32 AND Colour = 'Gray';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875884/dfqpkjvh8/ovkzcho5yxygruadu1dr.jpg' 
+WHERE Product_ID = 32 AND Colour = 'Blue';
+
+-- Category 9: Shoes
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875782/dfqpkjvh8/gtmbzkafjjadtzbpkovb.jpg' 
+WHERE Product_ID = 33 AND Colour = 'Black';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875783/dfqpkjvh8/vsu6xcneplkhuo1lzl4s.webp' 
+WHERE Product_ID = 33 AND Colour = 'White';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875778/dfqpkjvh8/nl055nx3fiw7fefxdvvv.webp' 
+WHERE Product_ID = 34 AND Colour = 'Gray';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875779/dfqpkjvh8/xztcsewzocsuyvqpmhps.jpg' 
+WHERE Product_ID = 34 AND Colour = 'Navy';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875784/dfqpkjvh8/kzzjvyafakg10t4zqalx.avif' 
+WHERE Product_ID = 35 AND Colour = 'Blue';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875785/dfqpkjvh8/r9kgsvfoingfwuwug94w.webp' 
+WHERE Product_ID = 35 AND Colour = 'Red';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875780/dfqpkjvh8/labewa8hrq2g1djq1gum.webp' 
+WHERE Product_ID = 36 AND Colour = 'Green';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875781/dfqpkjvh8/dxoxtbe2smx5jiousj8r.jpg' 
+WHERE Product_ID = 36 AND Colour = 'White';
+
+-- Category 10: Bags
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875006/dfqpkjvh8/gfgc8u5au4ylcv8b5xqm.webp' 
+WHERE Product_ID = 37 AND Colour = 'Brown';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875007/dfqpkjvh8/sdnjh7z7lhrifq0zcolw.webp' 
+WHERE Product_ID = 37 AND Colour = 'Monogram';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875005/dfqpkjvh8/uyvxquinuggrtuuskxou.jpg' 
+WHERE Product_ID = 38 AND Colour = 'Navy';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875004/dfqpkjvh8/oh6ou9ibpuh8otarlsis.jpg' 
+WHERE Product_ID = 38 AND Colour = 'Black';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875011/dfqpkjvh8/chi8pr3be7dcvfcxzhlc.jpg' 
+WHERE Product_ID = 39 AND Colour = 'Gray';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875012/dfqpkjvh8/ugmdqrx2jsesqaxdeiuu.jpg' 
+WHERE Product_ID = 39 AND Colour = 'Black';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875010/dfqpkjvh8jvh8/image/upload/v1760875010/dfqpkjvh8/dcnki1ly5lmnkljy0vwg.jpg' 
+WHERE Product_ID = 40 AND Colour = 'Silver';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875008/dfqpkjvh8/qpu86w4gvt9u3m3mjdvw.jpg' 
+WHERE Product_ID = 40 AND Colour = 'Blue';
+
+-- Category 11: Storage Devices
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875850/dfqpkjvh8/kei9ewampl45ziurhbe1.webp' 
+WHERE Product_ID = 41 AND Colour = 'Blue';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875848/dfqpkjvh8/atdzk5jl7ogdce3ucthz.avif' 
+WHERE Product_ID = 41 AND Colour = 'Black';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875851/dfqpkjvh8/ghyuzly7c47uidyxt83l.webp' 
+WHERE Product_ID = 42 AND Colour = 'Gray';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875852/dfqpkjvh8/l0gnlqccch8flwzv97qi.png' 
+WHERE Product_ID = 42 AND Colour = 'Red';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875855/dfqpkjvh8/darv0dpgsqddknqcew0x.png' 
+WHERE Product_ID = 43 AND Colour = 'Black';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875856/dfqpkjvh8/mg8jqzflooukzxzvqfrx.jpg' 
+WHERE Product_ID = 43 AND Colour = 'White';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875854/dfqpkjvh8/enxlyxkcgrsi7nztrpkj.jpg' 
+WHERE Product_ID = 44 AND Colour = 'Green';
+
+UPDATE Variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875853/dfqpkjvh8/tdvsrhzoq2xhyxk1hxal.webp' 
+WHERE Product_ID = 44 AND Colour ='Black';
+
+UPDATE variant SET Image_URL='https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875008/dfqpkjvh8/qpu86w4gvt9u3m3mjdvw.jpg' 
+WHERE Product_ID=40;
+
+-- Insert Sample Cities
+INSERT INTO city (City_ID, City_Name, Main_City) VALUES
+(1, 'New York', 1),
+(2, 'Los Angeles', 1),
+(3, 'Chicago', 1),
+(4, 'Houston', 1),
+(5, 'Phoenix', 1),
+(6, 'Philadelphia', 1),
+(7, 'San Antonio',0),
+(8, 'San Diego',0),
+(9, 'Dallas',0),
+(10,'San Jose',0);
+
+-- Insert Sample Users 
+INSERT INTO user (User_ID, Name, Password, Address, City_ID, Email, Role, image_URL) VALUES
+(1, 'John Smith', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '123 Main St', 1, 'john@email.com', 'customer', NULL),
+(2, 'Sarah Johnson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '456 Oak Ave', 2, 'sarah@email.com', 'customer', NULL),
+(3, 'Michael Brown', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '789 Pine Rd', 3, 'michael@email.com', 'customer', NULL),
+(4, 'Emily Davis', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '321 Elm St', 4, 'emily@email.com', 'customer', NULL),
+(5, 'David Wilson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '654 Maple Dr', 5, 'david@email.com', 'customer', NULL),
+(6, 'Jessica Miller', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '987 Cedar Ln', 6, 'jessica@email.com', 'customer', NULL),
+(7, 'Chris Taylor', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '111 Birch St', 7, 'chris@email.com', 'customer', NULL),
+(8, 'Amanda Anderson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '222 Spruce Ave', 8, 'amanda@email.com', 'customer', NULL),
+(9, 'Robert Thomas', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '333 Ash Rd', 9, 'robert@email.com', 'customer', NULL),
+(10, 'Lisa Jackson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '444 Willow Dr', 10, 'lisa@email.com', 'customer', NULL),
+(11, 'James White', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '555 Poplar Ln', 1, 'james@email.com', 'customer', NULL),
+(12, 'Michelle Harris', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '666 Laurel St', 2, 'michelle@email.com', 'customer', NULL),
+(13, 'Daniel Martin', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '777 Oak St', 3, 'daniel@email.com', 'customer', NULL),
+(14, 'Karen Lee', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '888 Pine Ave', 4, 'karen@email.com', 'customer', NULL),
+(15, 'Matthew Perez', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '999 Elm Rd', 5, 'matthew@email.com', 'customer', NULL),
+(16, 'Jennifer Garcia', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1010 Maple St', 6, 'jennifer@email.com', 'customer', NULL),
+(17, 'Mark Rodriguez', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1111 Cedar Ave', 7, 'mark@email.com', 'customer', NULL),
+(18, 'Patricia Lewis', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1212 Birch Rd', 8, 'patricia@email.com', 'customer', NULL),
+(19, 'Steven Walker', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1313 Spruce St', 9, 'steven@email.com', 'customer', NULL),
+(20, 'Nancy Hall', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '1414 Ash Ave', 10, 'nancy@email.com', 'customer', NULL),
+(21, 'Admin', '$2b$10$FMtxpGM3MQqDvpG014l5bOPEjIk4JI1ZHu7ilN6K95iehw9YKq98y', NULL,NULL, 'Admin1@example.com', 'admin', NULL);
+
+-- Insert Sample Delivery Records
+INSERT INTO delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
+-- 2023 Deliveries
+(1, 'Standard Delivery', '123 Main St, New York', 'Delivered', '2023-01-15'),
+(2, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Delivered', '2023-01-20'),
+(3, 'Standard Delivery', '789 Pine Rd, Chicago', 'Delivered', '2023-02-10'),
+(4, 'Store Pickup', '321 Elm St, Houston', 'Delivered', '2023-02-18'),
+(5, 'Standard Delivery', '654 Maple Dr, Phoenix', 'Delivered', '2023-03-05'),
+(6, 'Standard Delivery', '987 Cedar Ln, Philadelphia', 'Delivered', '2023-03-15'),
+(7, 'Standard Delivery', '111 Birch St, San Antonio', 'Delivered', '2023-04-12'),
+(8, 'Store Pickup', '222 Spruce Ave, San Diego', 'Delivered', '2023-04-22'),
+(9, 'Standard Delivery', '333 Ash Rd, Dallas', 'Delivered', '2023-05-08'),
+(10, 'Standard Delivery', '444 Willow Dr, San Jose', 'Delivered', '2023-05-18'),
+(11, 'Standard Delivery', '555 Poplar Ln, New York', 'Delivered', '2023-06-10'),
+(12, 'Store Pickup', '666 Laurel St, Los Angeles', 'Delivered', '2023-06-20'),
+(13, 'Standard Delivery', '777 Oak St, Chicago', 'Delivered', '2023-07-12'),
+(14, 'Store Pickup', '888 Pine Ave, Houston', 'Delivered', '2023-07-25'),
+(15, 'Standard Delivery', '999 Elm Rd, Phoenix', 'Delivered', '2023-08-08'),
+(16, 'Standard Delivery', '1010 Maple St, Philadelphia', 'Delivered', '2023-08-18'),
+(17, 'Standard Delivery', '1111 Cedar Ave, San Antonio', 'Delivered', '2023-09-05'),
+(18, 'Store Pickup', '1212 Birch Rd, San Diego', 'Delivered', '2023-09-15'),
+(19, 'Standard Delivery', '1313 Spruce St, Dallas', 'Delivered', '2023-10-10'),
+(20, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Delivered', '2023-10-20'),
+(21, 'Standard Delivery', '123 Main St, New York', 'Delivered', '2023-11-08'),
+(22, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Delivered', '2023-11-18'),
+(23, 'Standard Delivery', '789 Pine Rd, Chicago', 'Delivered', '2023-12-05'),
+(24, 'Standard Delivery', '321 Elm St, Houston', 'Delivered', '2023-12-15'),
+(25, 'Standard Delivery', '654 Maple Dr, Phoenix', 'Delivered', '2023-01-25'),
+(26, 'Store Pickup', '987 Cedar Ln, Philadelphia', 'Delivered', '2023-02-28'),
+(27, 'Standard Delivery', '111 Birch St, San Antonio', 'Delivered', '2023-03-28'),
+(28, 'Standard Delivery', '222 Spruce Ave, San Diego', 'Delivered', '2023-04-30'),
+(29, 'Standard Delivery', '333 Ash Rd, Dallas', 'Delivered', '2023-05-25'),
+(30, 'Store Pickup', '444 Willow Dr, San Jose', 'Delivered', '2023-06-28'),
+(31, 'Standard Delivery', '555 Poplar Ln, New York', 'Delivered', '2023-07-30'),
+(32, 'Standard Delivery', '666 Laurel St, Los Angeles', 'Delivered', '2023-08-25'),
+(33, 'Standard Delivery', '777 Oak St, Chicago', 'Delivered', '2023-09-20'),
+(34, 'Store Pickup', '888 Pine Ave, Houston', 'Delivered', '2023-10-28'),
+(35, 'Standard Delivery', '999 Elm Rd, Phoenix', 'Delivered', '2023-11-15'),
+(36, 'Standard Delivery', '1010 Maple St, Philadelphia', 'Delivered', '2023-12-10'),
+(37, 'Standard Delivery', '1111 Cedar Ave, San Antonio', 'Delivered', '2023-01-30'),
+(38, 'Store Pickup', '1212 Birch Rd, San Diego', 'Delivered', '2023-02-20'),
+(39, 'Standard Delivery', '1313 Spruce St, Dallas', 'Delivered', '2023-03-22'),
+(40, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Delivered', '2023-04-25'),
+
+-- 2024 Deliveries
+(41, 'Standard Delivery', '123 Main St, New York', 'Delivered', '2024-01-15'),
+(42, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Delivered', '2024-01-25'),
+(43, 'Standard Delivery', '789 Pine Rd, Chicago', 'Delivered', '2024-02-12'),
+(44, 'Standard Delivery', '321 Elm St, Houston', 'Delivered', '2024-02-22'),
+(45, 'Standard Delivery', '654 Maple Dr, Phoenix', 'Delivered', '2024-03-10'),
+(46, 'Store Pickup', '987 Cedar Ln, Philadelphia', 'Delivered', '2024-03-20'),
+(47, 'Standard Delivery', '111 Birch St, San Antonio', 'Delivered', '2024-04-08'),
+(48, 'Standard Delivery', '222 Spruce Ave, San Diego', 'Delivered', '2024-04-18'),
+(49, 'Standard Delivery', '333 Ash Rd, Dallas', 'Delivered', '2024-05-12'),
+(50, 'Store Pickup', '444 Willow Dr, San Jose', 'Delivered', '2024-05-22'),
+(51, 'Standard Delivery', '555 Poplar Ln, New York', 'Delivered', '2024-06-08'),
+(52, 'Standard Delivery', '666 Laurel St, Los Angeles', 'Delivered', '2024-06-18'),
+(53, 'Standard Delivery', '777 Oak St, Chicago', 'Pending', '2024-07-15'),
+(54, 'Store Pickup', '888 Pine Ave, Houston', 'Delivered', '2024-07-25'),
+(55, 'Standard Delivery', '999 Elm Rd, Phoenix', 'Delivered', '2024-08-10'),
+(56, 'Standard Delivery', '1010 Maple St, Philadelphia', 'Pending', '2024-08-20'),
+(57, 'Standard Delivery', '1111 Cedar Ave, San Antonio', 'Delivered', '2024-09-08'),
+(58, 'Store Pickup', '1212 Birch Rd, San Diego', 'Delivered', '2024-09-18'),
+(59, 'Standard Delivery', '1313 Spruce St, Dallas', 'Pending', '2024-10-12'),
+(60, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Delivered', '2024-10-22'),
+(61, 'Standard Delivery', '123 Main St, New York', 'Delivered', '2024-11-10'),
+(62, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Pending', '2024-11-20'),
+(63, 'Standard Delivery', '789 Pine Rd, Chicago', 'Delivered', '2024-12-08'),
+(64, 'Standard Delivery', '321 Elm St, Houston', 'Delivered', '2024-12-18'),
+(65, 'Standard Delivery', '654 Maple Dr, Phoenix', 'Delivered', '2024-01-28'),
+(66, 'Store Pickup', '987 Cedar Ln, Philadelphia', 'Delivered', '2024-02-28'),
+(67, 'Standard Delivery', '111 Birch St, San Antonio', 'Pending', '2024-03-30'),
+(68, 'Standard Delivery', '222 Spruce Ave, San Diego', 'Delivered', '2024-04-28'),
+(69, 'Standard Delivery', '333 Ash Rd, Dallas', 'Delivered', '2024-05-28'),
+(70, 'Store Pickup', '444 Willow Dr, San Jose', 'Pending', '2024-06-28'),
+(71, 'Standard Delivery', '555 Poplar Ln, New York', 'Delivered', '2024-07-28'),
+(72, 'Standard Delivery', '666 Laurel St, Los Angeles', 'Delivered', '2024-08-28'),
+(73, 'Standard Delivery', '777 Oak St, Chicago', 'Delivered', '2024-09-25'),
+(74, 'Store Pickup', '888 Pine Ave, Houston', 'Pending', '2024-10-28'),
+(75, 'Standard Delivery', '999 Elm Rd, Phoenix', 'Delivered', '2024-11-20'),
+(76, 'Standard Delivery', '1010 Maple St, Philadelphia', 'Delivered', '2024-12-15'),
+(77, 'Standard Delivery', '1111 Cedar Ave, San Antonio', 'Delivered', '2024-02-05'),
+(78, 'Store Pickup', '1212 Birch Rd, San Diego', 'Delivered', '2024-03-08'),
+(79, 'Standard Delivery', '1313 Spruce St, Dallas', 'Pending', '2024-04-10'),
+(80, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Delivered', '2024-05-12'),
+
+-- 2025 Deliveries
+(81, 'Standard Delivery', '123 Main St, New York', 'Pending', '2025-01-20'),
+(82, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Pending', '2025-01-28'),
+(83, 'Standard Delivery', '789 Pine Rd, Chicago', 'Pending', '2025-02-15'),
+(84, 'Standard Delivery', '321 Elm St, Houston', 'Pending', '2025-02-25'),
+(85, 'Standard Delivery', '654 Maple Dr, Phoenix', 'Pending', '2025-03-15'),
+(86, 'Store Pickup', '987 Cedar Ln, Philadelphia', 'Pending', '2025-03-25'),
+(87, 'Standard Delivery', '111 Birch St, San Antonio', 'Pending', '2025-04-12'),
+(88, 'Standard Delivery', '222 Spruce Ave, San Diego', 'Pending', '2025-04-22'),
+(89, 'Standard Delivery', '333 Ash Rd, Dallas', 'Pending', '2025-05-15'),
+(90, 'Store Pickup', '444 Willow Dr, San Jose', 'Pending', '2025-05-25'),
+(91, 'Standard Delivery', '555 Poplar Ln, New York', 'Pending', '2025-06-12'),
+(92, 'Standard Delivery', '666 Laurel St, Los Angeles', 'Pending', '2025-06-22'),
+(93, 'Standard Delivery', '777 Oak St, Chicago', 'Pending', '2025-07-18'),
+(94, 'Store Pickup', '888 Pine Ave, Houston', 'Pending', '2025-07-28'),
+(95, 'Standard Delivery', '999 Elm Rd, Phoenix', 'Pending', '2025-08-15'),
+(96, 'Standard Delivery', '1010 Maple St, Philadelphia', 'Pending', '2025-08-25'),
+(97, 'Standard Delivery', '1111 Cedar Ave, San Antonio', 'Pending', '2025-09-12'),
+(98, 'Store Pickup', '1212 Birch Rd, San Diego', 'Pending', '2025-09-22'),
+(99, 'Standard Delivery', '1313 Spruce St, Dallas', 'Pending', '2025-10-15'),
+(100, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Pending', '2025-10-25'),
+(101, 'Standard Delivery', '123 Main St, New York', 'Pending', '2025-11-12'),
+(102, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Pending', '2025-11-22'),
+(103, 'Standard Delivery', '789 Pine Rd, Chicago', 'Pending', '2025-12-10'),
+(104, 'Standard Delivery', '321 Elm St, Houston', 'Pending', '2025-12-20'),
+(105, 'Standard Delivery', '654 Maple Dr, Phoenix', 'Pending', '2025-01-25'),
+(106, 'Store Pickup', '987 Cedar Ln, Philadelphia', 'Pending', '2025-02-28'),
+(107, 'Standard Delivery', '111 Birch St, San Antonio', 'Pending', '2025-03-28'),
+(108, 'Standard Delivery', '222 Spruce Ave, San Diego', 'Pending', '2025-04-30'),
+(109, 'Standard Delivery', '333 Ash Rd, Dallas', 'Pending', '2025-05-28'),
+(110, 'Store Pickup', '444 Willow Dr, San Jose', 'Pending', '2025-06-30'),
+(111, 'Standard Delivery', '555 Poplar Ln, New York', 'Pending', '2025-07-30'),
+(112, 'Standard Delivery', '666 Laurel St, Los Angeles', 'Pending', '2025-08-28'),
+(113, 'Standard Delivery', '777 Oak St, Chicago', 'Pending', '2025-09-22'),
+(114, 'Store Pickup', '888 Pine Ave, Houston', 'Pending', '2025-10-30'),
+(115, 'Standard Delivery', '999 Elm Rd, Phoenix', 'Pending', '2025-11-18'),
+(116, 'Standard Delivery', '1010 Maple St, Philadelphia', 'Pending', '2025-12-12'),
+(117, 'Standard Delivery', '1111 Cedar Ave, San Antonio', 'Pending', '2025-02-08'),
+(118, 'Store Pickup', '1212 Birch Rd, San Diego', 'Pending', '2025-03-10'),
+(119, 'Standard Delivery', '1313 Spruce St, Dallas', 'Pending', '2025-04-12'),
+(120, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Pending', '2025-05-15');
+
+-- Insert Sample Carts
+INSERT INTO cart (Cart_ID, User_ID, Status) VALUES
+(1, 1, 'CheckedOut'), (2, 2, 'CheckedOut'), (3, 3, 'CheckedOut'), (4, 4, 'CheckedOut'), (5, 5, 'CheckedOut'),
+(6, 6, 'CheckedOut'), (7, 7, 'CheckedOut'), (8, 8, 'CheckedOut'), (9, 9, 'CheckedOut'), (10, 10, 'CheckedOut'),
+(11, 11, 'CheckedOut'), (12, 12, 'CheckedOut'), (13, 13, 'CheckedOut'), (14, 14, 'CheckedOut'), (15, 15, 'CheckedOut'),
+(16, 16, 'CheckedOut'), (17, 17, 'CheckedOut'), (18, 18, 'CheckedOut'), (19, 19, 'CheckedOut'), (20, 20, 'CheckedOut'),
+(21, 1, 'CheckedOut'), (22, 2, 'CheckedOut'), (23, 3, 'CheckedOut'), (24, 4, 'CheckedOut'), (25, 5, 'CheckedOut'),
+(26, 6, 'CheckedOut'), (27, 7, 'CheckedOut'), (28, 8, 'CheckedOut'), (29, 9, 'CheckedOut'), (30, 10, 'CheckedOut'),
+(31, 11, 'CheckedOut'), (32, 12, 'CheckedOut'), (33, 13, 'CheckedOut'), (34, 14, 'CheckedOut'), (35, 15, 'CheckedOut'),
+(36, 16, 'CheckedOut'), (37, 17, 'CheckedOut'), (38, 18, 'CheckedOut'), (39, 19, 'CheckedOut'), (40, 20, 'CheckedOut'),
+(41, 1, 'CheckedOut'), (42, 2, 'CheckedOut'), (43, 3, 'CheckedOut'), (44, 4, 'CheckedOut'), (45, 5, 'CheckedOut'),
+(46, 6, 'CheckedOut'), (47, 7, 'CheckedOut'), (48, 8, 'CheckedOut'), (49, 9, 'CheckedOut'), (50, 10, 'CheckedOut'),
+(51, 11, 'CheckedOut'), (52, 12, 'CheckedOut'), (53, 13, 'CheckedOut'), (54, 14, 'CheckedOut'), (55, 15, 'CheckedOut'),
+(56, 16, 'CheckedOut'), (57, 17, 'CheckedOut'), (58, 18, 'CheckedOut'), (59, 19, 'CheckedOut'), (60, 20, 'CheckedOut'),
+(61, 1, 'CheckedOut'), (62, 2, 'CheckedOut'), (63, 3, 'CheckedOut'), (64, 4, 'CheckedOut'), (65, 5, 'CheckedOut'),
+(66, 6, 'CheckedOut'), (67, 7, 'CheckedOut'), (68, 8, 'CheckedOut'), (69, 9, 'CheckedOut'), (70, 10, 'CheckedOut'),
+(71, 11, 'CheckedOut'), (72, 12, 'CheckedOut'), (73, 13, 'CheckedOut'), (74, 14, 'CheckedOut'), (75, 15, 'CheckedOut'),
+(76, 16, 'CheckedOut'), (77, 17, 'CheckedOut'), (78, 18, 'CheckedOut'), (79, 19, 'CheckedOut'), (80, 20, 'CheckedOut'),
+(81, 1, 'CheckedOut'), (82, 2, 'CheckedOut'), (83, 3, 'CheckedOut'), (84, 4, 'CheckedOut'), (85, 5, 'CheckedOut'),
+(86, 6, 'CheckedOut'), (87, 7, 'CheckedOut'), (88, 8, 'CheckedOut'), (89, 9, 'CheckedOut'), (90, 10, 'CheckedOut'),
+(91, 11, 'CheckedOut'), (92, 12, 'CheckedOut'), (93, 13, 'CheckedOut'), (94, 14, 'CheckedOut'), (95, 15, 'CheckedOut'),
+(96, 16, 'CheckedOut'), (97, 17, 'CheckedOut'), (98, 18, 'CheckedOut'), (99, 19, 'CheckedOut'), (100, 20, 'CheckedOut'),
+(101, 1, 'CheckedOut'), (102, 2, 'CheckedOut'), (103, 3, 'CheckedOut'), (104, 4, 'Active'), (105, 5, 'CheckedOut'),
+(106, 6, 'CheckedOut'), (107, 7, 'CheckedOut'), (108, 8, 'CheckedOut'), (109, 9, 'CheckedOut'), (110, 10, 'CheckedOut'),
+(111, 11, 'CheckedOut'), (112, 12, 'CheckedOut'), (113, 13, 'Active'), (114, 14, 'CheckedOut'), (115, 15, 'CheckedOut'),
+(116, 16, 'CheckedOut'), (117, 17, 'CheckedOut'), (118, 18, 'Active'), (119, 19, 'Active'), (120, 20, 'Active');
+
+-- Insert Sample Cart Items
+INSERT INTO cart_item (Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES
+(1, 1, 1, 1, 1299.00), (1, 9, 9, 2, 118.00),
+(2, 5, 9, 1, 1399.00), (2, 13, 17, 1, 249.00),
+(3, 2, 3, 1, 1599.00), (3, 21, 41, 2, 998.00),
+(4, 6, 11, 1, 1699.00), (4, 33, 65, 1, 179.00),
+(5, 3, 5, 1, 999.00), (5, 14, 19, 1, 399.00),
+(6, 7, 13, 1, 1499.00), (6, 38, 71, 1, 129.00),
+(7, 4, 7, 2, 1798.00), (7, 15, 21, 1, 349.00),
+(8, 10, 15, 1, 79.00), (8, 22, 43, 2, 898.00),
+(9, 11, 17, 1, 89.00), (9, 29, 57, 1, 1299.00),
+(10, 12, 19, 2, 198.00), (10, 34, 67, 1, 159.00),
+(11, 17, 25, 1, 2499.00), (11, 24, 47, 2, 598.00),
+(12, 18, 29, 1, 2199.00), (12, 39, 75, 1, 249.00),
+(13, 19, 33, 1, 1499.00), (13, 41, 81, 2, 258.00),
+(14, 20, 37, 1, 1699.00), (14, 37, 69, 1, 1599.00),
+(15, 25, 45, 1, 249.00), (15, 42, 83, 1, 139.00),
+(16, 26, 49, 2, 458.00), (16, 35, 69, 1, 149.00),
+(17, 27, 53, 1, 59.00), (17, 43, 85, 1, 259.00),
+(18, 28, 55, 1, 139.00), (18, 30, 59, 1, 1099.00),
+(19, 31, 61, 1, 1399.00), (19, 36, 71, 2, 278.00),
+(20, 32, 63, 1, 999.00), (20, 40, 77, 1, 199.00),
+(21, 1, 2, 1, 1399.00), (21, 16, 25, 1, 199.00),
+(22, 2, 4, 1, 1799.00), (22, 23, 45, 1, 899.00),
+(23, 5, 10, 1, 1599.00), (23, 44, 87, 1, 109.00),
+(24, 6, 12, 1, 1899.00), (24, 13, 18, 1, 259.00),
+(25, 3, 6, 1, 1099.00), (25, 28, 56, 2, 298.00),
+(26, 7, 14, 1, 1699.00), (26, 14, 20, 1, 429.00),
+(27, 4, 8, 1, 999.00), (27, 21, 42, 1, 549.00),
+(28, 10, 16, 1, 85.00), (28, 29, 58, 1, 1399.00),
+(29, 11, 18, 1, 95.00), (29, 38, 72, 1, 139.00),
+(30, 12, 20, 1, 109.00), (30, 27, 54, 2, 118.00),
+(31, 17, 26, 1, 2699.00), (31, 39, 76, 1, 259.00),
+(32, 18, 30, 1, 2399.00), (32, 41, 82, 1, 149.00),
+(33, 19, 34, 1, 1599.00), (33, 31, 62, 1, 1499.00),
+(34, 20, 38, 1, 1799.00), (34, 40, 78, 1, 219.00),
+(35, 25, 46, 1, 269.00), (35, 34, 68, 1, 169.00),
+(36, 26, 50, 1, 239.00), (36, 37, 70, 1, 1699.00),
+(37, 27, 54, 1, 69.00), (37, 42, 84, 1, 159.00),
+(38, 28, 56, 1, 149.00), (38, 22, 44, 1, 469.00),
+(39, 30, 60, 1, 1199.00), (39, 35, 70, 1, 159.00),
+(40, 32, 64, 1, 1099.00), (40, 43, 86, 1, 279.00),
+(41, 1, 1, 2, 2598.00), (41, 9, 10, 1, 64.00),
+(42, 5, 9, 1, 1399.00), (42, 13, 17, 2, 498.00),
+(43, 2, 3, 1, 1599.00), (43, 21, 41, 1, 499.00),
+(44, 6, 11, 1, 1699.00), (44, 33, 65, 2, 358.00),
+(45, 3, 5, 1, 999.00), (45, 14, 19, 1, 399.00),
+(46, 7, 13, 1, 1499.00), (46, 38, 71, 2, 258.00),
+(47, 4, 7, 1, 899.00), (47, 15, 21, 1, 349.00),
+(48, 10, 15, 2, 158.00), (48, 22, 43, 1, 449.00),
+(49, 11, 17, 1, 89.00), (49, 29, 57, 1, 1299.00),
+(50, 12, 20, 2, 218.00), (50, 34, 67, 1, 169.00),
+(51, 17, 25, 1, 2499.00), (51, 24, 47, 1, 299.00),
+(52, 18, 29, 1, 2199.00), (52, 39, 75, 1, 249.00),
+(53, 19, 33, 2, 2998.00), (53, 41, 81, 1, 129.00),
+(54, 20, 37, 1, 1699.00), (54, 37, 69, 1, 1599.00),
+(55, 25, 45, 1, 249.00), (55, 42, 83, 2, 278.00),
+(56, 26, 49, 1, 229.00), (56, 35, 69, 1, 149.00),
+(57, 27, 53, 2, 118.00), (57, 43, 85, 1, 259.00),
+(58, 28, 55, 1, 139.00), (58, 30, 59, 1, 1099.00),
+(59, 31, 61, 1, 1399.00), (59, 36, 71, 1, 139.00),
+(60, 32, 63, 2, 1998.00), (60, 40, 77, 1, 199.00),
+(61, 1, 2, 1, 1399.00), (61, 16, 25, 2, 398.00),
+(62, 2, 4, 1, 1799.00), (62, 23, 45, 1, 899.00),
+(63, 5, 10, 1, 1599.00), (63, 44, 87, 2, 218.00),
+(64, 6, 12, 1, 1899.00), (64, 13, 18, 1, 259.00),
+(65, 3, 6, 1, 1099.00), (65, 28, 56, 1, 149.00),
+(66, 7, 14, 1, 1699.00), (66, 14, 20, 1, 429.00),
+(67, 4, 8, 1, 999.00), (67, 21, 42, 1, 549.00),
+(68, 10, 16, 1, 85.00), (68, 29, 58, 1, 1399.00),
+(69, 11, 18, 2, 190.00), (69, 38, 72, 1, 139.00),
+(70, 12, 20, 1, 109.00), (70, 27, 54, 1, 59.00),
+(71, 17, 26, 1, 2699.00), (71, 39, 76, 1, 259.00),
+(72, 18, 30, 1, 2399.00), (72, 41, 82, 1, 149.00),
+(73, 19, 34, 1, 1599.00), (73, 31, 62, 1, 1499.00),
+(74, 20, 38, 2, 3598.00), (74, 40, 78, 1, 219.00),
+(75, 25, 46, 1, 269.00), (75, 34, 68, 1, 169.00),
+(76, 26, 50, 1, 239.00), (76, 37, 70, 1, 1699.00),
+(77, 27, 54, 1, 69.00), (77, 42, 84, 1, 159.00),
+(78, 28, 56, 1, 149.00), (78, 22, 44, 1, 469.00),
+(79, 30, 60, 1, 1199.00), (79, 35, 70, 1, 159.00),
+(80, 32, 64, 1, 1099.00), (80, 43, 86, 1, 279.00),
+(81, 1, 1, 1, 1299.00), (81, 9, 9, 1, 59.00),
+(82, 5, 9, 1, 1399.00), (82, 13, 17, 1, 249.00),
+(83, 2, 3, 2, 3198.00), (83, 21, 41, 1, 499.00),
+(84, 6, 11, 1, 1699.00), (84, 33, 65, 1, 179.00),
+(85, 3, 5, 1, 999.00), (85, 14, 19, 1, 399.00),
+(86, 7, 13, 1, 1499.00), (86, 38, 71, 1, 129.00),
+(87, 4, 7, 1, 899.00), (87, 15, 21, 2, 698.00),
+(88, 10, 15, 1, 79.00), (88, 22, 43, 1, 449.00),
+(89, 11, 17, 1, 89.00), (89, 29, 57, 1, 1299.00),
+(90, 12, 20, 1, 109.00), (90, 34, 67, 1, 169.00),
+(91, 17, 25, 1, 2499.00), (91, 24, 47, 1, 299.00),
+(92, 18, 29, 1, 2199.00), (92, 39, 75, 2, 498.00),
+(93, 19, 33, 1, 1499.00), (93, 41, 81, 1, 129.00),
+(94, 20, 37, 1, 1699.00), (94, 37, 69, 1, 1599.00),
+(95, 25, 45, 1, 249.00), (95, 42, 83, 1, 139.00),
+(96, 26, 49, 1, 229.00), (96, 35, 69, 1, 149.00),
+(97, 27, 53, 1, 59.00), (97, 43, 85, 1, 259.00),
+(98, 28, 55, 1, 139.00), (98, 30, 59, 1, 1099.00),
+(99, 31, 61, 1, 1399.00), (99, 36, 71, 1, 139.00),
+(100, 32, 63, 1, 999.00), (100, 40, 77, 1, 199.00),
+(101, 1, 2, 1, 1399.00), (101, 16, 25, 1, 199.00),
+(102, 2, 4, 1, 1799.00), (102, 23, 45, 1, 899.00),
+(103, 5, 10, 1, 1599.00), (103, 44, 87, 1, 109.00),
+(104, 6, 12, 1, 1899.00), (104, 13, 18, 1, 259.00),
+(105, 3, 6, 1, 1099.00), (105, 28, 56, 1, 149.00),
+(106, 7, 14, 1, 1699.00), (106, 14, 20, 1, 429.00),
+(107, 4, 8, 1, 999.00), (107, 21, 42, 1, 549.00),
+(108, 10, 16, 2, 158.00), (108, 29, 58, 1, 1399.00),
+(109, 11, 18, 1, 95.00), (109, 38, 72, 1, 139.00),
+(110, 12, 20, 1, 109.00), (110, 27, 54, 1, 59.00),
+(111, 17, 26, 1, 2699.00), (111, 39, 76, 1, 259.00),
+(112, 18, 30, 1, 2399.00), (112, 41, 82, 1, 149.00),
+(113, 19, 34, 1, 1599.00), (113, 31, 62, 1, 1499.00),
+(114, 20, 38, 1, 1799.00), (114, 40, 78, 1, 219.00),
+(115, 25, 46, 1, 269.00), (115, 34, 68, 1, 169.00),
+(116, 26, 50, 1, 239.00), (116, 37, 70, 1, 1699.00),
+(117, 27, 54, 1, 69.00), (117, 42, 84, 1, 159.00),
+(118, 28, 56, 1, 149.00), (118, 22, 44, 1, 469.00),
+(119, 30, 60, 1, 1199.00), (119, 35, 70, 1, 159.00),
+(120, 32, 64, 1, 1099.00), (120, 43, 86, 1, 279.00);
+
+INSERT INTO `order` (User_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
+-- 2023 Orders
+(1, 1, 1417.00, 'Online Payment', 1, '2023-01-10', 1673299200001),
+(2, 2, 1648.00, 'Cash on Delivery', 2, '2023-01-15', 1673558400002),
+(3, 3, 2597.00, 'Online Payment', 3, '2023-02-05', 1675728000003),
+(4, 4, 1878.00, 'Online Payment', 4, '2023-02-12', 1676332800004),
+(5, 5, 1398.00, 'Cash on Delivery', 5, '2023-03-01', 1677628800005),
+(6, 6, 1628.00, 'Online Payment', 6, '2023-03-10', 1678464000006),
+(7, 7, 2147.00, 'Online Payment', 7, '2023-04-05', 1680633600007),
+(8, 8, 1218.00, 'Cash on Delivery', 8, '2023-04-15', 1681516800008),
+(9, 9, 1388.00, 'Online Payment', 9, '2023-05-08', 1683302400009),
+(10, 10, 357.00, 'Online Payment', 10, '2023-05-18', 1684416000010),
+(11, 11, 3097.00, 'Cash on Delivery', 11, '2023-06-10', 1686355200011),
+(12, 12, 2448.00, 'Online Payment', 12, '2023-06-20', 1687180800012),
+(13, 13, 1757.00, 'Online Payment', 13, '2023-07-12', 1689206400013),
+(14, 14, 3398.00, 'Cash on Delivery', 14, '2023-07-22', 1690022400014),
+(15, 15, 518.00, 'Online Payment', 15, '2023-08-08', 1691510400015),
+(16, 16, 1587.00, 'Online Payment', 16, '2023-08-18', 1692374400016),
+(17, 17, 318.00, 'Cash on Delivery', 17, '2023-09-05', 1694275200017),
+(18, 18, 1188.00, 'Online Payment', 18, '2023-09-15', 1695052800018),
+(19, 19, 1677.00, 'Online Payment', 19, '2023-10-10', 1697155200019),
+(20, 20, 1198.00, 'Cash on Delivery', 20, '2023-10-20', 1697932800020),
+(1, 21, 1648.00, 'Online Payment', 21, '2023-11-08', 1699468800021),
+(2, 22, 2698.00, 'Online Payment', 22, '2023-11-18', 1700332800022),
+(3, 23, 1608.00, 'Cash on Delivery', 23, '2023-12-05', 1701734400023),
+(4, 24, 3598.00, 'Online Payment', 24, '2023-12-15', 1702598400024),
+(5, 25, 2198.00, 'Online Payment', 25, '2023-01-25', 1674662400025),
+(6, 26, 2128.00, 'Cash on Delivery', 26, '2023-02-28', 1677052800026),
+(7, 27, 1898.00, 'Online Payment', 27, '2023-03-28', 1679875200027),
+(8, 28, 1688.00, 'Online Payment', 28, '2023-04-30', 1682908800028),
+(9, 29, 1178.00, 'Cash on Delivery', 29, '2023-05-25', 1685030400029),
+(10, 30, 1178.00, 'Online Payment', 30, '2023-06-28', 1687891200030),
+(11, 31, 3097.00, 'Online Payment', 31, '2023-07-30', 1690281600031),
+(12, 32, 2428.00, 'Cash on Delivery', 32, '2023-08-25', 1692864000032),
+(13, 33, 2998.00, 'Online Payment', 33, '2023-09-20', 1695254400033),
+(14, 34, 3318.00, 'Online Payment', 34, '2023-10-28', 1698412800034),
+(15, 35, 1518.00, 'Cash on Delivery', 35, '2023-11-15', 1700083200035),
+(16, 36, 1958.00, 'Online Payment', 36, '2023-12-10', 1702224000036),
+(17, 37, 1518.00, 'Online Payment', 37, '2023-01-30', 1675900800037),
+(18, 38, 1288.00, 'Cash on Delivery', 38, '2023-02-20', 1676851200038),
+(19, 39, 1437.00, 'Online Payment', 39, '2023-03-22', 1679510400039),
+(20, 40, 1318.00, 'Online Payment', 40, '2023-04-25', 1682380800040),
+
+-- 2024 Orders 
+(1, 41, 2662.00, 'Online Payment', 41, '2024-01-10', 1704902400041),
+(2, 42, 1897.00, 'Cash on Delivery', 42, '2024-01-25', 1705939200042),
+(3, 43, 1817.00, 'Online Payment', 43, '2024-02-12', 1707686400043),
+(4, 44, 2158.00, 'Online Payment', 44, '2024-02-22', 1708636800044),
+(5, 45, 1398.00, 'Cash on Delivery', 45, '2024-03-10', 1710086400045),
+(6, 46, 1757.00, 'Online Payment', 46, '2024-03-20', 1711036800046),
+(7, 47, 1248.00, 'Online Payment', 47, '2024-04-08', 1712534400047),
+(8, 48, 1484.00, 'Cash on Delivery', 48, '2024-04-18', 1713398400048),
+(9, 49, 1388.00, 'Online Payment', 49, '2024-05-12', 1715472000049),
+(10, 50, 428.00, 'Online Payment', 50, '2024-05-22', 1716345600050),
+(11, 51, 3097.00, 'Cash on Delivery', 51, '2024-06-08', 1717939200051),
+(12, 52, 2448.00, 'Online Payment', 52, '2024-06-18', 1718808000052),
+(13, 53, 3408.00, 'Online Payment', 53, '2024-07-15', 1721001600053),
+(14, 54, 1918.00, 'Cash on Delivery', 54, '2024-07-25', 1721865600054),
+(15, 55, 527.00, 'Online Payment', 55, '2024-08-10', 1723248000055),
+(16, 56, 1488.00, 'Online Payment', 56, '2024-08-20', 1724112000056),
+(17, 57, 187.00, 'Cash on Delivery', 57, '2024-09-08', 1725811200057),
+(18, 58, 1288.00, 'Online Payment', 58, '2024-09-18', 1726680000058),
+(19, 59, 1548.00, 'Online Payment', 59, '2024-10-12', 1728691200059),
+(20, 60, 1298.00, 'Cash on Delivery', 60, '2024-10-22', 1729555200060),
+(1, 61, 1797.00, 'Online Payment', 61, '2024-11-10', 1731206400061),
+(2, 62, 2698.00, 'Online Payment', 62, '2024-11-20', 1732070400062),
+(3, 63, 1817.00, 'Cash on Delivery', 63, '2024-12-08', 1733587200063),
+(4, 64, 2158.00, 'Online Payment', 64, '2024-12-18', 1734451200064),
+(5, 65, 1248.00, 'Online Payment', 65, '2024-01-28', 1706428800065),
+(6, 66, 2128.00, 'Cash on Delivery', 66, '2024-02-28', 1709020800066),
+(7, 67, 1568.00, 'Online Payment', 67, '2024-03-30', 1711814400067),
+(8, 68, 1648.00, 'Online Payment', 68, '2024-04-28', 1714320000068),
+(9, 69, 1288.00, 'Cash on Delivery', 69, '2024-05-28', 1716825600069),
+(10, 70, 168.00, 'Online Payment', 70, '2024-06-28', 1719417600070),
+(11, 71, 3098.00, 'Online Payment', 71, '2024-07-28', 1722009600071),
+(12, 72, 2548.00, 'Cash on Delivery', 72, '2024-08-28', 1724601600072),
+(13, 73, 3098.00, 'Online Payment', 73, '2024-09-25', 1727026080073),
+(14, 74, 3817.00, 'Online Payment', 74, '2024-10-28', 1729814400074),
+(15, 75, 518.00, 'Cash on Delivery', 75, '2024-11-20', 1732070400075),
+(16, 76, 1938.00, 'Online Payment', 76, '2024-12-15', 1734374400076),
+(17, 77, 228.00, 'Online Payment', 77, '2024-02-05', 1707158400077),
+(18, 78, 618.00, 'Cash on Delivery', 78, '2024-03-08', 1709860800078),
+(19, 79, 1358.00, 'Online Payment', 79, '2024-04-10', 1712707200079),
+(20, 80, 1378.00, 'Online Payment', 80, '2024-05-12', 1715472000080),
+
+-- 2025 Orders 
+(1, 81, 1598.00, 'Online Payment', 81, '2025-01-15', 1736899200081),
+(2, 82, 2698.00, 'Cash on Delivery', 82, '2025-01-28', 1737936000082),
+(3, 83, 1708.00, 'Online Payment', 83, '2025-02-12', 1738723200083),
+(4, 84, 2158.00, 'Online Payment', 84, '2025-02-22', 1739587200084),
+(5, 85, 1248.00, 'Cash on Delivery', 85, '2025-03-12', 1741564800085),
+(6, 86, 2128.00, 'Online Payment', 86, '2025-03-25', 1742774400086),
+(7, 87, 1548.00, 'Online Payment', 87, '2025-04-10', 1744329600087),
+(8, 88, 1657.00, 'Cash on Delivery', 88, '2025-04-22', 1745452800088),
+(9, 89, 1234.00, 'Online Payment', 89, '2025-05-15', 1747190400089),
+(10, 90, 168.00, 'Online Payment', 90, '2025-05-25', 1748054400090),
+(11, 91, 3098.00, 'Cash on Delivery', 91, '2025-06-12', 1749734400091),
+(12, 92, 2548.00, 'Online Payment', 92, '2025-06-22', 1750598400092),
+(13, 93, 3098.00, 'Online Payment', 93, '2025-07-15', 1752633600093),
+(14, 94, 3817.00, 'Cash on Delivery', 94, '2025-07-28', 1753756800094),
+(15, 95, 518.00, 'Online Payment', 95, '2025-08-15', 1755456000095),
+(16, 96, 1938.00, 'Online Payment', 96, '2025-08-25', 1756320000096),
+(17, 97, 228.00, 'Cash on Delivery', 97, '2025-09-10', 1757875200097),
+(18, 98, 618.00, 'Online Payment', 98, '2025-09-22', 1758998400098),
+(19, 99, 1358.00, 'Online Payment', 99, '2025-10-15', 1760736000099),
+(20, 100, 1378.00, 'Cash on Delivery', 100, '2025-10-25', 1761600000100),
+(1, 101, 1598.00, 'Online Payment', 101, '2025-11-12', 1762204800101),
+(2, 102, 2698.00, 'Online Payment', 102, '2025-11-22', 1763068800102),
+(3, 103, 1708.00, 'Cash on Delivery', 103, '2025-12-10', 1764585600103),
+(4, 104, 2158.00, 'Online Payment', 104, '2025-12-20', 1765449600104),
+(5, 105, 1248.00, 'Online Payment', 105, '2025-01-25', 1737849600105),
+(6, 106, 2128.00, 'Cash on Delivery', 106, '2025-02-28', 1740355200106),
+(7, 107, 1568.00, 'Online Payment', 107, '2025-03-28', 1743078400107),
+(8, 108, 1648.00, 'Online Payment', 108, '2025-04-30', 1745584000108),
+(9, 109, 1288.00, 'Cash on Delivery', 109, '2025-05-28', 1748089600109),
+(10, 110, 168.00, 'Online Payment', 110, '2025-06-30', 1750681600110),
+(11, 111, 3098.00, 'Online Payment', 111, '2025-07-30', 1753273600111),
+(12, 112, 2548.00, 'Cash on Delivery', 112, '2025-08-28', 1755952800112),
+(13, 113, 3098.00, 'Online Payment', 113, '2025-09-22', 1759184400113),
+(14, 114, 3817.00, 'Online Payment', 114, '2025-10-30', 1761962400114),
+(15, 115, 518.00, 'Cash on Delivery', 115, '2025-11-18', 1763548800115),
+(16, 116, 1938.00, 'Online Payment', 116, '2025-12-12', 1763635200116),
+(17, 117, 228.00, 'Online Payment', 117, '2025-02-08', 1738972800117),
+(18, 118, 618.00, 'Cash on Delivery', 118, '2025-03-10', 1741564800118),
+(19, 119, 1358.00, 'Online Payment', 119, '2025-04-12', 1744326400119),
+(20, 120, 1378.00, 'Online Payment', 120, '2025-05-15', 1747190400120);
 
 -- CART  → USER
 ALTER TABLE cart
@@ -140,335 +946,19 @@ BEGIN
 END//
 DELIMITER ;
 
-INSERT INTO category (Category_ID, Category_Name) VALUES
-(1,'Mobilephones'),
-(2,'Tablets'),
-(3,'Accessories');
-
-INSERT INTO product (Product_ID, Category_ID, Product_Name, Brand, SKU, Description) VALUES
--- 1–5: your originals (with descriptions)
-(1, 1, 'iPhone 15',        'Apple',    'Apple iPhone 15',
- 'iPhone with bright OLED display, 48MP main camera, USB-C, and long battery life—great everyday iOS performance.'),
-(2, 1, 'Pixel 8',          'Google',   'Google Pixel 8',
- 'Clean Android with Google’s AI features and a class-leading camera—compact, smooth, and reliable.'),
-(3, 1, 'Galaxy S23',       'Samsung',  'Samsung Galaxy S23',
- 'Compact Galaxy with vibrant AMOLED screen, fast performance, and a versatile triple-camera setup.'),
-(4, 2, 'iPad Air (M2)',    'Apple',    'Apple iPad Air (M2)',
- 'Slim and powerful tablet with the M2 chip, great for study, note-taking, and creative apps with Apple Pencil support.'),
-(5, 3, 'USB-C Charger',    'Anker',    'Anker USB-C Charger',
- 'Compact USB-C wall charger for phones, tablets, and accessories—fast, travel-friendly, and dependable.'),
-
--- 6–20: Smartphones
-(6,  1, 'iPhone 15 Pro',         'Apple',     'Apple iPhone 15 Pro',
- 'Apple’s pro-grade phone with A17 chip, great cameras, and a premium titanium build. Ideal for performance and photography.'),
-(7,  1, 'iPhone 14',             'Apple',     'Apple iPhone 14',
- 'Reliable iPhone with excellent battery life and a bright OLED display. Perfect everyday iOS experience.'),
-(8,  1, 'iPhone SE (3rd Gen)',   'Apple',     'Apple iPhone SE (3rd Gen)',
- 'Compact iPhone with Touch ID and fast A15 performance. Great value for iOS lovers.'),
-(9,  1, 'Galaxy S23 Ultra',      'Samsung',   'Samsung Galaxy S23 Ultra',
- 'Flagship with S Pen support and a superb quad-camera system. Built for power users.'),
-(10, 1, 'Galaxy A55',            'Samsung',   'Samsung Galaxy A55',
- 'Mid-range Galaxy with AMOLED screen and long battery life. Solid everyday Android choice.'),
-(11, 1, 'Pixel 8 Pro',           'Google',    'Google Pixel 8 Pro',
- 'Google’s top Pixel with Tensor G3 and best-in-class AI camera features. Clean Android.'),
-(12, 1, 'Pixel 7a',              'Google',    'Google Pixel 7a',
- 'Affordable Pixel with excellent photos and smooth software—great value.'),
-(13, 1, 'OnePlus 12',            'OnePlus',   'OnePlus OnePlus 12',
- 'Fast and fluid flagship with rapid charging and a bright LTPO display.'),
-(14, 1, 'OnePlus Nord CE 4',     'OnePlus',   'OnePlus OnePlus Nord CE 4',
- 'Slim mid-ranger with clean OxygenOS and dependable performance.'),
-(15, 1, 'Xiaomi 13T Pro',        'Xiaomi',    'Xiaomi Xiaomi 13T Pro',
- 'Leica-tuned cameras and fast charging make this a strong flagship value.'),
-(16, 1, 'Redmi Note 13 Pro',     'Xiaomi',    'Xiaomi Redmi Note 13 Pro',
- 'Great AMOLED display and big battery—budget friendly with premium touches.'),
-(17, 1, 'Motorola Edge 40',      'Motorola',  'Motorola Motorola Edge 40',
- 'Curved display, light design, and clean Android experience.'),
-(18, 1, 'Nothing Phone (2a)',    'Nothing',   'Nothing Nothing Phone (2a)',
- 'Unique Glyph interface with smooth performance and minimalist design.'),
-(19, 1, 'Nokia G42',             'Nokia',     'Nokia Nokia G42',
- 'Repair-friendly design with long battery life and clean software.'),
-(20, 1, 'Sony Xperia 10 V',      'Sony',      'Sony Sony Xperia 10 V',
- 'Tall 21:9 OLED display and stereo speakers—great for media on the go.'),
-
--- 21–27: Tablets
-(21, 2, 'iPad Pro 11" (M4)',     'Apple',     'Apple iPad Pro 11" (M4)',
- 'Ultra-thin tablet with M4 performance and ProMotion display—made for creators.'),
-(22, 2, 'iPad (10th Gen)',       'Apple',     'Apple iPad (10th Gen)',
- 'All-round iPad for study and entertainment with USB-C and a vivid screen.'),
-(23, 2, 'Galaxy Tab S9',         'Samsung',   'Samsung Galaxy Tab S9',
- 'Premium AMOLED tablet with S Pen in the box and desktop-like DeX mode.'),
-(24, 2, 'Galaxy Tab A9',         'Samsung',   'Samsung Galaxy Tab A9',
- 'Lightweight family tablet for streaming, notes, and casual gaming.'),
-(25, 2, 'Xiaomi Pad 6',          'Xiaomi',    'Xiaomi Xiaomi Pad 6',
- 'Sharp 144Hz display and snappy performance—great value work-and-play slate.'),
-(26, 2, 'Lenovo Tab P12',        'Lenovo',    'Lenovo Lenovo Tab P12',
- 'Large screen tablet with quad speakers—ideal for movies and multitasking.'),
-(27, 2, 'Fire HD 10',            'Amazon',    'Amazon Fire HD 10',
- 'Affordable tablet for reading, streaming, and Alexa—excellent battery life.'),
-
--- 28–40: Accessories
-(28, 3, 'AirPods Pro (2nd Gen)',        'Apple',     'Apple AirPods Pro (2nd Gen)',
- 'Active noise cancellation with Spatial Audio—seamless with Apple devices.'),
-(29, 3, 'Galaxy Buds2 Pro',             'Samsung',   'Samsung Galaxy Buds2 Pro',
- 'Comfortable earbuds with rich sound and 24-bit hi-fi on supported devices.'),
-(30, 3, 'Pixel Buds Pro',               'Google',    'Google Pixel Buds Pro',
- 'ANC earbuds with deep integration to Pixel phones and clear call quality.'),
-(31, 3, 'PowerCore 20K',                'Anker',     'Anker PowerCore 20K',
- 'High-capacity power bank with fast charging for phones and tablets.'),
-(32, 3, '3-in-1 MagSafe Stand',         'Belkin',    'Belkin 3-in-1 MagSafe Stand',
- 'Charge iPhone, AirPods, and Apple Watch together—clean desk setup.'),
-(33, 3, 'Tune 510BT',                   'JBL',       'JBL Tune 510BT',
- 'Lightweight Bluetooth headphones with punchy bass and long battery life.'),
-(34, 3, 'WH-CH520',                     'Sony',      'Sony WH-CH520',
- 'Everyday wireless headphones—clear sound and multi-point connection.'),
-(35, 3, 'MX Master 3S',                 'Logitech',  'Logitech MX Master 3S',
- 'Ergonomic mouse with precise scrolling—great for productivity and creators.'),
-(36, 3, 'Ultra microSD 128GB',          'SanDisk',   'SanDisk Ultra microSD 128GB',
- 'Expand storage for phones, cameras, and handheld consoles—A1 app performance.'),
-(37, 3, 'DataTraveler 64GB',            'Kingston',  'Kingston DataTraveler 64GB',
- 'Compact USB flash drive—reliable file transfer and backup on the go.'),
-(38, 3, 'USB-C to HDMI Adapter',        'UGREEN',    'UGREEN USB-C to HDMI Adapter',
- 'Connect laptops/phones to 4K displays—plug-and-play adapter.'),
-(39, 3, 'Mag Armor Case (iPhone 15)',   'Spigen',    'Spigen Mag Armor Case (iPhone 15)',
- 'Protective MagSafe-compatible case with slim design and strong grip.'),
-(40, 3, 'Kishi V2',                      'Razer',     'Razer Kishi V2',
- 'Mobile game controller with low-latency USB-C—console feel on your phone.');
-
-INSERT INTO variant (Variant_ID, Product_ID, Price, Stock_quantity, Colour, Size) VALUES
-(1, 1, 799.00, 20, 'Black',     128),
-(2, 1, 899.00, 15, 'Blue',      256),
-(3, 2, 699.00, 25, 'Porcelain', 128),
-(4, 2, 799.00, 18, 'Obsidian',  256),
-(5, 3, 749.00, 30, 'Green',     128),
-(6, 3, 849.00, 14, 'Lavender',  256),
-(7, 4, 599.00, 12, 'Starlight',  64),
-(8, 4, 749.00, 10, 'Blue',256),
-(9, 5,  39.99, 50, 'White',65);
-
-
-INSERT INTO variant (Variant_ID, Product_ID, Colour, Size, Price, Stock_quantity) VALUES
-(10, 6,  'Black',   128, 1099.00, 50),
-(11, 6,  'Silver',  256, 1299.00, 40),
-(12, 7,  'Blue',    128, 799.00, 60),
-(13, 7,  'Purple',  256, 899.00, 40),
-(14, 8,  'Red',     64,  429.00, 70),
-(15, 8,  'White',   128, 479.00, 50),
-(16, 9,  'Black',   256, 1199.00, 45),
-(17, 9,  'Green',   512, 1399.00, 30),
-(18, 10, 'Blue',    128, 499.00, 80),
-(19, 11, 'Obsidian',128, 999.00, 50),
-(20, 11, 'Porcelain',256,1099.00, 30),
-(21, 12, 'Charcoal',128, 499.00, 60),
-(22, 13, 'Black',   256, 899.00, 40),
-(23, 13, 'Green',   512, 999.00, 25),
-(24, 14, 'Gray',    128, 399.00, 70),
-(25, 15, 'Blue',    256, 649.00, 50),
-(26, 16, 'Black',   128, 299.00, 90),
-(27, 17, 'Black',   256, 599.00, 40),
-(28, 18, 'White',   128, 449.00, 60),
-(29, 19, 'Gray',    128, 299.00, 70),
-(30, 20, 'Black',   128, 399.00, 50),
-(31, 21, 'Silver',  256, 1099.00, 30),
-(32, 22, 'Blue',    64,  449.00, 60),
-(33, 23, 'Graphite',256, 899.00, 40),
-(34, 24, 'Gray',    64,  229.00, 80),
-(35, 25, 'Blue',    128, 399.00, 50),
-(36, 26, 'Gray',    128, 429.00, 45),
-(37, 27, 'Black',   64,  199.00, 70),
-(38, 28, 'White',   NULL, 249.00, 100),
-(39, 29, 'Black',   NULL, 229.00, 90),
-(40, 30, 'Charcoal',NULL, 199.00, 80),
-(41, 31, 'Black',   NULL, 59.00,  120),
-(42, 32, 'White',   NULL, 129.00, 40),
-(43, 33, 'Black',   NULL, 49.00,  100),
-(44, 34, 'Blue',    NULL, 59.00,  90),
-(45, 35, 'Black',   NULL, 99.00,  50),
-(46, 36, 'Black',   128, 19.00,  200),
-(47, 37, 'Black',   64,  15.00,  150),
-(48, 38, 'Gray',    NULL, 25.00,  80),
-(49, 39, 'Black',   NULL, 29.00,  70),
-(50, 40, 'Black',   NULL, 99.00,  40);
-
--- Add image URLs to variants
-
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106569/dfqpkjvh8/oltkqyv4b2fyndyvi6tc.webp' WHERE (Variant_ID = '50');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106582/dfqpkjvh8/o9c55qshxpm5kmgeixhi.jpg' WHERE (Variant_ID = '49');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106583/dfqpkjvh8/uvmsedjynyw99hykk4k2.jpg' WHERE (Variant_ID = '48');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106551/dfqpkjvh8/rneahqssp8qdkxp4dmcj.webp' WHERE (Variant_ID = '47');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106578/dfqpkjvh8/rjqnou7lc4yldsivcrux.webp' WHERE (Variant_ID = '46');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106554/dfqpkjvh8/xsfn8yicrw3lthu2lryy.jpg' WHERE (Variant_ID = '45');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106580/dfqpkjvh8/ljuxtochd2wozogbendv.jpg' WHERE (Variant_ID = '44');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106549/dfqpkjvh8/mhjrvav9lftv28vnf00r.png' WHERE (Variant_ID = '43');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106526/dfqpkjvh8/sev8nlq8mfsyhdoaep0o.jpg' WHERE (Variant_ID = '42');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106523/dfqpkjvh8/coms2xptzjfkmbwfm5uq.webp' WHERE (Variant_ID = '41');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106565/dfqpkjvh8/sb3algkpn82zygwhzkcx.webp' WHERE (Variant_ID = '40');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106536/dfqpkjvh8/oqpbta0mu0ylixfcl5o0.jpg' WHERE (Variant_ID = '2');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106539/dfqpkjvh8/zj1rak94ub2jtxlu39zt.jpg' WHERE (Variant_ID = '1');
-
-UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760247910/dfqpkjvh8/wm0i2mgnpltqy1t0yk4j.jpg' WHERE (Variant_ID = '39');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106520/dfqpkjvh8/iv3sasd35vmybf1ombrh.webp' WHERE (Variant_ID = '38');
-UPDATE brightbuy.variant SET Colour = 'Blue', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106522/dfqpkjvh8/rq2ofeijp6whnixbuaew.webp' WHERE (Variant_ID = '37');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106552/dfqpkjvh8/jrjb9ktrzff2hceybbwu.jpg' WHERE (Variant_ID = '36');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106587/dfqpkjvh8/rbxts3an7nopde4aewf3.jpg' WHERE (Variant_ID = '35');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106575/dfqpkjvh8/quwuir8fpnu1mebzzl1y.webp' WHERE (Variant_ID = '34');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106577/dfqpkjvh8/nhnpi6ly4qsspqgwv2na.jpg' WHERE (Variant_ID = '33');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106529/dfqpkjvh8/xytqzmdvgw4jwiz8o0gx.png' WHERE (Variant_ID = '32');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106533/dfqpkjvh8/rrsbucas3wooqiwwrm3y.jpg' WHERE (Variant_ID = '31');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106588/dfqpkjvh8/th07jk1tlntjuqtolnht.png' WHERE (Variant_ID = '30');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106556/dfqpkjvh8/nzjqqoru1s7ibr6a1elw.webp' WHERE (Variant_ID = '29');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106557/dfqpkjvh8/ezuf0itfvm5czbnf06pu.webp' WHERE (Variant_ID = '28');
-UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106555/dfqpkjvh8/bjdzn41uyhjkhyzpdeqg.png' WHERE (Variant_ID = '27');
-UPDATE brightbuy.variant SET Colour = 'Purple', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106571/dfqpkjvh8/qrkwplwrebdlfyy4qhkm.png' WHERE (Variant_ID = '26');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106571/dfqpkjvh8/qrkwplwrebdlfyy4qhkm.png' WHERE (Variant_ID = '25');
-UPDATE brightbuy.variant SET Colour = 'Green', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106560/dfqpkjvh8/whue1zhtlen59innvc6t.jpg' WHERE (Variant_ID = '24');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106559/dfqpkjvh8/bjajvdkwc2q07xzeq1be.png' WHERE (Variant_ID = '23');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106558/dfqpkjvh8/nslwyc5nm1xkcbcrvxtu.webp' WHERE (Variant_ID = '22');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106562/dfqpkjvh8/p7ekjm2pxjgxjv38gwn5.png' WHERE (Variant_ID = '21');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106564/dfqpkjvh8/romtr0mck7lggahk2mjj.avif' WHERE (Variant_ID = '19');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106519/dfqpkjvh8/lz6xd5ntzunpbji3p8fv.jpg' WHERE (Variant_ID = '20');
-UPDATE brightbuy.variant SET Colour = 'White', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106572/dfqpkjvh8/wb0x0jwzifxizeqliqbd.webp' WHERE (Variant_ID = '18');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106576/dfqpkjvh8/soc7fa9y4b7wnzc2cul1.webp' WHERE (Variant_ID = '16');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106516/dfqpkjvh8/czcrnkhjk7xmv3rruzyy.jpg' WHERE (Variant_ID = '17');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106543/dfqpkjvh8/zbdru69e2tafcax2xrtb.webp' WHERE (Variant_ID = '15');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106546/dfqpkjvh8/h8hkgnhnym1kdgby4weh.avif' WHERE (Variant_ID = '14');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106540/dfqpkjvh8/uw4lhvy5chjmncj3m8zs.webp' WHERE (Variant_ID = '12');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106525/dfqpkjvh8/wowfcblcgxjvczikicn0.png' WHERE (Variant_ID = '13');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106534/dfqpkjvh8/w5zvgtq4suhvlhx4ybs2.png' WHERE (Variant_ID = '10');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106538/dfqpkjvh8/qpgun6ioljn4ptqfkrbv.jpg' WHERE (Variant_ID = '11');
-UPDATE brightbuy.variant SET Colour = 'Black', Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106524/dfqpkjvh8/yvakdeuqp3xecqpbqbqo.jpg' WHERE (Variant_ID = '9');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106531/dfqpkjvh8/kfpv2oxhknfu3b6uhlpf.jpg' WHERE (Variant_ID = '8');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106528/dfqpkjvh8/f9kd3lk8atkxjjz2sge0.avif' WHERE (Variant_ID = '7');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106514/dfqpkjvh8/x1ynh57etupksqfscecr.jpg' WHERE (Variant_ID = '6');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106518/dfqpkjvh8/p5h3hr6g7cvpinuwjyr1.jpg' WHERE (Variant_ID = '5');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106513/dfqpkjvh8/bnl0jvuw3myjy3ooqvk9.jpg' WHERE (Variant_ID = '4');
-UPDATE brightbuy.variant SET Image_URL = 'https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760106563/dfqpkjvh8/yjl79thhm1wsen8wakvl.jpg' WHERE (Variant_ID = '3');
-
--- Insert User data (6 users: 4 customers, 2 admins)
-INSERT INTO `user` 
-(user_id, name, password, address, city_ID, email, role)
-VALUES
-(1, 'John Smith', '$2b$10$5uQp7jO9Z1h7b3qM3LmqL.2x/Uf0GeykW6v36LgTzptE5ZmZkMo2y', '123 Broadway Ave', NULL, 'john.smith@email.com', 'customer'),
-(2, 'Maria Garcia', '$2b$10$1HnHZY0gk1aIqqoxmOfpUe8Z9UBHq5OJwITCwM3cjsCF14Cb0Lzj6', '456 Sunset Blvd', NULL, 'maria.garcia@email.com', 'customer'),
-(3, 'Admin User', '$2b$10$3P8Wq90x9dR.4ysYWj9pIuaQb0iVik4aS8PKotcJqSb5kKFXs4fQ6', '789 Michigan Ave', NULL, 'admin@brightbuy.com', 'admin'),
-(4, 'David Johnson', '$2b$10$0nM9Hx3QnFUkzqD95v7eReN2/NnQ5LbYfY8zjYl4V7PmVvN49hw5u', '321 Main Street', NULL, 'david.johnson@email.com', 'customer'),
-(5, 'Sarah Wilson', '$2b$10$gW3ap0LJGyjWJpVk6k6GeOlDq5Uu0g7qB4zF6wA5p1pCBP.jkW5Rm', '654 Central Ave', NULL, 'sarah.wilson@email.com', 'customer'),
-(6, 'admin2 User', '$2b$10$ns35RoYdRZMFctzh8Up3Lu7gK9fIu9XiM/CeRajGqI9PRByim5jEy', NULL, NULL, 'Admin2@example.com', 'admin');
-
--- Insert City data (Texas cities)
-INSERT INTO City (City_ID, City_Name, Main_City) VALUES
-(1, 'Houston', TRUE),
-(2, 'Dallas', TRUE),
-(3, 'Austin', TRUE),
-(4, 'San Antonio', TRUE),
-(5, 'Fort Worth', TRUE),
-(6, 'El Paso', FALSE),
-(7, 'Arlington', FALSE),
-(8, 'Corpus Christi', FALSE),
-(9, 'Plano', FALSE),
-(10, 'Lubbock', FALSE),
-(11, 'Garland', FALSE),
-(12, 'Irving', FALSE),
-(13, 'Laredo', FALSE),
-(14, 'Frisco', FALSE),
-(15, 'McKinney', FALSE);
-
--- Update existing users with city information
-UPDATE User SET City_ID = 1 WHERE User_ID = 1; -- John Smith in Houston
-UPDATE User SET City_ID = 2 WHERE User_ID = 2; -- Maria Garcia in Dallas
-UPDATE User SET City_ID = 1 WHERE User_ID = 3; -- Admin User in Houston
-UPDATE User SET City_ID = 3 WHERE User_ID = 4; -- David Johnson in Austin
-UPDATE User SET City_ID = 4 WHERE User_ID = 5; -- Sarah Wilson in San Antonio
-UPDATE User SET City_ID = 1 WHERE User_ID = 6;
-
-
--- Insert Delivery data
-INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
-(1, 'Standard Delivery', '123 Broadway Ave, Houston, TX 77002', 'Delivered', '2024-01-15'),
-(2, 'Express Delivery', '456 Elm Street, Dallas, TX 75201', 'Delivered', '2024-01-20'),
-(3, 'Standard Delivery', '321 Main Street, Austin, TX 73301', 'Pending', '2024-01-25'),
-(4, 'Express Delivery', '654 Central Ave, San Antonio, TX 78205', 'Delivered', '2024-01-18'),
-(5, 'Standard Delivery', '789 Richmond Ave, Houston, TX 77057', 'Delivered', '2024-01-12'),
-(6, 'Express Delivery', '123 Broadway Ave, Houston, TX 77002', 'Pending', '2024-01-22'),
-(7, 'Standard Delivery', '456 Commerce St, Dallas, TX 75202', 'Pending', '2024-01-28'),
-(8, 'Express Delivery', '321 Congress Ave, Austin, TX 78701', 'Delivered', '2024-01-24'),
-(9, 'Standard Delivery', '654 Market St, San Antonio, TX 78205', 'Pending', '2024-01-30'),
-(10, 'Express Delivery', '789 Westheimer Rd, Houston, TX 77027', 'Delivered', '2024-01-16');
-
--- Insert Cart data (one cart per user)
-INSERT INTO Cart (Cart_ID, User_ID) VALUES
-(1, 1), -- John Smith's cart
-(2, 2), -- Maria Garcia's cart
-(3, 4), -- David Johnson's cart
-(4, 5), -- Sarah Wilson's cart
-(5, 1), -- John Smith's second cart (for multiple orders)
-(6, 2), -- Maria Garcia's second cart
-(7, 4), -- David Johnson's second cart
-(8, 5); -- Sarah Wilson's second cart
-
-
--- Insert Cart_Item data (items in various carts)
-INSERT INTO Cart_Item (Cart_Item_ID, Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES
--- John Smith's first cart
-(1, 1, 1, 1, 1, 799.00),    -- iPhone 15 Black 128GB
-(2, 1, 5, 9, 2, 79.98),     -- 2x USB-C Charger
-(3, 1, 28, 38, 1, 249.00),  -- AirPods Pro
-
--- Maria Garcia's first cart
-(4, 2, 2, 3, 1, 699.00),    -- Pixel 8 Porcelain 128GB
-(5, 2, 31, 41, 1, 59.00),   -- PowerCore 20K
-
--- Sarah Wilson's first cart
-(9, 4, 4, 7, 1, 599.00),    -- iPad Air Starlight 64GB
-(10, 4, 32, 42, 1, 129.00), -- 3-in-1 MagSafe Stand
-
--- John Smith's second cart (for another order)
-(11, 5, 6, 10, 1, 1099.00), -- iPhone 15 Pro Black 128GB
-(12, 5, 35, 45, 1, 99.00),  -- MX Master 3S
-
--- Maria Garcia's second cart
-(13, 6, 11, 19, 1, 999.00), -- Pixel 8 Pro Obsidian 128GB
-(14, 6, 30, 40, 1, 199.00), -- Pixel Buds Pro
-
--- David Johnson's second cart
-(15, 7, 9, 16, 1, 1199.00), -- Galaxy S23 Ultra Black 256GB
-(16, 7, 39, 49, 1, 29.00),  -- Spigen Case
-
--- Sarah Wilson's second cart
-(17, 8, 21, 31, 1, 1099.00), -- iPad Pro 11" Silver 256GB
-(18, 8, 28, 38, 1, 249.00),  -- AirPods Pro
-(19, 8, 36, 46, 2, 38.00);   -- 2x microSD 128GB
-
--- Insert Order data
-INSERT INTO `Order` (Order_ID, User_ID, Cart_ID, `Total Amount`, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
-(3, 4, 3, 1877.00, 'Cash on Delivery', 3, '2024-01-14', 1003),
-(4, 3, 4, 728.00, 'Cash on Delivery', 4, '2024-01-15', 1004),
-(5, 1, 5, 1198.00, 'Online Payment', 5, '2024-01-08', 1005),
-(7, 4, 7, 1228.00, 'Cash on Delivery', 7, '2024-01-18', 1007),
-(8, 2, 8, 1386.00, 'Online Payment', 8, '2024-01-19', 1008);
-
--- Add foreign key constraint for Product -> Category (if not already added)
-ALTER TABLE Product 
+ALTER TABLE product 
 ADD CONSTRAINT fk_product_category 
-FOREIGN KEY (Category_ID) REFERENCES Category(Category_ID);
+FOREIGN KEY (Category_ID) REFERENCES category(Category_ID);
 
 -- Add foreign key constraint for Order -> Delivery (if not already added)
-ALTER TABLE `Order` 
+ALTER TABLE `order` 
 ADD CONSTRAINT fk_order_delivery 
-FOREIGN KEY (Delivery_ID) REFERENCES Delivery(Delivery_ID);
+FOREIGN KEY (Delivery_ID) REFERENCES delivery(Delivery_ID);
 
 -- Add foreign key constraint for Order -> Cart (if not already added)
-ALTER TABLE `Order` 
+ALTER TABLE `order` 
 ADD CONSTRAINT fk_order_cart 
-FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
-
--- Modify Main_City column to have default value FALSE and update existing cities accordingly
-ALTER TABLE city
-CHANGE Main_City Main_City BOOL DEFAULT 0;
-UPDATE city SET Main_City=0 WHERE City_ID=5;
-UPDATE city SET Main_City=0 WHERE City_ID=6;
-UPDATE city SET Main_City=0 WHERE City_ID=7;
-UPDATE city SET Main_City=0 WHERE City_ID=8;
-UPDATE city SET Main_City=0 WHERE City_ID=9;
+FOREIGN KEY (Cart_ID) REFERENCES cart(Cart_ID);
 
 -- Create indexes to optimize queries
 CREATE INDEX idx_delivery_estimated_date ON delivery (Estimated_delivery_Date);
@@ -481,29 +971,27 @@ BEGIN
   SELECT
     YEAR(o.Order_Date) AS Year,
     QUARTER(o.Order_Date) AS Quarter,
-    -- use the actual column name in the orders table (has a space), alias as Total_Sales
     SUM(o.`Total_Amount`) AS Total_Sales,
-    COUNT(o.Order_ID) AS Total_Orders,
+      COUNT(o.Order_Number) AS Total_Orders,
     AVG(o.`Total_Amount`) AS Avg_Order_Value
-  FROM brightbuy.`Order` o
+  FROM brightbuy.`order` o
   WHERE YEAR(o.Order_Date) = selectedYear
   GROUP BY Year, Quarter
   ORDER BY Quarter;
 END $$
 DELIMITER ;
 
-
 -- Create a view to summarize total orders per category
 CREATE VIEW CategoryOrderSummary AS
 SELECT 
     c.Category_Name, 
-    COUNT(DISTINCT o.Order_ID) AS TotalOrders
+  COUNT(DISTINCT o.Order_Number) AS TotalOrders
 FROM Category c
-LEFT JOIN Product p ON c.Category_ID = p.Category_ID
-LEFT JOIN Variant v ON p.Product_ID = v.Product_ID
-LEFT JOIN Cart_Item ci ON v.Variant_ID = ci.Variant_ID
+LEFT JOIN product p ON c.Category_ID = p.Category_ID
+LEFT JOIN variant v ON p.Product_ID = v.Product_ID
+LEFT JOIN cart_item ci ON v.Variant_ID = ci.Variant_ID
 LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
-WHERE o.Order_ID IS NOT NULL
+WHERE o.Order_Number IS NOT NULL
 GROUP BY c.Category_ID, c.Category_Name
 ORDER BY TotalOrders DESC;
 
@@ -519,12 +1007,24 @@ SELECT
 FROM
     `Order` o
 JOIN
-    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
+    cart_item ci ON o.Cart_ID = ci.Cart_ID
 JOIN
-    Variant v ON ci.Variant_ID = v.Variant_ID
+    variant v ON ci.Variant_ID = v.Variant_ID
 JOIN
-    Product p ON v.Product_ID = p.Product_ID
+    product p ON v.Product_ID = p.Product_ID
 GROUP BY
     month, p.Product_ID
 ORDER BY
     month, total_quantity_sold DESC;
+    
+-- Product lookups / sorts
+CREATE INDEX idx_product_name ON Product (Product_Name);
+CREATE INDEX idx_product_brand ON Product (Brand);
+CREATE INDEX idx_product_desc ON Product (Description(255)); 
+CREATE INDEX idx_product_id ON Product (Product_ID);
+
+-- Variant filters used by the subquery/EXISTS
+CREATE INDEX idx_variant_pid ON Variant (Product_ID);             
+CREATE INDEX idx_variant_colour ON Variant (Colour);
+CREATE INDEX idx_variant_size ON Variant (Size);
+CREATE INDEX idx_variant_pid_image ON Variant (Product_ID, Image_URL);

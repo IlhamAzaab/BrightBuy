@@ -1,6 +1,6 @@
 // backend/routes/productSearch.js
 import express from "express";
-import pool from "../db.js";
+import db from "../db.js";
 
 const router = express.Router();
 
@@ -43,7 +43,7 @@ router.get("/search", async (req, res) => {
     `;
 
     const params = [q, q, q, q, q];
-    const [rows] = await pool.query(sql, params);
+  const [rows] = await db.query(sql, params);
     res.json(rows || []);
   } catch (err) {
     console.error("Product search failed:", err);
