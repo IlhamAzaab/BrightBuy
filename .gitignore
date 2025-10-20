@@ -11,3 +11,4 @@ frontend/.env
 backend/.env
 .env
 backend\src\.env
+.env.example

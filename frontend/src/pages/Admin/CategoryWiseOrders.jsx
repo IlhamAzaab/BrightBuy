@@ -43,7 +43,6 @@ export default function CategoryWiseOrders() {
         }
         
         const data = await res.json();
-        console.log("Category data received:", data);
         setCategories(data.data || []);
       } catch (e) {
         console.error("Error loading categories:", e);

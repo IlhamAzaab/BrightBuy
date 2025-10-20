@@ -81,7 +81,7 @@ CREATE TABLE `Order` (
   `Order_ID` Int AUTO_INCREMENT,
   `User_ID` Int,
   `Cart_ID` Int,
-  `Total Amount` Numeric(9,2),
+  `Total_Amount` Numeric(9,2),
   `Payment_method` Varchar(25),
   `Delivery_ID` Int,
   `Order_Date` DATE,
@@ -98,14 +98,6 @@ CREATE TABLE `Delivery` (
   `Delivery_Status` ENUM('Delivered', 'Pending') default NULL,
   `Estimated_delivery_Date` DATE,
   PRIMARY KEY (`Delivery_ID`)
-);
-
-CREATE TABLE `Report` (
-  `Report_ID` Int AUTO_INCREMENT,
-  `Report_Type` Varchar(25),
-  `Report_Name` Varchar(25),
-  `Time_Period` Varchar(25),
-  PRIMARY KEY (`Report_ID`)
 );
 
 -- CART  → USER
@@ -487,40 +479,18 @@ DELIMITER $$
 CREATE PROCEDURE GetQuarterlySales(IN selectedYear INT)
 BEGIN
   SELECT
-    YEAR(Order_Date) AS Year,
-    QUARTER(Order_Date) AS Quarter,
-    SUM(Total_Amount) AS Total_Sales,
-    COUNT(Order_ID) AS Total_Orders,
-    AVG(Total_Amount) AS Avg_Order_Value
-  FROM brightbuy.`Order`
-  WHERE YEAR(Order_Date) = selectedYear
+    YEAR(o.Order_Date) AS Year,
+    QUARTER(o.Order_Date) AS Quarter,
+    -- use the actual column name in the orders table (has a space), alias as Total_Sales
+    SUM(o.`Total_Amount`) AS Total_Sales,
+    COUNT(o.Order_ID) AS Total_Orders,
+    AVG(o.`Total_Amount`) AS Avg_Order_Value
+  FROM brightbuy.`Order` o
+  WHERE YEAR(o.Order_Date) = selectedYear
   GROUP BY Year, Quarter
   ORDER BY Quarter;
 END $$
 DELIMITER ;
-
--- Create view for monthly top-selling products
-CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
-SELECT
-    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month, -- Format date as YYYY-MM
-    p.Product_ID,
-    p.Product_Name,
-    p.Brand,
-    SUM(ci.Quantity) AS total_quantity_sold,
-    SUM(ci.Total_price) AS total_revenue
-FROM
-    Order o
-JOIN
-    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
-JOIN
-    Product p ON ci.Product_ID = p.Product_ID
-GROUP BY
-    month, p.Product_ID
-ORDER BY
-    month DESC, total_quantity_sold DESC;
-
-    
-ALTER TABLE cart ADD COLUMN Status ENUM('Active', 'CheckedOut') DEFAULT 'Active';
 
 
 -- Create a view to summarize total orders per category
@@ -535,23 +505,26 @@ LEFT JOIN Cart_Item ci ON v.Variant_ID = ci.Variant_ID
 LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
 WHERE o.Order_ID IS NOT NULL
 GROUP BY c.Category_ID, c.Category_Name
-ORDER BY TotalOrders DESC;
+ORDER BY TotalOrders DESC;
 
-
-
---------------for searchbar----------------------
-
--- Product lookups / sorts
-CREATE INDEX idx_product_name ON Product (Product_Name);
-CREATE INDEX idx_product_brand ON Product (Brand);
-CREATE INDEX idx_product_desc ON Product (Description(255)); 
-CREATE INDEX idx_product_id ON Product (Product_ID);
-
--- Variant filters used by the subquery/EXISTS
-CREATE INDEX idx_variant_pid ON Variant (Product_ID);               
-CREATE INDEX idx_variant_colour ON Variant (Colour);
-CREATE INDEX idx_variant_size ON Variant (Size);
-CREATE INDEX idx_variant_pid_image ON Variant (Product_ID, Image_URL);
-
-
--------------------------------------------------
+-- Create view for monthly top-selling products
+CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
+SELECT
+    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month,
+    p.Product_ID,
+    p.Product_Name,
+    p.Brand,
+    SUM(ci.Quantity) AS total_quantity_sold,
+    SUM(ci.Total_price) AS total_revenue
+FROM
+    `Order` o
+JOIN
+    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
+JOIN
+    Variant v ON ci.Variant_ID = v.Variant_ID
+JOIN
+    Product p ON v.Product_ID = p.Product_ID
+GROUP BY
+    month, p.Product_ID
+ORDER BY
+    month, total_quantity_sold DESC;

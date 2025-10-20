@@ -27,7 +27,7 @@ router.get("/delivery-time", auth, async (_req, res) => {
       -- in case ETA is already past but status still pending
 
       CASE WHEN DATEDIFF(d.Estimated_delivery_Date, CURDATE()) < 0 THEN 1 ELSE 0 END AS Is_Overdue
-    FROM \`order\` o
+    FROM \`Order\` o
     JOIN delivery d ON d.Delivery_ID = o.Delivery_ID
     WHERE d.Delivery_Status = 'Pending'
     ORDER BY d.Estimated_delivery_Date ASC, d.Delivery_ID ASC

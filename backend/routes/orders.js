@@ -25,45 +25,32 @@ router.get("/", async (req, res) => {
      WHERE o.User_ID = ?`;
     const params = [userId];
 
-    // Order by date only; filter by status after grouping to avoid SQL enum pitfalls
+    // Filter by derived status using delivery status (only 'Delivered' and 'Pending' are supported)
+    if (status === 'completed') {
+      sql += ` AND d.Delivery_Status = 'Delivered'`;
+    } else if (status === 'pending') {
+      sql += ` AND d.Delivery_Status = 'Pending'`;
+    }
+
     sql += ' ORDER BY o.Order_Date DESC';
 
     const [rows] = await pool.query(sql, params);
 
     const grouped = {};
     rows.forEach(r => {
-      const isDelivered = String(r.Delivery_Status || '').toLowerCase() === 'delivered';
+      const isDelivered = r.Delivery_Status === 'Delivered';
       const logicalStatus = isDelivered ? 'completed' : 'pending';
-
-      // Compute ETA for pending orders: prefer DB value, else fallback based on delivery method or default window
-      let eta = null;
-      if (!isDelivered) {
-        eta = r.Estimated_delivery_Date || null;
-        if (!eta && r.Order_Date) {
-          const base = new Date(r.Order_Date);
-          if (!isNaN(base)) {
-            const isExpress = /express/i.test(String(r.Delivery_Method || ''));
-            const addDays = isExpress ? 2 : 5; // default window
-            base.setDate(base.getDate() + addDays);
-            // Send ISO string for consistent parsing on frontend
-            eta = base.toISOString();
-          }
-        }
-      }
-
       if (!grouped[r.Order_ID]) {
         grouped[r.Order_ID] = {
           id: r.Order_ID,
-          total: r.Total_Amount, // may be null/0 if schema changed; recompute below
-          status: logicalStatus,          // used for tab logic (completed vs pending)
-          deliveryStatus: r.Delivery_Status, // show real delivery status when not delivered
-          estimatedDelivery: eta,
+          total: r.Total_Amount,
+          status: logicalStatus,    
+          deliveryStatus: r.Delivery_Status, 
+          estimatedDelivery: !isDelivered ? r.Estimated_delivery_Date : null,
           date: r.Order_Date,
+          Number: r.Order_Number,
           items: []
         };
-      } else if (!grouped[r.Order_ID].estimatedDelivery && eta) {
-        // Ensure ETA is set if later rows provide it
-        grouped[r.Order_ID].estimatedDelivery = eta;
       }
       grouped[r.Order_ID].items.push({
         product: r.Product_Name,
@@ -73,15 +60,8 @@ router.get("/", async (req, res) => {
         subtotal: r.Total_price
       });
     });
-    // Finalize: compute totals if missing and apply requested status filter safely
-    let orders = Object.values(grouped).map(o => {
-      const sum = o.items.reduce((acc, it) => acc + Number(it.subtotal || 0), 0);
-      return { ...o, total: Number(o.total ?? sum) };
-    });
-    if (status === 'completed' || status === 'pending') {
-      orders = orders.filter(o => o.status === status);
-    }
-    res.json(orders);
+
+    res.json(Object.values(grouped));
   } catch (e) {
     console.error('Orders fetch error:', e);
     res.status(500).json({ error: 'Failed to fetch orders', detail: e.message });
@@ -90,8 +70,8 @@ router.get("/", async (req, res) => {
 
 // Update order status based on requested logical status
 // Request body can send: { status: 'completed' } -> sets Delivery_Status = 'Delivered'
-// or { status: 'pending' } -> sets Delivery_Status = 'Pending' (aligned with DB enum)
-// You may also send a direct Delivery_Status value (allowed by DB enum): 'Delivered' | 'Pending'.
+// or { status: 'pending' } -> sets Delivery_Status to a non-delivered value (default 'Processing')
+// You may also send a direct Delivery_Status value (e.g. 'In Transit', 'Shipped').
 router.put("/:id/status", async (req, res) => {
   const { id } = req.params; // Order_ID
   const requested = (req.body?.status || '').trim();
@@ -102,7 +82,7 @@ router.put("/:id/status", async (req, res) => {
     pending: 'Pending'
   };
 
-  // Allowed direct delivery statuses (must match DB enum)
+  // Allowed direct delivery statuses (based on database ENUM: only 'Delivered' and 'Pending')
   const allowedDeliveryStatuses = new Set(['Delivered', 'Pending']);
 
   // Decide target delivery status
@@ -116,7 +96,6 @@ router.put("/:id/status", async (req, res) => {
   }
 
   try {
-    // Fetch order with possible delivery linkage (LEFT JOIN to handle missing Delivery rows)
     const [rows] = await pool.query(
       'SELECT o.Order_ID, o.Delivery_ID, d.Delivery_ID AS Linked_Delivery_ID, d.Delivery_Status FROM `order` o LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
       [id]
@@ -124,25 +103,26 @@ router.put("/:id/status", async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Order not found', orderId: id });
     }
+    const beforeStatus = rows[0].Delivery_Status;
 
-    const orderRow = rows[0];
-    const beforeStatus = orderRow.Delivery_Status || null;
-
-    // If already in desired status, return early
-    if (beforeStatus && beforeStatus === targetDeliveryStatus) {
+    if (beforeStatus === targetDeliveryStatus) {
       return res.json({
         success: true,
         orderId: id,
         beforeStatus,
         afterStatus: beforeStatus,
         changed: false,
-        alreadyDelivered: beforeStatus === 'Delivered',
         derivedStatus: beforeStatus === 'Delivered' ? 'completed' : 'pending'
       });
     }
 
-    let afterStatus = beforeStatus;
-    let affectedRows = 0;
+    const [updateResult] = await pool.query(
+      `UPDATE Delivery d
+         JOIN \`Order\` o ON o.Delivery_ID = d.Delivery_ID
+         SET d.Delivery_Status = ?
+       WHERE o.Order_ID = ?`,
+      [targetDeliveryStatus, id]
+    );
 
     if (orderRow.Linked_Delivery_ID) {
       // Update existing Delivery row
@@ -173,7 +153,7 @@ router.put("/:id/status", async (req, res) => {
       'SELECT d.Delivery_Status FROM `order` o LEFT JOIN delivery d ON o.Delivery_ID = d.Delivery_ID WHERE o.Order_ID = ?',
       [id]
     );
-    afterStatus = after[0]?.Delivery_Status || null;
+    const afterStatus = after[0]?.Delivery_Status;
 
     res.json({
       success: true,
@@ -181,8 +161,7 @@ router.put("/:id/status", async (req, res) => {
       beforeStatus,
       afterStatus,
       changed: beforeStatus !== afterStatus,
-      affectedRows,
-      alreadyDelivered: afterStatus === 'Delivered',
+      affectedRows: updateResult.affectedRows,
       derivedStatus: afterStatus === 'Delivered' ? 'completed' : 'pending'
     });
   } catch (err) {

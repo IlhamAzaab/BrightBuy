@@ -23,7 +23,6 @@ const Orders = () => {
           }&status=${status}&_t=${Date.now()}`
         );
         const data = await res.json();
-        console.log("✅ Orders fetched:", data);
         // Defensive: ensure we always store an array
         if (Array.isArray(data)) {
           setOrders(data);
@@ -47,7 +46,6 @@ const Orders = () => {
     [user.id]
   );
 
-  // test agkaueglik
 
   useEffect(() => {
     if (user?.id) {
@@ -160,7 +158,7 @@ const Orders = () => {
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                       <div className="space-y-1">
                         <h2 className="font-semibold text-lg tracking-tight flex items-center gap-2">
-                          <span className="text-gray-800">Order #{o.id}</span>
+                          <span className="text-gray-800">Order #{o.Number}</span>
                           {o.status === "completed" && (
                             <span className="text-[10px] uppercase tracking-wide font-medium text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
                               Done
@@ -211,7 +209,7 @@ const Orders = () => {
 
                     {/* Items Table */}
                     <div className="mt-1 border border-gray-100 rounded-lg overflow-hidden">
-                      <div className="hidden md:grid grid-cols-12 bg-gray-50 text-[11px] font-medium text-gray-500 uppercase tracking-wide px-4 py-2">
+                      <div className="hidden md:grid grid-cols-12 bg-orange-50 text-[11px] font-medium text-gray-500 uppercase tracking-wide px-4 py-2">
                         <div className="col-span-5">Product</div>
                         <div className="col-span-3">Variant</div>
                         <div className="col-span-2 text-center">Qty</div>
