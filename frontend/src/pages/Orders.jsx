@@ -3,7 +3,6 @@ import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
-const API = "http://localhost:9000";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -167,7 +166,7 @@ const Orders = () => {
                       <div className="space-y-1">
                         <h2 className="font-semibold text-lg tracking-tight flex items-center gap-2">
                           <span className="text-gray-800">
-                            Order #{o.Number}
+                            Order #{o.id}
                           </span>
                           {o.status === "completed" && (
                             <span className="text-[10px] uppercase tracking-wide font-medium text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">

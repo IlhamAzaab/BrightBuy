@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const AddProduct = () => {
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
-  const API = (process.env.REACT_APP_API_BASE || "http://localhost:9000");
+  const API = process.env.REACT_APP_API_BASE || "http://localhost:9000";
 
   // Product fields
   const [productName, setProductName] = useState("");
@@ -30,7 +30,7 @@ const AddProduct = () => {
         setCategoryId("");
       })
       .catch((err) => console.error("Error fetching categories:", err));
-  }, []);
+  }, [API]);
 
   // Handle variant input change
   const handleVariantChange = (index, field, value) => {
@@ -98,7 +98,7 @@ const AddProduct = () => {
       const res = await fetch(`${API}/api/addproduct`, {
         method: "POST",
         body: formData,
-      });
+      }, [API]);
       const data = await res.json();
 
       if (res.ok) {
@@ -131,20 +131,20 @@ const AddProduct = () => {
     <div className="flex-1 min-h-screen flex flex-col justify-center items-center bg-gray-50 p-6">
       {/* ✅ Success Badge Animation */}
       <AnimatePresence>
-              {showBadge && (
-                <motion.div
-                  initial={{ y: -50, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -50, opacity: 0 }}
-                  transition={{ duration: 0.5, type: "spring" }}
-                  className="fixed top-16 left-0 w-full flex justify-center z-50"
-                >
-                  <div className="text-m tracking-wide text-green-700 bg-green-100 border-2 border-green-300 px-12 py-2 rounded-full shadow-xl">
-                    Product Added Successfully!
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+        {showBadge && (
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+            transition={{ duration: 0.5, type: "spring" }}
+            className="fixed top-16 left-0 w-full flex justify-center z-50"
+          >
+            <div className="text-m tracking-wide text-green-700 bg-green-100 border-2 border-green-300 px-12 py-2 rounded-full shadow-xl">
+              Product Added Successfully!
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="w-full max-w-3xl bg-white shadow-md rounded-lg p-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
@@ -288,6 +288,7 @@ const AddProduct = () => {
 
           <button
             type="submit"
+            onClick={handleSubmit}
             className="w-full p-3 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition"
           >
             Add Product

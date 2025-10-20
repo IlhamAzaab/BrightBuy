@@ -1,5 +1,5 @@
-import express from 'express';
-import db from '../db.js';
+import express from "express";
+import db from "../db.js";
 
 // Customers route: provides customer list enriched with order counts & last order date.
 // GET /api/customers
@@ -9,8 +9,8 @@ import db from '../db.js';
 // Returns: [{ id, name, email, orderCount, lastOrderDate }]
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const { search = '', order = 'recent' } = req.query;
+router.get("/", async (req, res) => {
+  const { search = "", order = "recent" } = req.query;
 
   // Base SQL with LEFT JOIN to count orders and get last order date
   // The project's DB uses Order_Number as the PK in the `order` table; alias it where needed.
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 
   sql += ` GROUP BY u.User_ID, u.Name, u.Email`;
 
-  if (order === 'name') {
+  if (order === "name") {
     sql += ` ORDER BY u.Name ASC`;
   } else {
     // Recent first (newest date first). Push NULLs (no orders) to the bottom.
@@ -39,23 +39,49 @@ router.get('/', async (req, res) => {
   }
 
   try {
-    console.log('[customers] sql:', sql, 'params:', params);
+    console.log("[customers] sql:", sql, "params:", params);
     const [rows] = await db.query(sql, params);
-    return res.json(rows.map(r => ({
-      ...r,
-      // Normalise nulls for frontend convenience
-      lastOrderDate: r.lastOrderDate ? r.lastOrderDate : null
-    })));
+    return res.json(
+      rows.map((r) => ({
+        ...r,
+        // Normalise nulls for frontend convenience
+        lastOrderDate: r.lastOrderDate ? r.lastOrderDate : null,
+      }))
+    );
   } catch (e) {
-    console.error('Error fetching customers (aggregated query):', { message: e.message, code: e.code, stack: e.stack });
+    console.error("Error fetching customers (aggregated query):", {
+      message: e.message,
+      code: e.code,
+      stack: e.stack,
+    });
     // Fallback: return simple customer list without order counts / lastOrderDate so UI still works
     try {
-      console.log('[customers] running fallback simple query');
-      const [simple] = await db.query("SELECT User_ID AS id, Name AS name, Email AS email FROM user WHERE Role = 'customer'");
-      return res.json(simple.map(r => ({ id: r.id, name: r.name, email: r.email, orderCount: 0, lastOrderDate: null })));
+      console.log("[customers] running fallback simple query");
+      const [simple] = await db.query(
+        "SELECT User_ID AS id, Name AS name, Email AS email FROM user WHERE Role = 'customer'"
+      );
+      return res.json(
+        simple.map((r) => ({
+          id: r.id,
+          name: r.name,
+          email: r.email,
+          orderCount: 0,
+          lastOrderDate: null,
+        }))
+      );
     } catch (fallbackErr) {
-      console.error('Customers fallback query failed:', { message: fallbackErr.message, code: fallbackErr.code, stack: fallbackErr.stack });
-      return res.status(500).json({ error: 'Failed to fetch customers', detail: e.message, code: e.code });
+      console.error("Customers fallback query failed:", {
+        message: fallbackErr.message,
+        code: fallbackErr.code,
+        stack: fallbackErr.stack,
+      });
+      return res
+        .status(500)
+        .json({
+          error: "Failed to fetch customers",
+          detail: e.message,
+          code: e.code,
+        });
     }
   }
 });
