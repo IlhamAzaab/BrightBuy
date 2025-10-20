@@ -4,7 +4,7 @@ drop database brightbuy;
 create database brightbuy;
 use brightbuy;
 
-CREATE TABLE `Product` (
+CREATE TABLE `product` (
   `Product_ID` Int not null AUTO_INCREMENT,
   `Category_ID` Int,
   `Product_Name` Varchar(225),
@@ -14,14 +14,14 @@ CREATE TABLE `Product` (
   PRIMARY KEY (`Product_ID`)
 );
 
-CREATE TABLE `Cart` (
+CREATE TABLE `cart` (
   `Cart_ID` Int AUTO_INCREMENT,
-  `customer_ID` Int,
+  `User_ID` Int,
   Status ENUM('Active', 'CheckedOut') DEFAULT 'Active',
   PRIMARY KEY (`Cart_ID`)
 );
 
-CREATE TABLE `Variant` (
+CREATE TABLE `variant` (
   `Variant_ID` Int not null AUTO_INCREMENT,
   `Product_ID` Int,
   `Price` decimal(10,2),
@@ -34,7 +34,7 @@ CREATE TABLE `Variant` (
       REFERENCES `Product`(`Product_ID`)
 );
 
-CREATE TABLE `Cart_Item` (
+CREATE TABLE `cart_item` (
   `Cart_Item_ID` Int AUTO_INCREMENT,
   `Cart_ID` Int,
   `Product_ID` Int,
@@ -50,15 +50,15 @@ CREATE TABLE `Cart_Item` (
       REFERENCES `Variant`(`Variant_ID`)
 );
 
-CREATE TABLE `City` (
+CREATE TABLE `city` (
   `City_ID` Int AUTO_INCREMENT,
   `City_Name` Varchar(25),
   `Main_City` BOOL default 0,
   PRIMARY KEY (`City_ID`)
 );
 
-CREATE TABLE `customer` (
-  `customer_ID` Int AUTO_INCREMENT,
+CREATE TABLE `user` (
+  `User_ID` Int AUTO_INCREMENT,
   `Name` Varchar(25),
   `Password` Varchar(100),
   `Address` Varchar(50),
@@ -66,19 +66,19 @@ CREATE TABLE `customer` (
   `Email` Varchar(25),
   `Role` Varchar(10),
   `image_URL` varchar(300),
-  PRIMARY KEY (`customer_ID`),
+  PRIMARY KEY (`User_ID`),
   FOREIGN KEY (`City_ID`)
       REFERENCES `City`(`City_ID`)
 );
 
-CREATE TABLE `Category` (
+CREATE TABLE `category` (
   `Category_ID` Int ,
   `Category_Name` Varchar(25),
   PRIMARY KEY (`Category_ID`)
 );
 
-CREATE TABLE `Order` (
-  `customer_ID` Int,
+CREATE TABLE `order` (
+  `User_ID` Int,
   `Cart_ID` Int,
   `Total_Amount` Numeric(9,2),
   `Payment_method` Varchar(25),
@@ -86,11 +86,11 @@ CREATE TABLE `Order` (
   `Order_Date` DATE,
   `Order_Number` BIGINT,
   PRIMARY KEY (`Order_Number`),
-  FOREIGN KEY (`customer_ID`)
-      REFERENCES `customer`(`customer_ID`)
+  FOREIGN KEY (`User_ID`)
+      REFERENCES `User`(`User_ID`)
 );
 
-CREATE TABLE `Delivery` (
+CREATE TABLE `delivery` (
   `Delivery_ID` Int AUTO_INCREMENT,
   `Delivery_Method` Varchar(25),
   `Delivery_Address` Varchar(50),
@@ -99,125 +99,8 @@ CREATE TABLE `Delivery` (
   PRIMARY KEY (`Delivery_ID`)
 );
 
--- CART  → customer
-ALTER TABLE cart
-  ADD CONSTRAINT fk_cart_customer
-  FOREIGN KEY (customer_ID) REFERENCES customer(customer_ID);
-
--- CART_ITEM → CART / VARIANT / PRODUCT
-ALTER TABLE cart_item
-  MODIFY Quantity INT NOT NULL DEFAULT 1,
-  ADD CONSTRAINT fk_ci_cart
-    FOREIGN KEY (Cart_ID) REFERENCES cart(Cart_ID) ON DELETE CASCADE,
-  ADD CONSTRAINT fk_ci_variant
-    FOREIGN KEY (Variant_ID) REFERENCES variant(Variant_ID),
-  ADD CONSTRAINT fk_ci_product
-    FOREIGN KEY (Product_ID) REFERENCES product(Product_ID);
-
--- Prevent duplicate rows for the same variant in the same cart
-ALTER TABLE cart_item
-  ADD UNIQUE KEY uq_cart_variant (Cart_ID, Variant_ID);
-
--- (Optional) keep Total_price in sync via triggers (or just compute in SELECTs)
-DELIMITER //
-CREATE TRIGGER trg_ci_before_insert
-BEFORE INSERT ON cart_item FOR EACH ROW
-BEGIN
-  DECLARE v_price DECIMAL(10,2);
-  SELECT Price INTO v_price FROM variant WHERE Variant_ID = NEW.Variant_ID;
-  IF NEW.Quantity IS NULL OR NEW.Quantity < 1 THEN SET NEW.Quantity = 1; END IF;
-  SET NEW.Total_price = v_price * NEW.Quantity;
-END//
-
-CREATE TRIGGER trg_ci_before_update
-BEFORE UPDATE ON cart_item FOR EACH ROW
-BEGIN
-  DECLARE v_price DECIMAL(10,2);
-  SELECT Price INTO v_price FROM variant WHERE Variant_ID = NEW.Variant_ID;
-  IF NEW.Quantity IS NULL OR NEW.Quantity < 1 THEN SET NEW.Quantity = 1; END IF;
-  SET NEW.Total_price = v_price * NEW.Quantity;
-END//
-DELIMITER ;
-
-ALTER TABLE Product 
-ADD CONSTRAINT fk_product_category 
-FOREIGN KEY (Category_ID) REFERENCES Category(Category_ID);
-
--- Add foreign key constraint for Order -> Delivery (if not already added)
-ALTER TABLE `Order` 
-ADD CONSTRAINT fk_order_delivery 
-FOREIGN KEY (Delivery_ID) REFERENCES Delivery(Delivery_ID);
-
--- Add foreign key constraint for Order -> Cart (if not already added)
-ALTER TABLE `Order` 
-ADD CONSTRAINT fk_order_cart 
-FOREIGN KEY (Cart_ID) REFERENCES Cart(Cart_ID);
-
--- Create indexes to optimize queries
-CREATE INDEX idx_delivery_estimated_date ON delivery (Estimated_delivery_Date);
-CREATE INDEX idx_delivery_status ON delivery (Delivery_Status);
-
--- Create stored procedure to get quarterly sales report
-DELIMITER $$
-CREATE PROCEDURE GetQuarterlySales(IN selectedYear INT)
-BEGIN
-  SELECT
-    YEAR(o.Order_Date) AS Year,
-    QUARTER(o.Order_Date) AS Quarter,
-    -- use the actual column name in the orders table (has a space), alias as Total_Sales
-    SUM(o.`Total_Amount`) AS Total_Sales,
-      COUNT(o.Order_Number) AS Total_Orders,
-    AVG(o.`Total_Amount`) AS Avg_Order_Value
-  FROM brightbuy.`Order` o
-  WHERE YEAR(o.Order_Date) = selectedYear
-  GROUP BY Year, Quarter
-  ORDER BY Quarter;
-END $$
-DELIMITER ;
-
--- Create a view to summarize total orders per category
-CREATE VIEW CategoryOrderSummary AS
-SELECT 
-    c.Category_Name, 
-  COUNT(DISTINCT o.Order_Number) AS TotalOrders
-FROM Category c
-LEFT JOIN Product p ON c.Category_ID = p.Category_ID
-LEFT JOIN Variant v ON p.Product_ID = v.Product_ID
-LEFT JOIN Cart_Item ci ON v.Variant_ID = ci.Variant_ID
-LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
-WHERE o.Order_Number IS NOT NULL
-GROUP BY c.Category_ID, c.Category_Name
-ORDER BY TotalOrders DESC;
-
--- Create view for monthly top-selling products
-CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
-SELECT
-    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month,
-    p.Product_ID,
-    p.Product_Name,
-    p.Brand,
-    SUM(ci.Quantity) AS total_quantity_sold,
-    SUM(ci.Total_price) AS total_revenue
-FROM
-    `Order` o
-JOIN
-    Cart_Item ci ON o.Cart_ID = ci.Cart_ID
-JOIN
-    Variant v ON ci.Variant_ID = v.Variant_ID
-JOIN
-    Product p ON v.Product_ID = p.Product_ID
-GROUP BY
-    month, p.Product_ID
-ORDER BY
-    month, total_quantity_sold DESC;
-
-DELETE FROM Cart_Item WHERE Cart_ID>0;
-DELETE FROM cart WHERE User_ID>0;
-DELETE FROM User WHERE User_ID>0;
-DELETE FROM city WHERE City_ID>0;
-    
 -- add sample data for category table
-INSERT INTO Category (Category_ID, Category_Name)
+INSERT INTO category (Category_ID, Category_Name)
 VALUES
   (1, 'Mobile Phones'),
   (2, 'Laptops'),
@@ -231,7 +114,7 @@ VALUES
   (10, 'Bags'),
   (11, 'Storage Devices');
   
-INSERT INTO Product (Product_ID, Category_ID, Product_Name, Brand, SKU, Description) VALUES
+INSERT INTO product (Product_ID, Category_ID, Product_Name, Brand, SKU, Description) VALUES
 -- Category 1: Mobile Phones
 (1, 1, 'Galaxy S25 Ultra', 'Samsung', 'SAMSUNG_GALAXY_S25_ULTRA', 'Flagship model from Samsung'),
 (2, 1, 'iPhone 16 Pro Max', 'Apple', 'APPLE_IPHONE_16_PRO_MAX', 'Latest Pro Max version of iPhone'),
@@ -298,8 +181,8 @@ INSERT INTO Product (Product_ID, Category_ID, Product_Name, Brand, SKU, Descript
 (43, 11, 'MyBook 10TB', 'Western Digital', 'WESTERN_DIGITAL_MYBOOK_10TB', 'Desktop external HDD'),
 (44, 11, 'Barracuda 4TB', 'Seagate', 'SEAGATE_BARRACUDA_4TB', 'Internal HDD 3.5 inch model');
 
-INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES
--- Category 1: Mobile Phones
+INSERT INTO variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL) VALUES
+-- Category 1: Mobile Phones 
 (1, 1299.00, 50, 'Black', 256, NULL),
 (1, 1399.00, 40, 'Silver', 512, NULL),
 (2, 1599.00, 35, 'Gold', 256, NULL),
@@ -329,7 +212,7 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (12, 99.00, 40, 'Gray', NULL, NULL),
 (12, 109.00, 35, 'White', NULL, NULL),
 
--- Category 4: Headsets 
+-- Category 4: Headsets
 (13, 249.00, 70, 'White', NULL, NULL),
 (13, 259.00, 60, 'Black', NULL, NULL),
 (14, 399.00, 50, 'Black', NULL, NULL),
@@ -347,7 +230,6 @@ INSERT INTO Variant (Product_ID, Price, Stock_quantity, Colour, Size, Image_URL)
 (19, 1599.00, 7, 'Silver', NULL, NULL),
 (20, 1699.00, 13, 'Black', NULL, NULL),
 (20, 1799.00, 8, 'Silver', NULL, NULL),
-
 
 -- Category 6: Watches 
 (21, 499.00, 60, 'Midnight', NULL, NULL),
@@ -582,21 +464,21 @@ WHERE Product_ID = 44 AND Colour ='Black';
 UPDATE variant SET Image_URL='https://res.cloudinary.com/dfqpkjvh8/image/upload/v1760875008/dfqpkjvh8/qpu86w4gvt9u3m3mjdvw.jpg' 
 WHERE Product_ID=40;
 
--- Insert Sample Cities 
-INSERT INTO City (City_ID, City_Name, Main_City) VALUES
+-- Insert Sample Cities
+INSERT INTO city (City_ID, City_Name, Main_City) VALUES
 (1, 'New York', 1),
 (2, 'Los Angeles', 1),
 (3, 'Chicago', 1),
 (4, 'Houston', 1),
 (5, 'Phoenix', 1),
 (6, 'Philadelphia', 1),
-(7, 'San Antonio', 0),
-(8, 'San Diego', 0),
-(9, 'Dallas', 0),
-(10, 'San Jose', 0);
+(7, 'San Antonio',0),
+(8, 'San Diego',0),
+(9, 'Dallas',0),
+(10,'San Jose',0);
 
--- Insert Sample customers 
-INSERT INTO customer (customer_ID, Name, Password, Address, City_ID, Email, Role, image_URL) VALUES
+-- Insert Sample Users 
+INSERT INTO user (User_ID, Name, Password, Address, City_ID, Email, Role, image_URL) VALUES
 (1, 'John Smith', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '123 Main St', 1, 'john@email.com', 'customer', NULL),
 (2, 'Sarah Johnson', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '456 Oak Ave', 2, 'sarah@email.com', 'customer', NULL),
 (3, 'Michael Brown', '$2b$10$Vh8O4vV3eACDm4z9yqFZ7u4Q8klGPGi5zX5tKZy6x7Zxu6hM9k7hW', '789 Pine Rd', 3, 'michael@email.com', 'customer', NULL),
@@ -620,8 +502,8 @@ INSERT INTO customer (customer_ID, Name, Password, Address, City_ID, Email, Role
 (21, 'Admin', '$2b$10$FMtxpGM3MQqDvpG014l5bOPEjIk4JI1ZHu7ilN6K95iehw9YKq98y', NULL,NULL, 'Admin1@example.com', 'admin', NULL);
 
 -- Insert Sample Delivery Records
-INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
--- 2023 Deliveries 
+INSERT INTO delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_Status, Estimated_delivery_Date) VALUES
+-- 2023 Deliveries
 (1, 'Standard Delivery', '123 Main St, New York', 'Delivered', '2023-01-15'),
 (2, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Delivered', '2023-01-20'),
 (3, 'Standard Delivery', '789 Pine Rd, Chicago', 'Delivered', '2023-02-10'),
@@ -705,7 +587,7 @@ INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_S
 (79, 'Standard Delivery', '1313 Spruce St, Dallas', 'Pending', '2024-04-10'),
 (80, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Delivered', '2024-05-12'),
 
--- 2025 Deliveries 
+-- 2025 Deliveries
 (81, 'Standard Delivery', '123 Main St, New York', 'Pending', '2025-01-20'),
 (82, 'Store Pickup', '456 Oak Ave, Los Angeles', 'Pending', '2025-01-28'),
 (83, 'Standard Delivery', '789 Pine Rd, Chicago', 'Pending', '2025-02-15'),
@@ -747,8 +629,8 @@ INSERT INTO Delivery (Delivery_ID, Delivery_Method, Delivery_Address, Delivery_S
 (119, 'Standard Delivery', '1313 Spruce St, Dallas', 'Pending', '2025-04-12'),
 (120, 'Standard Delivery', '1414 Ash Ave, San Jose', 'Pending', '2025-05-15');
 
--- Insert Sample Carts 
-INSERT INTO Cart (Cart_ID, customer_ID, Status) VALUES
+-- Insert Sample Carts
+INSERT INTO cart (Cart_ID, User_ID, Status) VALUES
 (1, 1, 'CheckedOut'), (2, 2, 'CheckedOut'), (3, 3, 'CheckedOut'), (4, 4, 'CheckedOut'), (5, 5, 'CheckedOut'),
 (6, 6, 'CheckedOut'), (7, 7, 'CheckedOut'), (8, 8, 'CheckedOut'), (9, 9, 'CheckedOut'), (10, 10, 'CheckedOut'),
 (11, 11, 'CheckedOut'), (12, 12, 'CheckedOut'), (13, 13, 'CheckedOut'), (14, 14, 'CheckedOut'), (15, 15, 'CheckedOut'),
@@ -775,7 +657,7 @@ INSERT INTO Cart (Cart_ID, customer_ID, Status) VALUES
 (116, 16, 'CheckedOut'), (117, 17, 'CheckedOut'), (118, 18, 'Active'), (119, 19, 'Active'), (120, 20, 'Active');
 
 -- Insert Sample Cart Items
-INSERT INTO Cart_Item (Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES
+INSERT INTO cart_item (Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) VALUES
 (1, 1, 1, 1, 1299.00), (1, 9, 9, 2, 118.00),
 (2, 5, 9, 1, 1399.00), (2, 13, 17, 1, 249.00),
 (3, 2, 3, 1, 1599.00), (3, 21, 41, 2, 998.00),
@@ -897,8 +779,8 @@ INSERT INTO Cart_Item (Cart_ID, Product_ID, Variant_ID, Quantity, Total_price) V
 (119, 30, 60, 1, 1199.00), (119, 35, 70, 1, 159.00),
 (120, 32, 64, 1, 1099.00), (120, 43, 86, 1, 279.00);
 
-INSERT INTO `Order` (customer_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
--- 2023 Orders 
+INSERT INTO `order` (User_ID, Cart_ID, Total_Amount, Payment_method, Delivery_ID, Order_Date, Order_Number) VALUES
+-- 2023 Orders
 (1, 1, 1417.00, 'Online Payment', 1, '2023-01-10', 1673299200001),
 (2, 2, 1648.00, 'Cash on Delivery', 2, '2023-01-15', 1673558400002),
 (3, 3, 2597.00, 'Online Payment', 3, '2023-02-05', 1675728000003),
@@ -1023,3 +905,115 @@ INSERT INTO `Order` (customer_ID, Cart_ID, Total_Amount, Payment_method, Deliver
 (18, 118, 618.00, 'Cash on Delivery', 118, '2025-03-10', 1741564800118),
 (19, 119, 1358.00, 'Online Payment', 119, '2025-04-12', 1744326400119),
 (20, 120, 1378.00, 'Online Payment', 120, '2025-05-15', 1747190400120);
+
+-- CART  → USER
+ALTER TABLE cart
+  ADD CONSTRAINT fk_cart_user
+  FOREIGN KEY (User_ID) REFERENCES user(User_ID);
+
+-- CART_ITEM → CART / VARIANT / PRODUCT
+ALTER TABLE cart_item
+  MODIFY Quantity INT NOT NULL DEFAULT 1,
+  ADD CONSTRAINT fk_ci_cart
+    FOREIGN KEY (Cart_ID) REFERENCES cart(Cart_ID) ON DELETE CASCADE,
+  ADD CONSTRAINT fk_ci_variant
+    FOREIGN KEY (Variant_ID) REFERENCES variant(Variant_ID),
+  ADD CONSTRAINT fk_ci_product
+    FOREIGN KEY (Product_ID) REFERENCES product(Product_ID);
+
+-- Prevent duplicate rows for the same variant in the same cart
+ALTER TABLE cart_item
+  ADD UNIQUE KEY uq_cart_variant (Cart_ID, Variant_ID);
+
+-- (Optional) keep Total_price in sync via triggers (or just compute in SELECTs)
+DELIMITER //
+CREATE TRIGGER trg_ci_before_insert
+BEFORE INSERT ON cart_item FOR EACH ROW
+BEGIN
+  DECLARE v_price DECIMAL(10,2);
+  SELECT Price INTO v_price FROM variant WHERE Variant_ID = NEW.Variant_ID;
+  IF NEW.Quantity IS NULL OR NEW.Quantity < 1 THEN SET NEW.Quantity = 1; END IF;
+  SET NEW.Total_price = v_price * NEW.Quantity;
+END//
+
+CREATE TRIGGER trg_ci_before_update
+BEFORE UPDATE ON cart_item FOR EACH ROW
+BEGIN
+  DECLARE v_price DECIMAL(10,2);
+  SELECT Price INTO v_price FROM variant WHERE Variant_ID = NEW.Variant_ID;
+  IF NEW.Quantity IS NULL OR NEW.Quantity < 1 THEN SET NEW.Quantity = 1; END IF;
+  SET NEW.Total_price = v_price * NEW.Quantity;
+END//
+DELIMITER ;
+
+ALTER TABLE product 
+ADD CONSTRAINT fk_product_category 
+FOREIGN KEY (Category_ID) REFERENCES category(Category_ID);
+
+-- Add foreign key constraint for Order -> Delivery (if not already added)
+ALTER TABLE `order` 
+ADD CONSTRAINT fk_order_delivery 
+FOREIGN KEY (Delivery_ID) REFERENCES delivery(Delivery_ID);
+
+-- Add foreign key constraint for Order -> Cart (if not already added)
+ALTER TABLE `order` 
+ADD CONSTRAINT fk_order_cart 
+FOREIGN KEY (Cart_ID) REFERENCES cart(Cart_ID);
+
+-- Create indexes to optimize queries
+CREATE INDEX idx_delivery_estimated_date ON delivery (Estimated_delivery_Date);
+CREATE INDEX idx_delivery_status ON delivery (Delivery_Status);
+
+-- Create stored procedure to get quarterly sales report
+DELIMITER $$
+CREATE PROCEDURE GetQuarterlySales(IN selectedYear INT)
+BEGIN
+  SELECT
+    YEAR(o.Order_Date) AS Year,
+    QUARTER(o.Order_Date) AS Quarter,
+    SUM(o.`Total_Amount`) AS Total_Sales,
+      COUNT(o.Order_Number) AS Total_Orders,
+    AVG(o.`Total_Amount`) AS Avg_Order_Value
+  FROM brightbuy.`order` o
+  WHERE YEAR(o.Order_Date) = selectedYear
+  GROUP BY Year, Quarter
+  ORDER BY Quarter;
+END $$
+DELIMITER ;
+
+-- Create a view to summarize total orders per category
+CREATE VIEW CategoryOrderSummary AS
+SELECT 
+    c.Category_Name, 
+  COUNT(DISTINCT o.Order_Number) AS TotalOrders
+FROM Category c
+LEFT JOIN product p ON c.Category_ID = p.Category_ID
+LEFT JOIN variant v ON p.Product_ID = v.Product_ID
+LEFT JOIN cart_item ci ON v.Variant_ID = ci.Variant_ID
+LEFT JOIN brightbuy.`order` o ON ci.Cart_ID = o.Cart_ID 
+WHERE o.Order_Number IS NOT NULL
+GROUP BY c.Category_ID, c.Category_Name
+ORDER BY TotalOrders DESC;
+
+-- Create view for monthly top-selling products
+CREATE OR REPLACE VIEW MonthlyTopSellingProducts AS
+SELECT
+    DATE_FORMAT(o.Order_Date, '%Y-%m') AS month,
+    p.Product_ID,
+    p.Product_Name,
+    p.Brand,
+    SUM(ci.Quantity) AS total_quantity_sold,
+    SUM(ci.Total_price) AS total_revenue
+FROM
+    `Order` o
+JOIN
+    cart_item ci ON o.Cart_ID = ci.Cart_ID
+JOIN
+    variant v ON ci.Variant_ID = v.Variant_ID
+JOIN
+    product p ON v.Product_ID = p.Product_ID
+GROUP BY
+    month, p.Product_ID
+ORDER BY
+    month, total_quantity_sold DESC;
+
