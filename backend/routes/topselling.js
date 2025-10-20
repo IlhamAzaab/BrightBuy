@@ -11,8 +11,8 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    const [results] = await pool.query(
-      "SELECT * FROM monthlytopsellingproducts WHERE month = ?",
+  const [results] = await db.query(
+      "SELECT * FROM MonthlyTopSellingProducts WHERE month = ?",
       [month]
     );
     res.json(results);
