@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
       // DB column is now `Total_Amount`
       const totalExpr = 'o.`Total_Amount`';
 
-  let sql = `SELECT o.Order_Number AS Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date,
+  let sql = `SELECT o.Order_Number AS Order_ID, ${totalExpr} AS Total_Amount, o.Order_Date, o.Order_Number, d.Delivery_Status, d.Estimated_delivery_Date, d.Delivery_Method, o.Payment_method,
                       ci.Quantity, ci.Total_price, p.Product_Name, v.Colour, v.Size, v.Price
                FROM \`Order\` o
                JOIN Delivery d ON o.Delivery_ID = d.Delivery_ID
@@ -45,6 +45,8 @@ router.get("/", async (req, res) => {
           status: logicalStatus,    
           deliveryStatus: r.Delivery_Status, 
           estimatedDelivery: !isDelivered ? r.Estimated_delivery_Date : null,
+          deliveryMethod: r.Delivery_Method || null,
+          paymentMethod: r.Payment_method || null,
           date: r.Order_Date,
           Number: r.Order_Number,
           items: []

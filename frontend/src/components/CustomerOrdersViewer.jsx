@@ -111,6 +111,9 @@ export default function CustomerOrdersViewer() {
           status: (o.deliveryStatus === 'Delivered' || o.status === 'completed')
             ? 'Delivered'
             : 'Pending',
+          // Delivery & payment fields (multiple fallback names supported)
+          deliveryMethod: o.deliveryMethod ?? o.Delivery_Method ?? o.delivery_method ?? null,
+          paymentMethod: o.paymentMethod ?? o.Payment_method ?? o.payment_method ?? null,
           items: (o.items && Array.isArray(o.items) ? o.items : []).map((it, i) => ({
             sku: it.sku ?? `${o.id}-item-${i}`,
             productName: it.product ?? it.productName ?? 'Product',
@@ -219,6 +222,10 @@ export default function CustomerOrdersViewer() {
                     <div className="flex items-center gap-2">
                       <span className={`text-xs font-medium px-2 py-1 rounded border ${statusColors[order.status] || 'bg-gray-100 text-gray-600 border-gray-200'}`}>{order.status}</span>
                       <span className="text-sm font-semibold">{currency(total)}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-gray-600">
+                      {order.deliveryMethod && <span>Delivery: <strong className="text-gray-800">{order.deliveryMethod}</strong></span>}
+                      {order.paymentMethod && <span>Payment: <strong className="text-gray-800">{order.paymentMethod}</strong></span>}
                     </div>
                   </div>
                   <div className="border-t border-gray-100 pt-2">
