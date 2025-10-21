@@ -31,32 +31,32 @@ router.get("/", async (req, res) => {
       sql += ` AND d.Delivery_Status = 'Pending'`;
     }
 
-    sql += ' ORDER BY o.Order_Date DESC';
+  sql += ' ORDER BY o.Order_Date DESC';
 
-  const [rows] = await db.query(sql, params);
+    const [rows] = await db.query(sql, params);
 
     const grouped = {};
     rows.forEach(r => {
       const isDelivered = r.Delivery_Status === 'Delivered';
       const logicalStatus = isDelivered ? 'completed' : 'pending';
-      if (!grouped[r.Order_ID]) {
-        grouped[r.Order_ID] = {
-          id: r.Order_ID,
+      const key = r.Order_ID; // aliased from Order_Number
+      if (!grouped[key]) {
+        grouped[key] = {
+          id: key,
           total: r.Total_Amount,
-          status: logicalStatus,    
-          deliveryStatus: r.Delivery_Status, 
+          status: logicalStatus,
+          deliveryStatus: r.Delivery_Status,
           estimatedDelivery: !isDelivered ? r.Estimated_delivery_Date : null,
           deliveryMethod: r.Delivery_Method || null,
           paymentMethod: r.Payment_method || null,
           date: r.Order_Date,
-          Number: r.Order_Number,
           items: []
         };
       }
-      grouped[r.Order_ID].items.push({
+      grouped[key].items.push({
         product: r.Product_Name,
         qty: r.Quantity,
-        variant: `${r.Colour} ${r.Size}`,
+        variant: `${r.Colour ?? ''} ${r.Size ?? ''}`.trim(),
         price: r.Price,
         subtotal: r.Total_price
       });
@@ -64,8 +64,26 @@ router.get("/", async (req, res) => {
 
     res.json(Object.values(grouped));
   } catch (e) {
-    console.error('Orders fetch error:', e);
-    res.status(500).json({ error: 'Failed to fetch orders', detail: e.message });
+    console.error('Orders fetch error (main query):', { message: e.message, code: e.code, sqlMessage: e.sqlMessage, stack: e.stack });
+    // Fallback: return simple order list (no items) so frontend doesn't hard-fail
+    try {
+      const [simple] = await db.query('SELECT Order_ID, User_ID, Order_Date, Total_Amount, Payment_method, Delivery_ID FROM `order` WHERE User_ID = ?', [userId]);
+      const mapped = (simple || []).map(r => ({
+        id: r.Order_ID,
+        total: r.Total_Amount,
+        status: null,
+        deliveryStatus: null,
+        estimatedDelivery: null,
+        deliveryMethod: null,
+        paymentMethod: r.Payment_method || null,
+        date: r.Order_Date,
+        items: []
+      }));
+      return res.json(mapped);
+    } catch (fallbackErr) {
+      console.error('Orders fallback query failed:', { message: fallbackErr.message, code: fallbackErr.code, sqlMessage: fallbackErr.sqlMessage, stack: fallbackErr.stack });
+      return res.status(500).json({ error: 'Failed to fetch orders', detail: e.message });
+    }
   }
 });
 
@@ -117,8 +135,8 @@ router.put("/:id/status", async (req, res) => {
     }
 
   const [updateResult] = await db.query(
-      `UPDATE Delivery d
-         JOIN \`Order\` o ON o.Delivery_ID = d.Delivery_ID
+      `UPDATE delivery d
+         JOIN \`order\` o ON o.Delivery_ID = d.Delivery_ID
          SET d.Delivery_Status = ?
        WHERE o.Order_Number = ?`,
       [targetDeliveryStatus, id]
