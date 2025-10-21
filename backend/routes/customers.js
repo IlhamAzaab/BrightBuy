@@ -39,7 +39,6 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    console.log("[customers] sql:", sql, "params:", params);
     const [rows] = await db.query(sql, params);
     return res.json(
       rows.map((r) => ({
