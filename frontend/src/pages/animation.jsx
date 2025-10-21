@@ -5,10 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 const Animation = () => {
   const [showBadge, setShowBadge] = useState(false);
 
-  const triggerAnimation = () => {
+  const handleOrderSuccess = () => {
     setShowBadge(true);
-
-    // hide after 3 seconds
     setTimeout(() => {
       setShowBadge(false);
     }, 3000);
@@ -37,7 +35,7 @@ const Animation = () => {
       <div className="flex flex-col items-center justify-center h-full pt-40">
         <h1 className="text-3xl font-semibold mb-6">Animation Test Page</h1>
         <button
-          onClick={triggerAnimation}
+          onClick={handleOrderSuccess}
           className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
         >
           Show Success Badge

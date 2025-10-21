@@ -41,12 +41,14 @@ router.post("/add", auth, async (req, res) => {
 
     const cartId = await ensureActiveCart(conn, req.user.id);
 
+    // Do we already have this variant in the cart?
     const [existing] = await conn.query(
       "SELECT Cart_Item_ID, Quantity FROM cart_item WHERE Cart_ID = ? AND Variant_ID = ?",
       [cartId, variantId]
     );
 
     if (existing.length) {
+      // Bump quantity and recompute total using current variant price
       await conn.query(
         `UPDATE cart_item ci
            JOIN variant v ON v.Variant_ID = ci.Variant_ID
@@ -56,6 +58,7 @@ router.post("/add", auth, async (req, res) => {
         [qty, qty, existing[0].Cart_Item_ID]
       );
     } else {
+      // Need product id & price for this variant
       const [vrows] = await conn.query(
         "SELECT Product_ID, Price FROM variant WHERE Variant_ID = ?",
         [variantId]
@@ -153,6 +156,7 @@ router.patch("/item/:id", auth, async (req, res) => {
   try {
     await conn.beginTransaction();
 
+    // Update qty and total atomically (recalc with variant price)
     await conn.query(
       `UPDATE cart_item ci
          JOIN variant v ON v.Variant_ID = ci.Variant_ID

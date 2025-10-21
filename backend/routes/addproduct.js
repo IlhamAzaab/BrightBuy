@@ -109,7 +109,7 @@ router.post(
             priceArr[i],
             stockArr[i],
             colourArr[i],
-            sizeArr[i],
+            sizeArr[i] === "" ? null : sizeArr[i], // Set NULL if size is empty
             uploaded.secure_url,
           ]
         );

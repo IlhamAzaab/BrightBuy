@@ -106,7 +106,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex items-center justify-between px-2 md:px-16 lg:px-32 py-3 border-b border-orange-400 shadow-lg shadow-orange-100 bg-gray-50 text-gray-600 relative">
+    <nav className="flex items-center justify-between px-2 md:px-16 lg:px-32 py-3 border-b border-orange-400 shadow-lg shadow-orange-100 bg-gray-50 text-gray-600">
       {/* Logo */}
       <img
         src={logo}

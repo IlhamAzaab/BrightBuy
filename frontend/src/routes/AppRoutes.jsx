@@ -5,6 +5,7 @@ import Signup from "../pages/Auth/Signup";
 import { AuthContext } from "../context/AuthContext";
 import Orders from "../pages/Orders";
 import Profile from "../pages/profile";
+import Animation from "../pages/animation";
 
 // Existing pages
 import Home from "../pages/Home";
@@ -26,7 +27,6 @@ import TopProductsReport from "../pages/Admin/TopProductsReport";
 import TopSellingProductsReport from "../pages/Admin/TopProductsReport";
 import CategoryWiseOrders from "../pages/Admin/CategoryWiseOrders";
 import Outofstocklist from "../pages/Admin/outofstocklist";
-import Animation from "../pages/animation";
 import DeliveryTimeEstimates from "../pages/Admin/DeliveryTimeEstimates";
 
 export default function AppRoutes() {
@@ -83,6 +83,7 @@ export default function AppRoutes() {
             }
           />
         </Route>
+        <Route path="/animation" element={<Animation />} />
 
         {/* Protected customer routes */}
         <Route
