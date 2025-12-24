@@ -1,67 +1,67 @@
-BrightBuy – Full-Stack E-Commerce Platform
+BrightBuy – Full-Stack E-Commerce Platform<br>
 
 BrightBuy is a full-stack e-commerce web application developed as part of the Database Systems course (Semester 3) at the University of Moratuwa.<br>
-The project demonstrates real-world application development using modern web technologies, secure authentication, relational database design, and cloud deployment.
+The project demonstrates real-world application development using modern web technologies, secure authentication, relational database design, and cloud deployment.<br>
 
-Overview
+Overview<br>
 
-BrightBuy provides a complete online shopping experience where users can browse products, manage a shopping cart, and place orders.
+BrightBuy provides a complete online shopping experience where users can browse products, manage a shopping cart, and place orders.<br>
 The system is designed following industry best practices, with a clear separation between frontend, backend, and database layers.
 
 
 Team & Contribution
 
-Project Type:
-Team Project
+Project Type:<br>
+Team Project<br>
 
-My Role:
-Full-Stack Developer
-Backend API development
-Database schema design & integration
-
-
-Tech Stack
-
-Frontend
-React
-Tailwind CSS
-Responsive UI design
-
-Backend
-Node.js
-Express.js
-JWT Authentication
-
-Database
-MySQL
-Hosted on AWS RDS
-Deployment & DevOps
-
-Docker
-AWS EC2 (Application Deployment)
+My Role:<br>
+Full-Stack Developer<br>
+Backend API development<br>
+Database schema design & integration<br>
 
 
-Features
+Tech Stack<br>
 
-User authentication (Sign up / Login) using JWT
-Product listing and browsing
-Shopping cart functionality
-Order placement workflow
-Secure RESTful APIs
-Relational database design
-Fully responsive user interface
-Cloud-hosted database (AWS RDS)
-Dockerized backend for portability and scalability
+Frontend<br>
+React<br>
+Tailwind CSS<br>
+Responsive UI design<br>
 
-System Architecture
+Backend<br>
+Node.js<br>
+Express.js<br>
+JWT Authentication<br>
 
-BrightBuy follows a client–server architecture with clear separation of concerns between the frontend, backend, and database layers.
-The application is containerized using Docker and deployed on AWS infrastructure.
+Database<br>
+MySQL<br>
+Hosted on AWS RDS<br>
+Deployment & DevOps<br>
 
-High-Level Flow
+Docker<br>
+AWS EC2 (Application Deployment)<br>
 
-Users interact with the React frontend
-Frontend communicates with the Node.js + Express REST API
-Authentication is handled using JWT
+
+Features<br>
+
+User authentication (Sign up / Login) using JWT<br>
+Product listing and browsing<br>
+Shopping cart functionality<br>
+Order placement workflow<br>
+Secure RESTful APIs<br>
+Relational database design<br>
+Fully responsive user interface<br>
+Cloud-hosted database (AWS RDS)<br>
+Dockerized backend for portability and scalability<br>
+
+System Architecture<br>
+
+BrightBuy follows a client–server architecture with clear separation of concerns between the frontend, backend, and database layers.<br>
+The application is containerized using Docker and deployed on AWS infrastructure.<br>
+
+High-Level Flow<br>
+
+Users interact with the React frontend<br>
+Frontend communicates with the Node.js + Express REST API<br>
+Authentication is handled using JWT<br>
 Data is stored in MySQL hosted on AWS RDS
-Backend services run inside Docker containers on AWS EC2
+Backend services run inside Docker containers on AWS EC2<br>
