@@ -1,7 +1,8 @@
 
 User[User / Browser]
-Frontend[React Frontend<br/>Tailwind CSS]
-Backend[Node.js + Express API<br/>JWT Authentication]
+
+#Frontend React Frontend<br/>Tailwind CSS
+#Backend[Node.js + Express API<br/>JWT Authentication]
 Database[(MySQL Database<br/>AWS RDS)]
 Docker[Docker Container]
 EC2[AWS EC2 Instance]
