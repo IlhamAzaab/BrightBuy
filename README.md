@@ -1,7 +1,6 @@
 BrightBuy – Full-Stack E-Commerce Platform
 
-BrightBuy is a full-stack e-commerce web application developed as part of the Database Systems course (Semester 3) at the University of Moratuwa.
-
+BrightBuy is a full-stack e-commerce web application developed as part of the Database Systems course (Semester 3) at the University of Moratuwa.<br>
 The project demonstrates real-world application development using modern web technologies, secure authentication, relational database design, and cloud deployment.
 
 Overview
