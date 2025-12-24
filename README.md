@@ -65,3 +65,8 @@ Frontend communicates with the Node.js + Express REST API<br>
 Authentication is handled using JWT<br>
 Data is stored in MySQL hosted on AWS RDS
 Backend services run inside Docker containers on AWS EC2<br>
+<img width="1883" height="890" alt="Screenshot 2025-12-24 110843" src="https://github.com/user-attachments/assets/23dd1439-e985-49c9-8081-6bd060aa18bb" />
+<img width="1877" height="891" alt="Screenshot 2025-12-24 110930" src="https://github.com/user-attachments/assets/0d8a10dc-473c-4cc0-8b20-03f166a3f1d9" />
+<img width="1878" height="892" alt="Screenshot 2025-12-24 111003" src="https://github.com/user-attachments/assets/60909f8c-9d19-42c9-98f5-1588f9c796ba" />
+
+
